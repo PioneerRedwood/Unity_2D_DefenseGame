@@ -1,0 +1,6 @@
+# : comments
+*.cs.meta
+
+*.csproj
+
+*.meta
