@@ -2,14 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleMoveMonster : Monster
+public class Ground : Tile
 {
-    public override bool OnDamage(float damage)
-    {
-        throw new System.NotImplementedException();
-
-    }
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +13,6 @@ public class SimpleMoveMonster : Monster
     // Update is called once per frame
     void Update()
     {
-        MoveToNext();
+        
     }
 }

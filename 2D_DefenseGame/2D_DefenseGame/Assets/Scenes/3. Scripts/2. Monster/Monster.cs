@@ -4,39 +4,18 @@ using UnityEngine;
 
 public abstract class Monster : MonoBehaviour
 {
-    enum MonsterState
+    protected enum MonsterState
     {
         moving, stop, dead, normal
     }
-    [SerializeField] private float hp;
-    [SerializeField] private float speed;
+    [SerializeField] private float hp = 0;
+    [SerializeField] private float speed = 0;
 
-    private MonsterState state = MonsterState.normal;
-    private Vector2Int[] Waypoint { get; set; }
-    private int wayPointIdx = 0;
-    private Vector2Int nextPos;
-
-    public GameObject Player;
-
-    void Start()
-    {
-        Player = GameObject.Find("Player");
-    }
-
-    void Update()
-    {
-        // 끝 지점 도달은 Tile에서 몬스터로 알려주는 이벤트 발생? -- 고려
-        // MoveToWaypoint()
-        // 만약 끝 지점 플레이어 체력 깎고 자신 파괴
-        if (Waypoint != null)
-            MoveToNext();
-
-        if ((Vector2)transform.position == Waypoint[Waypoint.Length - 1])
-        {
-            Destroy(gameObject);
-        }
-    }
-
+    protected MonsterState state = MonsterState.normal;
+    protected Vector2Int[] Waypoint { get; set; }
+    protected int wayPointIdx = 0;
+    protected Vector2Int nextPos;
+    
     #region Damage
     public abstract bool OnDamage(float damage);
 
@@ -59,13 +38,18 @@ public abstract class Monster : MonoBehaviour
 
     // 이동 유튜브 참고
     // https://www.youtube.com/watch?v=ExRQAEm4jPg&ab_channel=AlexanderZotov
-    private void MoveToNext()
+    protected void MoveToNext()
     {
         transform.position = Vector2.MoveTowards(transform.position, (Vector2)nextPos, speed * Time.deltaTime);
 
-        if (nextPos == Waypoint[wayPointIdx + 1])
+        if ((Vector2)transform.position == nextPos && nextPos != Waypoint[Waypoint.Length - 1])
         {
             nextPos = Waypoint[++wayPointIdx];
+        }
+
+        if ((Vector2)transform.position == Waypoint[Waypoint.Length - 1])
+        {
+            Destroy(gameObject);
         }
     }
     #endregion
