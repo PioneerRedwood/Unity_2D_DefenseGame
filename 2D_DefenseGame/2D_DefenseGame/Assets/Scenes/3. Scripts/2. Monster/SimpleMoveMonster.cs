@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class SimpleMoveMonster : Monster
 {
+    [SerializeField] private float hp = 0;
+
     public override bool OnDamage(float damage)
     {
         throw new System.NotImplementedException();
-
+        
     }
     
     // Start is called before the first frame update
@@ -20,5 +22,10 @@ public class SimpleMoveMonster : Monster
     void Update()
     {
         MoveToNext();
+        if(hp < 0)
+        {
+            state = MonsterState.dead;
+            Destroy(gameObject);
+        }
     }
 }

@@ -8,7 +8,6 @@ public abstract class Monster : MonoBehaviour
     {
         moving, stop, dead, normal
     }
-    [SerializeField] private float hp = 0;
     [SerializeField] private float speed = 0;
 
     protected MonsterState state = MonsterState.normal;

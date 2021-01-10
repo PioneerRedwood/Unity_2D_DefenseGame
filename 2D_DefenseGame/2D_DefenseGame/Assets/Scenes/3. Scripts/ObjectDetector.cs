@@ -25,18 +25,24 @@ public class ObjectDetector : MonoBehaviour
 
             ray = Main.ScreenPointToRay(Input.mousePosition);
 
-            if(Physics.Raycast(ray, out Hit, Mathf.Infinity))
+            if (Physics.Raycast(ray, out Hit, Mathf.Infinity))
             {
+                Debug.Log(Hit.transform.tag);
                 if (Hit.transform.CompareTag("Ground"))
                 {
                     UIManager.GroundClick();
                     Debug.Log("groundclick!");
                 }
-                else if (Hit.transform.CompareTag("Route"))
+                else if(Hit.transform.CompareTag("Route"))
                 {
                     UIManager.RouteClick();
+                    Debug.Log("Routeclick!");
+                }
+                else
+                {
                     Debug.Log("click!");
                 }
+                
             }
             
         }

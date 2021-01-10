@@ -5,7 +5,7 @@ using UnityEngine;
 // 스테이지의 생성과 파괴를 관리
 public class StageManager : MonoBehaviour
 {
-    [SerializeField] private Stage[] stages;
+    [SerializeField] private Stage[] stages = null;
     [SerializeField] public Vector3 stageHolder;
 
     private Stage currentStage;
@@ -23,13 +23,15 @@ public class StageManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+       
     }
 
 
     public void LoadStage(int index)
     {
-        currentStage = (Stage)Instantiate<Stage>(stages[index], stageHolder, Quaternion.identity);
+        currentStage = Instantiate<Stage>(stages[index], stageHolder, Quaternion.identity);
+        currentStage.SpawnPointOffset();
+       
         stages[index].InitStage(index);
         bIsWaveOngoing = true;
         // 게임 UI 변경

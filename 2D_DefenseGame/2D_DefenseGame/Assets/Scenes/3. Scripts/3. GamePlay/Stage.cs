@@ -8,7 +8,7 @@ public class Stage : MonoBehaviour
     [SerializeField] private float waveStartWait = 0.0f;
     [SerializeField] private float monsterSpawnWait = 0.0f;
     [SerializeField] private Wave wave = null;
-    [SerializeField] private Vector2Int[] Waypoints;
+    [SerializeField] private Vector2Int[] Waypoints = null;
 
     public Tile[,] tiles;
     private int stageIdx = 0;
@@ -129,5 +129,20 @@ public class Stage : MonoBehaviour
         }
         stageState = StageState.Wait;
     }
+
+    // 스테이지 위치값에 따른 Waypoints에 offset 추가
+    public void SpawnPointOffset() 
+    {
+        Vector2Int offset = new Vector2Int((int)gameObject.transform.position.x, (int)gameObject.transform.position.y);
+
+        for (int i = 0; i < Waypoints.Length; i++)
+        {
+            Waypoints[i] += offset;
+        }
+
+    }
     #endregion
+
+
+
 }
