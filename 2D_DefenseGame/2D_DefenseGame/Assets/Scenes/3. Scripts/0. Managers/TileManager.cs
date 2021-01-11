@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// 본 프로젝트에서 사용되지 않음
 public class TileManager : MonoBehaviour
 {
     public int SIZE;

@@ -27,24 +27,19 @@ public class ObjectDetector : MonoBehaviour
 
             if (Physics.Raycast(ray, out Hit, Mathf.Infinity))
             {
-                Debug.Log(Hit.transform.tag);
+
                 if (Hit.transform.CompareTag("Ground"))
                 {
-                    UIManager.GroundClick();
-                    Debug.Log("groundclick!");
+                    UIManager.GroundClick(Hit.collider.gameObject);
+                    Debug.Log(Hit.collider.gameObject.name);
                 }
                 else if(Hit.transform.CompareTag("Route"))
                 {
-                    UIManager.RouteClick();
-                    Debug.Log("Routeclick!");
-                }
-                else
-                {
-                    Debug.Log("click!");
+                    UIManager.RouteClick(Hit.collider.gameObject);
+                    Debug.Log(Hit.collider.gameObject.name);
                 }
                 
             }
-            
         }
     }
 }

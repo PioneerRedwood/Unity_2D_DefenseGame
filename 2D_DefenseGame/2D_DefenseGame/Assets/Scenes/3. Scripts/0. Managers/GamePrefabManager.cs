@@ -20,8 +20,4 @@ public class GamePrefabManager : SingletonScriptableObject<GamePrefabManager>
 
     // End
     public EndPoint endPointPrefab;
-
-
-    // SimpleBasicMonster
-    public SimpleMoveMonster simpleMoveMonsterPrefab;
 }

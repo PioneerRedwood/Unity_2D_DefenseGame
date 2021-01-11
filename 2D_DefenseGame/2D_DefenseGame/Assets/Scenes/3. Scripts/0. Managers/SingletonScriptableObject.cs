@@ -15,7 +15,8 @@ namespace SingletonPattern
                 if (_instance == null)
                 {
                     _instance = Resources.LoadAll<T>("").FirstOrDefault();
-                    if (_instance == null) Debug.LogError($"Cannot find Singleton ScriptableObject of type {typeof(T)}");
+                    if (_instance == null)
+                        Debug.LogError($"Cannot find Singleton ScriptableObject of type {typeof(T)}");
                 }
 
                 return _instance;
