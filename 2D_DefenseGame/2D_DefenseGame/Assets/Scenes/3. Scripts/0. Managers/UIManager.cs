@@ -14,8 +14,9 @@ public class UIManager : MonoBehaviour
     private bool IsRoutePanel = false;
     private bool IsGroundPanel = false;
 
-    private Ground Ground_componet;
-    private Route Route_componet;
+    private Ground Ground_component;
+    private Route Route_component;
+    private TileOutline TileOutline_component;
 
     // Start is called before the first frame update
     void Start()
@@ -31,12 +32,18 @@ public class UIManager : MonoBehaviour
 
     public void RouteClick(GameObject _Route)
     {
-        if(SelectedObj == _Route)
+        TileOutline_component = _Route.GetComponent<TileOutline>();
+
+        if (SelectedObj == _Route)
         {
             resetPanel();
+            TileOutline_component.OutlineDisable();
             SelectedObj = null;
             return;
         }
+
+        TileOutline_component.OutlineEnable();
+
         SelectedObj = _Route;
         LoadPanel(SelectedObj);
 
@@ -44,46 +51,50 @@ public class UIManager : MonoBehaviour
 
     public void GroundClick(GameObject _Ground)
     {
+        TileOutline_component = _Ground.GetComponent<TileOutline>();
+
         if (SelectedObj == _Ground)
         {
             resetPanel();
+            TileOutline_component.OutlineDisable();
             SelectedObj = null;
             return;
         }
+        TileOutline_component.OutlineEnable();
 
         SelectedObj = _Ground;
         LoadPanel(SelectedObj);
-
     }
 
     #region Panel
 
     public void LoadPanel(GameObject SelectedObj)
     {
+        resetPanel();
+
         if (SelectedObj.CompareTag("Route"))
         {
-            Route_componet = SelectedObj.GetComponent<Route>();
+            Route_component = SelectedObj.GetComponent<Route>();
 
-            if (Ground_componet == null)
+            if (Route_component == null)
             {
                 return;
             }
         }
         else if (SelectedObj.CompareTag("Ground"))
         {
-            resetPanel();
-            Ground_componet = SelectedObj.GetComponent<Ground>();
+            Ground_component = SelectedObj.GetComponent<Ground>();
 
-            if(Ground_componet == null)
+            if(Ground_component == null)
             {
                 return;
             }
 
-            if(Ground_componet.IsBuildTower == false)
+            if(Ground_component.IsBuildTower == false)
             {
                 CreateButton(Buttons[0]);
             }
-            else if(Ground_componet.IsBuildTower == true)
+            else if(Ground_component.IsBuildTower == true)
             {
                 CreateButton(Buttons[1]);
                 CreateButton(Buttons[2]);

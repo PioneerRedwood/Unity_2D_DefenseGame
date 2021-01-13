@@ -1,16 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // 스테이지의 생성과 파괴를 관리
 public class StageManager : MonoBehaviour
 {
-    [SerializeField] private Stage[] stages = null;
-    [SerializeField] public Vector3 stageHolder;
+    [SerializeField] private Stage[] _stages = null;
+    [SerializeField] public Vector3 _stageHolder;
+    
 
-    private Stage currentStage;
-    private bool bIsWaveOngoing { get; set; }
-
+    private Stage _currentStage;
+    private int _bIsWaveOngoing { get; set; }
 
     // Start is called before the first frame update
     void Start()
@@ -29,18 +30,18 @@ public class StageManager : MonoBehaviour
 
     public void LoadStage(int index)
     {
-        currentStage = Instantiate<Stage>(stages[index], stageHolder, Quaternion.identity);
-        currentStage.SpawnPointOffset();
+        _currentStage = Instantiate<Stage>(_stages[index], _stageHolder, Quaternion.identity);
+        _currentStage.SpawnPointOffset();
        
-        stages[index].InitStage(index);
-        bIsWaveOngoing = true;
+        _stages[index].InitStage(index);
+        _bIsWaveOngoing = index;
         // 게임 UI 변경
 
     }
 
     public void UnloadStage(int index)
     {
-        stages[index].InitStage(index);
-        Destroy(currentStage);
+        _stages[index].InitStage(index);
+        Destroy(_currentStage);
     }
 }
