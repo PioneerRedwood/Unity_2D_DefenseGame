@@ -9,7 +9,7 @@ public class SimpleMoveMonster : Monster
     public override void OnDamage(float damage)
     {
         _hp -= damage;
-        Debug.Log(name + "   hp: " + _hp);
+        //Debug.Log(name + "   hp: " + _hp);
     }
 
     // Start is called before the first frame update

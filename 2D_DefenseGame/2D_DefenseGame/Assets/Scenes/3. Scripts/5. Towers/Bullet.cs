@@ -8,13 +8,9 @@ public class Bullet : MonoBehaviour
     public float _speed = 1.0f;
     public float _damage = 20.0f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
+    private float _deltaTime = 0.0f;
+    private float _destroyDelay = 1.0f;
+    
     void Update()
     {
         if (_target != null)
@@ -31,6 +27,11 @@ public class Bullet : MonoBehaviour
         }
         else
         {
+            _deltaTime += Time.deltaTime;
+            if(_destroyDelay <= _deltaTime)
+            {
+                Destroy(gameObject);
+            }
             return;
         }
     }

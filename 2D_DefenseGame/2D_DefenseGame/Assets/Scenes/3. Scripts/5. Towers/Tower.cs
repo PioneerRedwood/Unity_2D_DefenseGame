@@ -20,6 +20,7 @@ public class Tower : Tile
     void Start()
     {
         line = GetComponent<LineRenderer>();
+
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
     }
 
@@ -67,22 +68,22 @@ public class Tower : Tile
         }
         else
         {
+            // 지정된 적 방향으로 회전
             Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
 
+            //DrawLine();
             // Attack
-            if(_attackDelay <= _fireCount)
+            if (_attackDelay <= _fireCount)
             {
                 Attack();
                 _fireCount = 0f;
-                DrawLine();
             }
             _fireCount += Time.deltaTime;
         }
     }
 
     // 공격 기능 타워를 만들어야함
-    // 추상 클래스로 두는게 어떰
     #region Attacking process
     protected void Attack()
     {
@@ -99,17 +100,17 @@ public class Tower : Tile
         Gizmos.DrawWireSphere(transform.position, _range);
     }
     
+    // 원활히 작동 안됨
     private void DrawLine()
     {
         if(_targetTransform != null)
         {
-            line.SetPosition(0, transform.position);
-            line.SetPosition(1, _targetTransform.position);
-            line.startWidth = 2.0f;
             line.startColor = Color.red;
+            line.SetPosition(0, _muzzle.transform.position);
+            line.SetPosition(1, _targetTransform.position);
+            line.startWidth = 0.1f;
+            line.endWidth = 0.1f;
         }
     }
     #endregion
-
-
 }

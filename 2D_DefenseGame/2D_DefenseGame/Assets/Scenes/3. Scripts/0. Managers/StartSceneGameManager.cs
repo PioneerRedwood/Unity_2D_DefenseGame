@@ -19,7 +19,7 @@ public class StartSceneGameManager : MonoBehaviour
 
     public void OnPlayClicked()
     {
-        SceneManager.LoadScene("PR_Scene");
+        SceneManager.LoadScene("StageSelectScene");
     }
 
     public void OnSettingsClicked()
