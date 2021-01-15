@@ -1,0 +1,24 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class TowerManager : MonoBehaviour
+{
+    [SerializeField]
+    public Tower[] Common;
+    [SerializeField]
+    public Tower[] Uncommon;
+    [SerializeField]
+    public Tower[] Rare;
+    [SerializeField]
+    public Tower[] Unique;
+    [SerializeField]
+    public Tower[] Legendary;
+
+
+    void Start()
+    {
+        Player.getInstance().LoadTower(this);
+    }
+
+}

@@ -1,61 +1,96 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+// for debugging
+using UnityEngine.UI;
 
 public class Stage : MonoBehaviour
 {
-    [SerializeField] private Vector2Int Size = new Vector2Int(0, 0);
-    [SerializeField] private float waveStartWait = 0.0f;
-    [SerializeField] private float monsterSpawnWait = 0.0f;
-    [SerializeField] private Wave wave = null;
-    [SerializeField] private Vector2Int[] Waypoints = null;
+    [SerializeField] private Vector2Int _size = new Vector2Int(0, 0);
+    [SerializeField] private float _firstSpawnDelay = 0.0f;
+    [SerializeField] private float _monsterSpawnDelay = 0.0f;
+    [SerializeField] private Wave _wave = null;
+    [SerializeField] private Vector2Int[] _waypoints = null;
+    [SerializeField] private float _nextWaveDelay = 30.0f;
 
-    public Tile[,] tiles;
-    private int stageIdx = 0;
-    private int waveIdx = 0;
-    private List<Monster> monsters = new List<Monster>();
+    public Tile[,] _tiles;
+    private StageManager _stageManager;
+    private int _stageIdx = 0;
+    private int _waveIdx = 0;
+    private List<Monster> _monsters = new List<Monster>();
 
-    float time = 0.0f;
+    private float time = 0.0f;
+    private Text _timerText;
 
     private void Start()
     {
-        stageState = StageState.Ongoing;
-        LoadWave(waveIdx);
+        if (_stageIdx != -1)
+        {
+            _stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+
+            LoadWave(_waveIdx);
+        }
+        else
+        {
+            _stageState = StageState.Unload;
+        }
+
+        InvokeRepeating("UpdateMonsterList", 0.0f, 2.0f);
+    }
+
+    // for debugging after testing delete using UnityEngine.UI
+    void UpdateMonsterList()
+    {
+        for (int i = 0; i < _monsters.Count; i++)
+        {
+            if (_monsters[i] == null)
+            {
+                _monsters.Remove(_monsters[i]);
+            }
+        }
     }
 
     private void Update()
     {
-        // 시간 체크를 해야할 듯
-        time += Time.deltaTime;
-        if(time > 5 && stageState == StageState.Wait)
+        if (_stageState == StageState.Ongoing)
         {
-            //Debug.Log("5초 초과");
-            time = 0;
-            //LoadWave(++waveIdx);
+            _timerText = GameObject.Find("Timer").GetComponent<Text>();
+            _timerText.text = "경과 시간:" + time + " \n현재 웨이브: " + _waveIdx + " 총 웨이브: " + _wave.GetNumOfWave()
+                                        + "\n 남은 몬스터 수: " + _monsters.Count;
+            time += Time.deltaTime;
+            if (time > _nextWaveDelay && _waveIdx < _wave.GetNumOfWave())
+            {
+                time = 0;
+                LoadWave(_waveIdx++);
+            }
+        }
+
+        if (_waveIdx == _wave.GetNumOfWave() && _monsters.Count < 1)
+        {
+            _stageState = StageState.Success;
         }
     }
 
-    // 보류
     public enum StageState
     {
         // 진행중, 실패, 성공, 언로드, 정지, 대기
         Ongoing, Fail, Success, Unload, Paused, Wait
     }
-    private StageState stageState { get; set; }
+    private StageState _stageState { get; set; }
 
 
     #region Grid
     public void CreateGrid()
     {
-        tiles = new Tile[Size.x, Size.y];
-        for (int x = 0; x < Size.x; x++)
+        _tiles = new Tile[_size.x, _size.y];
+        for (int x = 0; x < _size.x; x++)
         {
-            for (int y = 0; y < Size.y; y++)
+            for (int y = 0; y < _size.y; y++)
             {
                 var tileGameObject = new GameObject($"Tile ({x}, {y})");
                 var tile = tileGameObject.AddComponent<Tile>();
 
-                tiles[x, y] = tile;
+                _tiles[x, y] = tile;
                 // 타일 초기화
                 tile.transform.parent = transform;
                 tile.transform.localPosition = new Vector3(x, y, 0);
@@ -69,15 +104,14 @@ public class Stage : MonoBehaviour
         {
             DestroyImmediate(transform.GetChild(i).gameObject);
         }
-        tiles = null;
+        _tiles = null;
     }
     #endregion
 
     #region Stage Wave control
     public void InitStage(int idx)
     {
-        stageIdx = idx;
-        stageState = StageState.Unload;
+        _stageIdx = idx;
     }
 
     private void LoadWave(int index)
@@ -88,7 +122,7 @@ public class Stage : MonoBehaviour
 
     public StageState GetState()
     {
-        return stageState;
+        return _stageState;
     }
     #endregion
 
@@ -96,48 +130,37 @@ public class Stage : MonoBehaviour
 
     /*
      * 몬스터 스폰
-     * Wave, Coroutine으로 작성할 필요 있음
-     * https://www.youtube.com/watch?v=r8N6J79W0go&ab_channel=Unity 참고
-     * 
+     * https://www.youtube.com/watch?v=r8N6J79W0go&ab_channel=Unity 참고함
      */
-
-    //타일 매니저로 생성시 참고한 코드
-    //(Tile)Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity);
-    //Spawning here
-    //Spawning position will be set StartPoint(x, y).Quaternion
-    //tiles[i * size + j].name = "Tile[" + i + "][" + j + "]";
-    //tiles[i * size + j].transform.parent = this.transform;
-
-    private IEnumerator SpawnMonster(int waveIdx)
+    private IEnumerator SpawnMonster(int idx)
     {
-        yield return new WaitForSeconds(waveStartWait);
-        stageState = StageState.Ongoing;
-        for (int i = 0; i < wave.GetWaveBundle(waveIdx).numOfMonster; i++)
+        yield return new WaitForSeconds(_firstSpawnDelay);
+        _stageState = StageState.Ongoing;
+        for (int i = 0; i < _wave.GetWaveBundle(idx).numOfMonster; i++)
         {
-            var monster = Instantiate(wave.GetWaveBundle(waveIdx).monster, 
-                                        new Vector3(Waypoints[0].x, Waypoints[0].y, 0), Quaternion.identity);
+            var monster = Instantiate(_wave.GetWaveBundle(idx).monster,
+                                        new Vector3(_waypoints[0].x, _waypoints[0].y, 0), Quaternion.identity);
 
             if (monster != null)
             {
-                monster.name = wave.GetWaveBundle(waveIdx).monster.ToString() + "" + monsters.Count;
-                monster.transform.parent = this.transform;
+                monster.name = _wave.GetWaveBundle(idx).monster.ToString() + "" + _monsters.Count;
+                monster.transform.parent = transform;
 
-                monster.InitWaypoint(Waypoints);
-                monsters.Add(monster);
+                monster.InitWaypoint(_waypoints);
+                _monsters.Add(monster);
             }
-            yield return new WaitForSeconds(monsterSpawnWait);
+            yield return new WaitForSeconds(_monsterSpawnDelay);
         }
-        stageState = StageState.Wait;
     }
 
     // 스테이지 위치값에 따른 Waypoints에 offset 추가
-    public void SpawnPointOffset() 
+    public void SpawnPointOffset()
     {
         Vector2Int offset = new Vector2Int((int)gameObject.transform.position.x, (int)gameObject.transform.position.y);
 
-        for (int i = 0; i < Waypoints.Length; i++)
+        for (int i = 0; i < _waypoints.Length; i++)
         {
-            Waypoints[i] += offset;
+            _waypoints[i] += offset;
         }
 
     }

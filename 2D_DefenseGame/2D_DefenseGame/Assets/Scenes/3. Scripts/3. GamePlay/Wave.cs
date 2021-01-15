@@ -25,7 +25,7 @@ public class Wave : MonoBehaviour
         return null;
     }
 
-    public int GetNumOfWaveBundle()
+    public int GetNumOfWave()
     {
         return bundles.Count;
     }

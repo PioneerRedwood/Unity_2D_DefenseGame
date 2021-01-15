@@ -16,6 +16,17 @@ public class Tower : Tile
     public float _attackDelay = 1f;
     private float _fireCount = 0f;
 
+    public enum towerTier
+    {
+        common,
+        uncommon,
+        rare,
+        unique,
+        legendary
+    }
+    public towerTier Tier;
+    public string towerName;
+
     private LineRenderer line;
     void Start()
     {

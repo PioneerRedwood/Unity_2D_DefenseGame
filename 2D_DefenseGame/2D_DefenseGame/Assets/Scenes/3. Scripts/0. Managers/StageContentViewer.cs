@@ -15,18 +15,24 @@ public class StageContentViewer : MonoBehaviour
     // 현재, 이전 인덱스
     private int _currIdx = 0;
     private int _prevIdx = -1;
-
+    private int _nextIdx = -1;
 
     // Start is called before the first frame update
     void Start()
     {
-        foreach (StageViewer viewer in _stageViewer)
+        int idx = 0;
+        // 초기 생성시 
+        if (_nextIdx < 0)
         {
-            var tempViewer = Instantiate(viewer);
-            tempViewer.transform.SetParent(gameObject.transform);
+            foreach (StageViewer viewer in _stageViewer)
+            {
+                var tempViewer = Instantiate(viewer);
+                tempViewer.transform.SetParent(gameObject.transform);
+                tempViewer.SetStageIndex(idx++);
+            }
+            // Initialize general variables
+            transform.localPosition = new Vector3(_widthOffset * (_stageViewer.Length / 2), 0.0f, 0.0f);
         }
-        // Initialize general variables
-        transform.localPosition = new Vector3(_widthOffset * (_stageViewer.Length / 2), 0.0f, 0.0f);
     }
 
 
@@ -37,7 +43,7 @@ public class StageContentViewer : MonoBehaviour
         {
             transform.position =
                 Vector2.Lerp(new Vector2(transform.position.x, transform.position.y), new Vector2(_nextXPos, transform.position.y), _speed * Time.deltaTime);
-            
+
             if (Mathf.Approximately(transform.position.x, _nextXPos))
             {
                 _onMove = OnMove.Stop;
@@ -46,9 +52,9 @@ public class StageContentViewer : MonoBehaviour
 
     }
 
-    public void OnStageSelected()
+    public void UpdateNextStage()
     {
-
+        _nextIdx++;
     }
 
     public void OnMoveContentLeftButtonClicked()

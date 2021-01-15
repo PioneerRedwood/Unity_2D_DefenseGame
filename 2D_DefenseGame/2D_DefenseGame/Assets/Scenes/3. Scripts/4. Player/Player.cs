@@ -5,7 +5,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private static Player _instance;
-
     public static Player getInstance()
     {
         if (_instance == null)
@@ -18,7 +17,7 @@ public class Player : MonoBehaviour
 
     //public StageManager _StageManager;
     private bool _IsPlaying = false;
-
+    private TowerManager TowerManager;
     private int Money = 0;
     private int Life = 0;
 
@@ -51,6 +50,7 @@ public class Player : MonoBehaviour
     {
         Money = 0;
         Life = 0;
+        TowerList.Clear();
     }
 
 
@@ -75,6 +75,39 @@ public class Player : MonoBehaviour
     {
         return TowerList;
     }
+    public Tower getTower(Transform parent)
+    {
+        Tower find = new Tower();
+        foreach (Tower tower in TowerList)
+        {
+            if (tower.transform.parent == parent)
+            {
+                find = tower;
+                break;
+            }
+        }
+        return find;
+    }
+
+    public void BuildTower(GameObject SelectedObj)
+    {
+        Tower _Tower = Instantiate(getRandomTower(TowerManager.Common), SelectedObj.transform.position, Quaternion.identity);
+
+        _Tower.transform.position = SelectedObj.transform.position;
+        _Tower.transform.SetParent(SelectedObj.transform.parent);
+
+        AddTower(_Tower);
+    }
+
+    public void BuildTower(GameObject SelectedObj, Tower tower)
+    {
+        Tower _Tower = Instantiate(tower, SelectedObj.transform.position, Quaternion.identity);
+
+        _Tower.transform.position = SelectedObj.transform.position;
+        _Tower.transform.SetParent(SelectedObj.transform.parent);
+
+        AddTower(_Tower);
+    }
 
     public void DeleteTower(Transform Delete)
     {
@@ -96,14 +129,74 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void MergeTower(GameObject SelectedObj)
+    {
+        Tower mergedTower;
+        Tower SelectedTower = getTower(SelectedObj.transform.parent);
+
+        foreach (Tower tower in TowerList)
+        {
+            if (tower.towerName == SelectedTower.towerName && tower != SelectedTower)
+            {
+
+                switch (SelectedTower.Tier.ToString())
+                {
+                    case "common":
+                        BuildTower(SelectedObj, getRandomTower(TowerManager.Uncommon));
+                        break;
+                    case "uncommon":
+                        BuildTower(SelectedObj, getRandomTower(TowerManager.Rare));
+                        break;
+                    case "rare":
+                        BuildTower(SelectedObj, getRandomTower(TowerManager.Unique));
+                        break;
+                    case "unique":
+                        BuildTower(SelectedObj, getRandomTower(TowerManager.Legendary));
+                        break;
+                    case "legendary":
+                        break;
+                    default:
+                        break;
+                }
+
+                TowerList.Remove(SelectedTower);
+                TowerList.Remove(tower);
+
+                tower.transform.parent.GetChild(0).GetComponent<Ground>().IsBuildTower = false;
+
+                Destroy(SelectedTower.gameObject);
+                Destroy(tower.gameObject);
+
+                break;
+            }
+        }
+    }
+
     public void AddTower(Tower add)
     {
         if (add == null)
-        {
+        {   
             return;
         }
 
         TowerList.Add(add);
+    }
+
+    public void LoadTower(TowerManager input)
+    {
+        TowerManager = input;
+        if(TowerManager == null)
+        {
+            TowerManager = GameObject.FindObjectOfType<TowerManager>();
+        }
+
+    }
+
+    private Tower getRandomTower(Tower[] List)
+    {
+        Tower RT = List[Random.Range(0, List.Length)];
+
+        return RT;
     }
 
 }

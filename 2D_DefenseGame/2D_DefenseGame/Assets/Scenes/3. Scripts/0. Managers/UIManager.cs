@@ -12,9 +12,6 @@ public class UIManager : MonoBehaviour
 
     private GameObject SelectedObj;
 
-    private bool IsRoutePanel = false;
-    private bool IsGroundPanel = false;
-
     private int TowerPrice = 0;
 
     private Ground Ground_component;
@@ -73,7 +70,7 @@ public class UIManager : MonoBehaviour
 
     public void LoadPanel(GameObject SelectedObj) { 
         resetPanel();
-
+        
         if (SelectedObj.CompareTag("Route"))
         {
             Route_component = SelectedObj.GetComponent<Route>();
@@ -164,12 +161,7 @@ public class UIManager : MonoBehaviour
 
         Ground_component.IsBuildTower = true;
 
-        Tower _Tower = Instantiate(GamePrefabManager.Instance.towerPrefab, SelectedObj.transform.position, Quaternion.identity);
-
-        _Tower.transform.position = Ground_component.transform.position;
-        _Tower.transform.SetParent(Ground_component.transform.parent);
-
-        Player.getInstance().AddTower(_Tower);
+        Player.getInstance().BuildTower(SelectedObj);
         LoadPanel(SelectedObj);
     }
 
@@ -177,7 +169,13 @@ public class UIManager : MonoBehaviour
     {
         Debug.Log("MERGE");
 
-    }
+        if (!Ground_component.IsBuildTower)
+        {
+            return;
+        }
+
+        Player.getInstance().MergeTower(SelectedObj);
+     }
 
     public void SellButton()
     {
@@ -188,15 +186,11 @@ public class UIManager : MonoBehaviour
         }
 
         Player.getInstance().DeleteTower(SelectedObj.transform.parent);
-
         Player.getInstance().addMoney(TowerPrice / 2);
 
         Ground_component.IsBuildTower = false;
         LoadPanel(SelectedObj);
     }
-
-
-
     #endregion
 
 }
