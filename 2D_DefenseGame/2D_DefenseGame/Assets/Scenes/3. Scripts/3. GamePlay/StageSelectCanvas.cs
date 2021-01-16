@@ -7,7 +7,7 @@ public class StageSelectCanvas : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     // Update is called once per frame
@@ -18,6 +18,6 @@ public class StageSelectCanvas : MonoBehaviour
 
     public void SetActive(bool bIsActive)
     {
-        gameObject.SetActive(bIsActive);
+        //gameObject.SetActive(bIsActive);
     }
 }

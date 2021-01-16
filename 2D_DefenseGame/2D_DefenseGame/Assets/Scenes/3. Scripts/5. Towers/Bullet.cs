@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    private Monster _target;
+    [Header("Bullet")]
     public float _speed = 1.0f;
     public float _damage = 20.0f;
 
+    private Monster _target;
     private float _deltaTime = 0.0f;
     private float _destroyDelay = 1.0f;
-    
+
     void Update()
     {
         if (_target != null)
@@ -28,7 +29,7 @@ public class Bullet : MonoBehaviour
         else
         {
             _deltaTime += Time.deltaTime;
-            if(_destroyDelay <= _deltaTime)
+            if (_destroyDelay <= _deltaTime)
             {
                 Destroy(gameObject);
             }
@@ -38,7 +39,7 @@ public class Bullet : MonoBehaviour
 
     public bool SetTarget(Monster target)
     {
-        if(target != null)
+        if (target != null)
         {
             _target = target;
             return true;

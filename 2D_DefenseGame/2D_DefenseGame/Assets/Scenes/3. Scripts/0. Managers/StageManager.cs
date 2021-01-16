@@ -7,82 +7,88 @@ using UnityEngine.SceneManagement;
 // 스테이지의 생성과 파괴를 관리
 public class StageManager : MonoBehaviour
 {
+    [Header("Stage")]
     [SerializeField] private Stage[] _stages = null;
     [SerializeField] public Vector3 _stageHolder;
 
-    private StageSelector _stageSelector;
-    private StageSelectCanvas stageSelectCanvas;
+    private GameObject _stageDataHolder;
     private Stage _currentStage;
     private int _currStageIdx = -1;
-    private bool bIsScene { get; set; }
-    
+    private bool _bIsScene { get; set; }
+
     void Start()
     {
-        // 씬을 바꾸니 두개가 존재하는 현상이 발생함
-        _stageSelector = GameObject.Find("Content").GetComponent<StageSelector>();
-        stageSelectCanvas = GameObject.Find("StageSelectCanvas").GetComponent<StageSelectCanvas>();
-
-        DontDestroyOnLoad(gameObject);
-    }
-
-    private void CheckInScene()
-    {
-        if (bIsScene && _currentStage == null)
+        _stageDataHolder = GameObject.Find("StageDataHolder");
+        if (_stageDataHolder == null)
         {
-            LoadStage(_currStageIdx);
-            bIsScene = false;
-            CancelInvoke("CheckInScene");
+            GameObject stageHolder = new GameObject("StageDataHolder");
+            stageHolder.AddComponent<StageDataHolder>();
+            _stageDataHolder = stageHolder;
         }
+
+        _currStageIdx = _stageDataHolder.GetComponent<StageDataHolder>().GetCurrentStage();
+        SetCurrentStage(_currStageIdx);
     }
 
     void Update()
     {
         if (_currentStage != null)
         {
-            if (bIsScene)
+            if (_bIsScene)
             {
-                CancelInvoke("CheckInScene");
+                CancelInvoke("CheckStageLoaded");
             }
 
-            // StageManager는 Destroy하는게 오히려 나아보인다 
-            // 계속 유지되는 데이터는 StageSelector에 넣어야겠다
+            // 스테이지 클리어시 해야하는 동작 추가 바람
             if (_currentStage.GetState() == Stage.StageState.Success)
             {
                 Destroy(_currentStage, 1.0f);
-                _stageSelector.UpdateNextStage();
-                stageSelectCanvas.SetActive(true);
+                Destroy(_stageDataHolder);
+                Debug.Log("Stage Clear!");
                 SceneManager.LoadScene("StageSelectScene");
-                Destroy(gameObject);
             }
             else if (_currentStage.GetState() == Stage.StageState.Fail)
             {
                 Destroy(_currentStage, 1.0f);
-                stageSelectCanvas.SetActive(true);
+                Destroy(_stageDataHolder);
+                Debug.Log("Stage Fail!");
                 SceneManager.LoadScene("StageSelectScene");
-                Destroy(gameObject);
             }
+        }
+    }
+
+    #region Stage Setting & Load
+    public void LoadStage(int index)
+    {
+        _currentStage = Instantiate<Stage>(_stages[index], _stageHolder, Quaternion.identity);
+
+        if (_currentStage != null)
+        {
+            _currentStage.SpawnPointOffset();
+            _stages[index].InitStage(index);
+        }
+    }
+
+    // 해당 함수는 SetCurrentStage()에서 참조됨
+    // 시작시 0.2초 딜레이 후 2초마다 실행 후 InvokeRepeating()을 종료
+    // 씬에 존재할 때 스테이지가 로드되지 않았다면 로드
+    private void CheckStageLoaded()
+    {
+        if (_bIsScene && _currentStage == null)
+        {
+            LoadStage(_currStageIdx);
+            _bIsScene = false;
+            CancelInvoke("CheckInScene");
         }
     }
 
     public void SetCurrentStage(int index)
     {
         _currStageIdx = index;
-        InvokeRepeating("CheckInScene", 0.2f, 2f);
-        bIsScene = true;
-
-        SceneManager.LoadScene("SampleScene");
+        InvokeRepeating("CheckStageLoaded", 0.2f, 2f);
+        _bIsScene = true;
     }
 
-    public void LoadStage(int index)
-    {
-        _currentStage = Instantiate<Stage>(_stages[index], _stageHolder, Quaternion.identity);
-        if(_currentStage != null)
-        {
-            _currentStage.SpawnPointOffset();
 
-            _stages[index].InitStage(index);
-            
-        }
-    }
-
+    #endregion
 }

@@ -4,21 +4,16 @@ using UnityEngine;
 
 public class TowerManager : MonoBehaviour
 {
-    [SerializeField]
-    public Tower[] Common;
-    [SerializeField]
-    public Tower[] Uncommon;
-    [SerializeField]
-    public Tower[] Rare;
-    [SerializeField]
-    public Tower[] Unique;
-    [SerializeField]
-    public Tower[] Legendary;
-
+    [Header("Tower")]
+    [SerializeField] public Tower[] Common;
+    [SerializeField] public Tower[] Uncommon;
+    [SerializeField] public Tower[] Rare;
+    [SerializeField] public Tower[] Unique;
+    [SerializeField] public Tower[] Legendary;
 
     void Start()
     {
-        Player.getInstance().LoadTower(this);
+        Player.GetInstance().LoadTower(this);
     }
 
 }

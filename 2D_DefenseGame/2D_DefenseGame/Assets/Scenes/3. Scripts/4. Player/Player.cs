@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private static Player _instance;
-    public static Player getInstance()
+    public static Player GetInstance()
     {
         if (_instance == null)
         {
@@ -15,70 +15,55 @@ public class Player : MonoBehaviour
         return _instance;
     }
 
-    //public StageManager _StageManager;
-    private bool _IsPlaying = false;
-    private TowerManager TowerManager;
-    private int Money = 0;
-    private int Life = 0;
+    private TowerManager _towerManager;
+    private int _money = 0;
+    private int _life = 0;
 
-    private List<Tower> TowerList = new List<Tower>();
+    private List<Tower> _towerList = new List<Tower>();
 
-    // Start is called before the first frame update
     void Awake()
     {
-        //_StageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
-
-        if(_instance == null)
+        if (_instance == null)
         {
             _instance = this;
         }
- 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void SetIsNowPlayingFlag(bool IsPlaying)
-    {
-        _IsPlaying = IsPlaying;
-    }
-
+    #region Property
     public void ResetGame()
     {
-        Money = 0;
-        Life = 0;
-        TowerList.Clear();
+        _money = 0;
+        _life = 0;
+        _towerList.Clear();
     }
-
-
-    public void addMoney(int add)
+    public void addMoney(int num)
     {
-        Money += add;
+        _money += num;
     }
     public int getMoney()
     {
-        return Money;
+        return _money;
     }
-    public void addLife(int add)
+    public void addLife(int num)
     {
-        Life += add;
+        _life += num;
     }
     public int getLife()
     {
-        return Life;
+        return _life;
+    }
+    #endregion
+
+    #region Tower
+    public List<Tower> GetTowerList()
+    {
+        return _towerList;
     }
 
-    public List<Tower> getTowerList()
-    {
-        return TowerList;
-    }
-    public Tower getTower(Transform parent)
+    public Tower GetTower(Transform parent)
     {
         Tower find = new Tower();
-        foreach (Tower tower in TowerList)
+        foreach (Tower tower in _towerList)
         {
             if (tower.transform.parent == parent)
             {
@@ -89,38 +74,38 @@ public class Player : MonoBehaviour
         return find;
     }
 
-    public void BuildTower(GameObject SelectedObj)
+    public void BuildTower(GameObject selectedObj)
     {
-        Tower _Tower = Instantiate(getRandomTower(TowerManager.Common), SelectedObj.transform.position, Quaternion.identity);
+        Tower tempTower = Instantiate(GetRandomTower(_towerManager.Common), selectedObj.transform.position, Quaternion.identity);
 
-        _Tower.transform.position = SelectedObj.transform.position;
-        _Tower.transform.SetParent(SelectedObj.transform.parent);
+        tempTower.transform.position = selectedObj.transform.position;
+        tempTower.transform.SetParent(selectedObj.transform.parent);
 
-        AddTower(_Tower);
+        AddTower(tempTower);
     }
 
-    public void BuildTower(GameObject SelectedObj, Tower tower)
+    public void BuildTower(GameObject selectedObj, Tower tower)
     {
-        Tower _Tower = Instantiate(tower, SelectedObj.transform.position, Quaternion.identity);
+        Tower _tempTower = Instantiate(tower, selectedObj.transform.position, Quaternion.identity);
 
-        _Tower.transform.position = SelectedObj.transform.position;
-        _Tower.transform.SetParent(SelectedObj.transform.parent);
+        _tempTower.transform.position = selectedObj.transform.position;
+        _tempTower.transform.SetParent(selectedObj.transform.parent);
 
-        AddTower(_Tower);
+        AddTower(_tempTower);
     }
 
-    public void DeleteTower(Transform Delete)
+    public void DeleteTower(Transform delete)
     {
         int towerindex = 0;
 
-        foreach(Tower tower in TowerList)
+        foreach (Tower tower in _towerList)
         {
 
-            if (tower.transform.parent == Delete)
+            if (tower.transform.parent == delete)
             {
                 Debug.Log("Deleted!");
 
-                TowerList.RemoveAt(towerindex);
+                _towerList.RemoveAt(towerindex);
                 Destroy(tower.gameObject);
                 break;
             }
@@ -129,38 +114,37 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void MergeTower(GameObject SelectedObj)
+    public void MergeTower(GameObject selectedObj)
     {
         Tower mergedTower;
-        Tower SelectedTower = getTower(SelectedObj.transform.parent);
+        Tower SelectedTower = GetTower(selectedObj.transform.parent);
 
-        foreach (Tower tower in TowerList)
+        foreach (Tower tower in _towerList)
         {
-            if (tower.towerName == SelectedTower.towerName && tower != SelectedTower)
+            if (tower._towerName == SelectedTower._towerName && tower != SelectedTower)
             {
-
-                switch (SelectedTower.Tier.ToString())
+                switch (SelectedTower._tier.ToString())
                 {
-                    case "common":
-                        BuildTower(SelectedObj, getRandomTower(TowerManager.Uncommon));
+                    case "Common":
+                        BuildTower(selectedObj, GetRandomTower(_towerManager.Uncommon));
                         break;
-                    case "uncommon":
-                        BuildTower(SelectedObj, getRandomTower(TowerManager.Rare));
+                    case "Uncommon":
+                        BuildTower(selectedObj, GetRandomTower(_towerManager.Rare));
                         break;
-                    case "rare":
-                        BuildTower(SelectedObj, getRandomTower(TowerManager.Unique));
+                    case "Rare":
+                        BuildTower(selectedObj, GetRandomTower(_towerManager.Unique));
                         break;
-                    case "unique":
-                        BuildTower(SelectedObj, getRandomTower(TowerManager.Legendary));
+                    case "Unique":
+                        BuildTower(selectedObj, GetRandomTower(_towerManager.Legendary));
                         break;
-                    case "legendary":
+                    case "Legendary":
                         break;
                     default:
                         break;
                 }
 
-                TowerList.Remove(SelectedTower);
-                TowerList.Remove(tower);
+                _towerList.Remove(SelectedTower);
+                _towerList.Remove(tower);
 
                 tower.transform.parent.GetChild(0).GetComponent<Ground>().IsBuildTower = false;
 
@@ -172,31 +156,33 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void AddTower(Tower add)
+    public void AddTower(Tower tower)
     {
-        if (add == null)
-        {   
+        if (tower == null)
+        {
             return;
         }
 
-        TowerList.Add(add);
+        _towerList.Add(tower);
     }
 
-    public void LoadTower(TowerManager input)
+    public void LoadTower(TowerManager towerManager)
     {
-        TowerManager = input;
-        if(TowerManager == null)
+        _towerManager = towerManager;
+        if (_towerManager == null)
         {
-            TowerManager = GameObject.FindObjectOfType<TowerManager>();
+            _towerManager = GameObject.FindObjectOfType<TowerManager>();
         }
 
     }
 
-    private Tower getRandomTower(Tower[] List)
+    private Tower GetRandomTower(Tower[] List)
     {
-        Tower RT = List[Random.Range(0, List.Length)];
+        Tower randomTower = List[Random.Range(0, List.Length)];
 
-        return RT;
+        return randomTower;
     }
+
+    #endregion
 
 }

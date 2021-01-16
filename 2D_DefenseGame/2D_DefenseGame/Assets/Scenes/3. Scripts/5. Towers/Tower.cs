@@ -16,16 +16,16 @@ public class Tower : Tile
     public float _attackDelay = 1f;
     private float _fireCount = 0f;
 
-    public enum towerTier
+    public enum TowerTier
     {
-        common,
-        uncommon,
-        rare,
-        unique,
-        legendary
+        Common,
+        Uncommon,
+        Rare,
+        Unique,
+        Legendary
     }
-    public towerTier Tier;
-    public string towerName;
+    public TowerTier _tier;
+    public string _towerName;
 
     private LineRenderer line;
     void Start()
@@ -44,10 +44,10 @@ public class Tower : Tile
         GameObject nearestEnemy = null;
 
         // 필드 내 적 중에서 가장 가까운 놈을 찾아내서 등록
-        foreach(GameObject enemy in enemies)
+        foreach (GameObject enemy in enemies)
         {
             float distanceToEnemy = Vector2.Distance(transform.position, enemy.transform.position);
-            if(distanceToEnemy < shortestDistance)
+            if (distanceToEnemy < shortestDistance)
             {
                 shortestDistance = distanceToEnemy;
                 nearestEnemy = enemy;
@@ -67,7 +67,7 @@ public class Tower : Tile
         }
     }
     #endregion
-    
+
 
     void Update()
     {
@@ -110,11 +110,11 @@ public class Tower : Tile
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _range);
     }
-    
+
     // 원활히 작동 안됨
     private void DrawLine()
     {
-        if(_targetTransform != null)
+        if (_targetTransform != null)
         {
             line.startColor = Color.red;
             line.SetPosition(0, _muzzle.transform.position);

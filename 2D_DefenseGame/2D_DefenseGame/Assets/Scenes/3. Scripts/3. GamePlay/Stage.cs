@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Stage : MonoBehaviour
 {
+    [Header("Stage")]
     [SerializeField] private Vector2Int _size = new Vector2Int(0, 0);
     [SerializeField] private float _firstSpawnDelay = 0.0f;
     [SerializeField] private float _monsterSpawnDelay = 0.0f;
@@ -36,18 +37,6 @@ public class Stage : MonoBehaviour
         }
 
         InvokeRepeating("UpdateMonsterList", 0.0f, 2.0f);
-    }
-
-    // for debugging after testing delete using UnityEngine.UI
-    void UpdateMonsterList()
-    {
-        for (int i = 0; i < _monsters.Count; i++)
-        {
-            if (_monsters[i] == null)
-            {
-                _monsters.Remove(_monsters[i]);
-            }
-        }
     }
 
     private void Update()
@@ -163,6 +152,18 @@ public class Stage : MonoBehaviour
             _waypoints[i] += offset;
         }
 
+    }
+
+    // 몬스터 리스트 업데이트 2초마다 실행됨
+    void UpdateMonsterList()
+    {
+        for (int i = 0; i < _monsters.Count; i++)
+        {
+            if (_monsters[i] == null)
+            {
+                _monsters.Remove(_monsters[i]);
+            }
+        }
     }
     #endregion
 

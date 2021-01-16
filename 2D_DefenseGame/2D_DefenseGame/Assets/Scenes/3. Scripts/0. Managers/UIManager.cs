@@ -5,95 +5,75 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject UIPanel;
-    [SerializeField]
-    private GameObject[] Buttons;
+    [Header("UI")]
+    [SerializeField] private GameObject _UIPanel;
+    [SerializeField] private GameObject[] _buttons;
 
-    private GameObject SelectedObj;
+    private GameObject _selectedObj;
 
-    private int TowerPrice = 0;
+    private int _towerPrice = 0;
 
-    private Ground Ground_component;
-    private Route Route_component;
-    private TileOutline TileOutline_component;
+    private Ground _groundComponent;
+    private Route _routeComponent;
 
-    // Start is called before the first frame update
-    void Start()
+    public void RouteClick(GameObject route)
     {
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void RouteClick(GameObject _Route)
-    {
-        TileOutline_component = _Route.GetComponent<TileOutline>();
-
-        if (SelectedObj == _Route)
+        if (_selectedObj == route)
         {
             resetPanel();
-            TileOutline_component.OutlineDisable();
-            SelectedObj = null;
+            _selectedObj = null;
             return;
         }
 
-        TileOutline_component.OutlineEnable();
-
-        SelectedObj = _Route;
-        LoadPanel(SelectedObj);
+        _selectedObj = route;
+        LoadPanel(_selectedObj);
 
     }
 
-    public void GroundClick(GameObject _Ground)
+    public void GroundClick(GameObject ground)
     {
-        TileOutline_component = _Ground.GetComponent<TileOutline>();
 
-        if (SelectedObj == _Ground)
+        if (_selectedObj == ground)
         {
             resetPanel();
-            TileOutline_component.OutlineDisable();
-            SelectedObj = null;
+            _selectedObj = null;
             return;
         }
-        TileOutline_component.OutlineEnable();
 
-        SelectedObj = _Ground;
-        LoadPanel(SelectedObj);
+        _selectedObj = ground;
+        LoadPanel(_selectedObj);
     }
 
     #region Panel
 
-    public void LoadPanel(GameObject SelectedObj) { 
+    public void LoadPanel(GameObject selectedObj)
+    {
         resetPanel();
-        
-        if (SelectedObj.CompareTag("Route"))
-        {
-            Route_component = SelectedObj.GetComponent<Route>();
 
-            if (Route_component == null)
+        if (selectedObj.CompareTag("Route"))
+        {
+            _routeComponent = selectedObj.GetComponent<Route>();
+
+            if (_routeComponent == null)
             {
                 return;
             }
         }
-        else if (SelectedObj.CompareTag("Ground"))
+        else if (selectedObj.CompareTag("Ground"))
         {
-            Ground_component = SelectedObj.GetComponent<Ground>();
-        
-            if(Ground_component == null)
+            _groundComponent = selectedObj.GetComponent<Ground>();
+
+            if (_groundComponent == null)
             {
                 return;
             }
 
-            if(Ground_component.IsBuildTower == false)
+            if (_groundComponent.IsBuildTower == false)
             {
                 CreateButton(0);
             }
-            else if(Ground_component.IsBuildTower == true)
+            else if (_groundComponent.IsBuildTower == true)
             {
                 CreateButton(1);
                 CreateButton(2);
@@ -103,11 +83,11 @@ public class UIManager : MonoBehaviour
 
     public void CreateButton(int num)
     {
-     
-        GameObject Button = Instantiate(Buttons[num]);
 
-        Button.transform.position = UIPanel.transform.position;
-        Button.transform.SetParent(UIPanel.transform);
+        GameObject Button = Instantiate(_buttons[num]);
+
+        Button.transform.position = _UIPanel.transform.position;
+        Button.transform.SetParent(_UIPanel.transform);
 
         Button BtnListener = Button.GetComponent<Button>();
 
@@ -130,12 +110,12 @@ public class UIManager : MonoBehaviour
 
     public void resetPanel()
     {
-        Transform child = UIPanel.GetComponentInChildren<Transform>();
+        Transform child = _UIPanel.GetComponentInChildren<Transform>();
 
         foreach (Transform iter in child)
         {
             // 부모(this.gameObject)는 삭제 하지 않기 위한 처리
-            if (iter != UIPanel.transform)
+            if (iter != _UIPanel.transform)
             {
                 Destroy(iter.gameObject);
             }
@@ -149,47 +129,48 @@ public class UIManager : MonoBehaviour
     public void BuildButton()
     {
 
-        if ((Player.getInstance().getMoney() - TowerPrice) < 0 ) {
+        if ((Player.GetInstance().getMoney() - _towerPrice) < 0)
+        {
             Debug.Log("Not Enough Minerals");
             return;
         }
 
-        if (Ground_component.IsBuildTower)
+        if (_groundComponent.IsBuildTower)
         {
             return;
         }
 
-        Ground_component.IsBuildTower = true;
+        _groundComponent.IsBuildTower = true;
 
-        Player.getInstance().BuildTower(SelectedObj);
-        LoadPanel(SelectedObj);
+        Player.GetInstance().BuildTower(_selectedObj);
+        LoadPanel(_selectedObj);
     }
 
     public void MergeButton()
     {
         Debug.Log("MERGE");
 
-        if (!Ground_component.IsBuildTower)
+        if (!_groundComponent.IsBuildTower)
         {
             return;
         }
 
-        Player.getInstance().MergeTower(SelectedObj);
-     }
+        Player.GetInstance().MergeTower(_selectedObj);
+    }
 
     public void SellButton()
     {
         Debug.Log("SELL");
-        if (Ground_component.IsBuildTower == false)
+        if (_groundComponent.IsBuildTower == false)
         {
             return;
         }
 
-        Player.getInstance().DeleteTower(SelectedObj.transform.parent);
-        Player.getInstance().addMoney(TowerPrice / 2);
+        Player.GetInstance().DeleteTower(_selectedObj.transform.parent);
+        Player.GetInstance().addMoney(_towerPrice / 2);
 
-        Ground_component.IsBuildTower = false;
-        LoadPanel(SelectedObj);
+        _groundComponent.IsBuildTower = false;
+        LoadPanel(_selectedObj);
     }
     #endregion
 
