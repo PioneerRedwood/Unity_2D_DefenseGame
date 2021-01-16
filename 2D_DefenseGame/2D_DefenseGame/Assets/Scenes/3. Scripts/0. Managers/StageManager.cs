@@ -10,7 +10,7 @@ public class StageManager : MonoBehaviour
     [SerializeField] private Stage[] _stages = null;
     [SerializeField] public Vector3 _stageHolder;
 
-    private StageContentViewer stageViewer;
+    private StageSelector _stageSelector;
     private StageSelectCanvas stageSelectCanvas;
     private Stage _currentStage;
     private int _currStageIdx = -1;
@@ -19,7 +19,7 @@ public class StageManager : MonoBehaviour
     void Start()
     {
         // 씬을 바꾸니 두개가 존재하는 현상이 발생함
-        stageViewer = GameObject.Find("Content").GetComponent<StageContentViewer>();
+        _stageSelector = GameObject.Find("Content").GetComponent<StageSelector>();
         stageSelectCanvas = GameObject.Find("StageSelectCanvas").GetComponent<StageSelectCanvas>();
 
         DontDestroyOnLoad(gameObject);
@@ -44,18 +44,22 @@ public class StageManager : MonoBehaviour
                 CancelInvoke("CheckInScene");
             }
 
+            // StageManager는 Destroy하는게 오히려 나아보인다 
+            // 계속 유지되는 데이터는 StageSelector에 넣어야겠다
             if (_currentStage.GetState() == Stage.StageState.Success)
             {
                 Destroy(_currentStage, 1.0f);
-                stageViewer.UpdateNextStage();
+                _stageSelector.UpdateNextStage();
                 stageSelectCanvas.SetActive(true);
                 SceneManager.LoadScene("StageSelectScene");
+                Destroy(gameObject);
             }
             else if (_currentStage.GetState() == Stage.StageState.Fail)
             {
                 Destroy(_currentStage, 1.0f);
                 stageSelectCanvas.SetActive(true);
                 SceneManager.LoadScene("StageSelectScene");
+                Destroy(gameObject);
             }
         }
     }

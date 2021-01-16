@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StageContentViewer : MonoBehaviour
+public class StageSelector : MonoBehaviour
 {
     public StageViewer[] _stageViewer;
     private enum OnMove { Stop, Right, Left };
@@ -31,7 +31,12 @@ public class StageContentViewer : MonoBehaviour
                 tempViewer.SetStageIndex(idx++);
             }
             // Initialize general variables
+            _nextIdx++;
             transform.localPosition = new Vector3(_widthOffset * (_stageViewer.Length / 2), 0.0f, 0.0f);
+        }
+        else
+        {
+            transform.localPosition = new Vector3(_widthOffset * _nextIdx, 0.0f, 0.0f);
         }
     }
 
