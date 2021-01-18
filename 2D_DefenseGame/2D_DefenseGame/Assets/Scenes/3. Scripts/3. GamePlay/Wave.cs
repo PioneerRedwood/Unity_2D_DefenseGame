@@ -9,12 +9,11 @@ public class Wave : MonoBehaviour
     [Serializable]
     public class WaveBundle
     {
-        // prefab? class type?
         public Monster monster = null;
         public int numOfMonster = 0;
     }
 
-    [SerializeField] private List<WaveBundle> bundles = null;
+    [SerializeField] private WaveBundle[] bundles = null;
 
     public WaveBundle GetWaveBundle(int i)
     {
@@ -27,6 +26,6 @@ public class Wave : MonoBehaviour
 
     public int GetNumOfWave()
     {
-        return bundles.Count;
+        return bundles.Length;
     }
 }

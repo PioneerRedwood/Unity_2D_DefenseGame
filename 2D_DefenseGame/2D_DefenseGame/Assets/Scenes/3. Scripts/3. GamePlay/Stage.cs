@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-// for debugging
 using UnityEngine.UI;
 
 public class Stage : MonoBehaviour
@@ -16,7 +15,8 @@ public class Stage : MonoBehaviour
 
     public Tile[,] _tiles;
     private StageManager _stageManager;
-    private int _stageIdx = 0;
+    // _stageIdx는 로드가 진행되지 않으면 -1값임
+    private int _stageIdx = -1;
     private int _waveIdx = 0;
     private List<Monster> _monsters = new List<Monster>();
 
@@ -25,18 +25,15 @@ public class Stage : MonoBehaviour
 
     private void Start()
     {
-        if (_stageIdx != -1)
+        // 초기화 진행으로 _stageIdx가 유효한 값이면 
+        if (_stageIdx < 0)
         {
             _stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
-
-            LoadWave(_waveIdx);
-        }
-        else
-        {
-            _stageState = StageState.Unload;
+            _stageState = StageState.Ongoing;
         }
 
-        InvokeRepeating("UpdateMonsterList", 0.0f, 2.0f);
+        // StageState를 검사하는 함수. 맨 처음 실행 전 _nextWaveDelay와 _monsterSpawnDelay를 기다림
+        InvokeRepeating("CheckStageState", _nextWaveDelay + _monsterSpawnDelay, 1.0f);
     }
 
     private void Update()
@@ -44,19 +41,23 @@ public class Stage : MonoBehaviour
         if (_stageState == StageState.Ongoing)
         {
             _timerText = GameObject.Find("Timer").GetComponent<Text>();
-            _timerText.text = "경과 시간:" + time + " \n현재 웨이브: " + _waveIdx + " 총 웨이브: " + _wave.GetNumOfWave()
+            _timerText.text = "경과 시간:" + time + " \n현재 웨이브: " + _waveIdx + " 총 웨이브 수: " + _wave.GetNumOfWave()
                                         + "\n 남은 몬스터 수: " + _monsters.Count;
             time += Time.deltaTime;
+            
+            // 맨 처음 웨이브라면 _nextWaveDelay 기다리지 않음
+            if (_waveIdx == 0)
+            {
+                time = 0;
+                LoadWave(_waveIdx++);
+                return;
+            }
+
             if (time > _nextWaveDelay && _waveIdx < _wave.GetNumOfWave())
             {
                 time = 0;
                 LoadWave(_waveIdx++);
             }
-        }
-
-        if (_waveIdx == _wave.GetNumOfWave() && _monsters.Count < 1)
-        {
-            _stageState = StageState.Success;
         }
     }
 
@@ -98,6 +99,7 @@ public class Stage : MonoBehaviour
     #endregion
 
     #region Stage Wave control
+    // StageManager에서 스테이지를 인덱스를 받아 초기화
     public void InitStage(int idx)
     {
         _stageIdx = idx;
@@ -116,11 +118,10 @@ public class Stage : MonoBehaviour
     #endregion
 
     #region Monster
-
     /*
-     * 몬스터 스폰
-     * https://www.youtube.com/watch?v=r8N6J79W0go&ab_channel=Unity 참고함
-     */
+    * 웨이브 진행 중 몬스터 스폰
+    * https://www.youtube.com/watch?v=r8N6J79W0go&ab_channel=Unity 참고함
+    */
     private IEnumerator SpawnMonster(int idx)
     {
         yield return new WaitForSeconds(_firstSpawnDelay);
@@ -154,8 +155,8 @@ public class Stage : MonoBehaviour
 
     }
 
-    // 몬스터 리스트 업데이트 2초마다 실행됨
-    void UpdateMonsterList()
+    // 몬스터 리스트 업데이트와 몬스터의 수와 웨이브 수를 체크
+    void CheckStageState()
     {
         for (int i = 0; i < _monsters.Count; i++)
         {
@@ -164,9 +165,12 @@ public class Stage : MonoBehaviour
                 _monsters.Remove(_monsters[i]);
             }
         }
+
+        if ((_waveIdx == _wave.GetNumOfWave()) && _monsters.Count < 1)
+        {
+            _stageState = StageState.Success;
+        }
     }
     #endregion
-
-
 
 }

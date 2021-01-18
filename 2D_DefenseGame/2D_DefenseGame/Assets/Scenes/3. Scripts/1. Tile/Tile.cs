@@ -9,6 +9,7 @@ public class Tile : MonoBehaviour
     {
         // 다른 컴포넌트가 있으면 삭제하고 추가
         var otherComponent = GetComponentInChildren<T>();
+
         if(otherComponent != null)
         {
             DestroyImmediate(tileComponent.gameObject);
@@ -22,7 +23,10 @@ public class Tile : MonoBehaviour
 
     public void RemoveAllTileComponents()
     {
-
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
     }
 
     public void RemoveTileComponent<T>(T tileComponent) where T : Tile

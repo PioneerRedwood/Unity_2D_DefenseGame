@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
 
         if (_selectedObj == route)
         {
-            resetPanel();
+            ResetPanel();
             _selectedObj = null;
             return;
         }
@@ -36,7 +36,7 @@ public class UIManager : MonoBehaviour
 
         if (_selectedObj == ground)
         {
-            resetPanel();
+            ResetPanel();
             _selectedObj = null;
             return;
         }
@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
 
     public void LoadPanel(GameObject selectedObj)
     {
-        resetPanel();
+        ResetPanel();
 
         if (selectedObj.CompareTag("Route"))
         {
@@ -108,7 +108,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void resetPanel()
+    public void ResetPanel()
     {
         Transform child = _UIPanel.GetComponentInChildren<Transform>();
 

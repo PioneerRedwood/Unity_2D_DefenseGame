@@ -10,7 +10,6 @@ public class Bullet : MonoBehaviour
 
     private Monster _target;
     private float _deltaTime = 0.0f;
-    private float _destroyDelay = 1.0f;
 
     void Update()
     {
@@ -28,12 +27,7 @@ public class Bullet : MonoBehaviour
         }
         else
         {
-            _deltaTime += Time.deltaTime;
-            if (_destroyDelay <= _deltaTime)
-            {
-                Destroy(gameObject);
-            }
-            return;
+            Destroy(gameObject);
         }
     }
 

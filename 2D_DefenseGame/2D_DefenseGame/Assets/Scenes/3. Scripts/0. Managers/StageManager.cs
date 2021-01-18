@@ -19,6 +19,7 @@ public class StageManager : MonoBehaviour
     void Start()
     {
         _stageDataHolder = GameObject.Find("StageDataHolder");
+        // 일단 게임씬에서 실행할때 에러 안뜨게
         if (_stageDataHolder == null)
         {
             GameObject stageHolder = new GameObject("StageDataHolder");
@@ -42,16 +43,16 @@ public class StageManager : MonoBehaviour
             // 스테이지 클리어시 해야하는 동작 추가 바람
             if (_currentStage.GetState() == Stage.StageState.Success)
             {
+
                 Destroy(_currentStage, 1.0f);
-                Destroy(_stageDataHolder);
-                Debug.Log("Stage Clear!");
+                _stageDataHolder.GetComponent<StageDataHolder>().AddClearCount();
                 SceneManager.LoadScene("StageSelectScene");
+                Debug.Log("Stage Clear!" + _stageDataHolder.GetComponent<StageDataHolder>().GetClearCount());
             }
             else if (_currentStage.GetState() == Stage.StageState.Fail)
             {
-                Destroy(_currentStage, 1.0f);
-                Destroy(_stageDataHolder);
                 Debug.Log("Stage Fail!");
+                Destroy(_currentStage, 1.0f);
                 SceneManager.LoadScene("StageSelectScene");
             }
         }
@@ -88,7 +89,6 @@ public class StageManager : MonoBehaviour
         InvokeRepeating("CheckStageLoaded", 0.2f, 2f);
         _bIsScene = true;
     }
-
 
     #endregion
 }
