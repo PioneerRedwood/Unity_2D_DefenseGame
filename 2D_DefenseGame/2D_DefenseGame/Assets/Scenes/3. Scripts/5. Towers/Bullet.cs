@@ -5,8 +5,8 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [Header("Bullet")]
-    public float _speed = 1.0f;
-    public float _damage = 20.0f;
+    private float _speed = 1.0f;
+    private float _damage = 20.0f;
 
     private Monster _target;
     private float _deltaTime = 0.0f;
@@ -19,7 +19,8 @@ public class Bullet : MonoBehaviour
 
             // 충돌 검사하는 부분
             // 몬스터 크기에 맞게 충돌해야 함
-            if (transform.position == _target.transform.position)
+            if (GetDistance(new Vector2(transform.position.x, transform.position.y), 
+                new Vector2(_target.transform.position.x, _target.transform.position.y)) < 1.0f )
             {
                 _target.OnDamage(_damage);
                 Destroy(gameObject);
@@ -43,4 +44,23 @@ public class Bullet : MonoBehaviour
             return false;
         }
     }
+
+    public void SetDamage(float input)
+    {
+        _damage = input;
+    }
+
+    public void SetSpeed(float input)
+    {
+        _speed = input;
+    }
+
+    private float GetDistance(Vector2 x, Vector2 y)
+    {
+        float xm = x.x - y.x;
+        float ym = x.y - y.y;
+
+        return Mathf.Sqrt(Mathf.Pow(xm, 2) + Mathf.Pow(ym, 2));
+    }
+
 }

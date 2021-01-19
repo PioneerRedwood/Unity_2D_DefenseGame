@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject _UIPanel;
     [SerializeField] private GameObject[] _buttons;
+    [SerializeField] private InfoPanel _InfoPanel;
 
     private GameObject _selectedObj;
 
@@ -47,6 +48,7 @@ public class UIManager : MonoBehaviour
 
     #region Panel
 
+    //왼쪽의 버튼들 업데이트
     public void LoadPanel(GameObject selectedObj)
     {
         ResetPanel();
@@ -77,10 +79,12 @@ public class UIManager : MonoBehaviour
             {
                 CreateButton(1);
                 CreateButton(2);
+                LoadTowerInfo();
             }
         }
     }
 
+    //버튼 생성 후 이벤트리스너 부착
     public void CreateButton(int num)
     {
 
@@ -108,6 +112,7 @@ public class UIManager : MonoBehaviour
 
     }
 
+    //패널 초기화
     public void ResetPanel()
     {
         Transform child = _UIPanel.GetComponentInChildren<Transform>();
@@ -120,16 +125,19 @@ public class UIManager : MonoBehaviour
                 Destroy(iter.gameObject);
             }
         }
+
+        _InfoPanel.OffPanel();
     }
 
     #endregion
 
     #region GroundButtons
 
+    //건설 버튼
     public void BuildButton()
     {
 
-        if ((Player.GetInstance().getMoney() - _towerPrice) < 0)
+        if ((Player.GetInstance().GetMoney() - _towerPrice) < 0)
         {
             Debug.Log("Not Enough Minerals");
             return;
@@ -156,6 +164,7 @@ public class UIManager : MonoBehaviour
         }
 
         Player.GetInstance().MergeTower(_selectedObj);
+        LoadPanel(_selectedObj);
     }
 
     public void SellButton()
@@ -167,11 +176,24 @@ public class UIManager : MonoBehaviour
         }
 
         Player.GetInstance().DeleteTower(_selectedObj.transform.parent);
-        Player.GetInstance().addMoney(_towerPrice / 2);
+        Player.GetInstance().AddMoney(_towerPrice / 2);
 
         _groundComponent.IsBuildTower = false;
         LoadPanel(_selectedObj);
     }
+    #endregion
+
+    #region GroundButton TowerInfo
+
+    private void LoadTowerInfo()
+    {
+        Tower selectedTower = Player.GetInstance().GetTower(_selectedObj.transform.parent);
+
+        _InfoPanel.OnPanel(selectedTower.transform);
+    }
+
+
+
     #endregion
 
 }

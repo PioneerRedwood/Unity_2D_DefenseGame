@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 // Stage Select UI
 public class StageSelector : MonoBehaviour
@@ -9,15 +11,16 @@ public class StageSelector : MonoBehaviour
     public StageViewer[] _stageVieweres;
     public GameObject _content;
     public StageDataHolder _stageDataHolder;
+    public Text _textCurrentIndex;
 
     [Header("General")]
     [SerializeField] private int _widthOffset = 1366;
-    [SerializeField] private float _speed = 15.0f;
+    [SerializeField] private float _speed = 40.0f;
 
     private enum OnMove { Stop, Right, Left };
     private OnMove _onMove = OnMove.Stop;
     private float _nextXPos = 0;
-    
+
     // -1은 세팅이 안된 상태
     private int _currIdx = 0;
     private int _prevIdx = -1;
@@ -48,34 +51,37 @@ public class StageSelector : MonoBehaviour
     private void OnSelectorReload()
     {
         int idx = 0;
-        // 씬이 바뀌어도 viewer에는 꼭 넣어야..
-        Debug.Log(_stageDataHolder.GetClearCount());
+        // _stageDataHolder.GetClearCount() 는 PlayerPrefs.GetInt("StageCount")에 저장됨
+        Debug.Log(PlayerPrefs.GetInt("StageCount"));
 
         foreach (StageViewer viewer in _stageVieweres)
         {
             var tempViewer = Instantiate(viewer);
             tempViewer.transform.SetParent(_content.transform);
-            tempViewer.SetStageIndex(idx++);
-            if(idx < _stageDataHolder.GetClearCount())
+
+            // 전에 클리어한 부분 있으면 Clear한 것 표시
+            if (idx < PlayerPrefs.GetInt("StageCount"))
             {
                 tempViewer.OnClearStage();
             }
+            tempViewer.SetStageIndex(idx++);
         }
 
-        if (_stageDataHolder.GetClearCount() == 0)
-        {            
-            SetContentPosition(-1);
+        if (PlayerPrefs.GetInt("StageCount") == 0)
+        {
             _currIdx = 0;
             _nextIdx = 1;
             _prevIdx = -1;
+            SetContentPosition(-1);
         }
         else
         {
-            _currIdx = _stageDataHolder.GetClearCount();
+            _currIdx = PlayerPrefs.GetInt("StageCount");
             _nextIdx = _currIdx + 1;
             _prevIdx = _currIdx - 1;
-            SetContentPosition(_stageDataHolder.GetClearCount());
+            SetContentPosition(PlayerPrefs.GetInt("StageCount"));
         }
+        _textCurrentIndex.text = _currIdx + 1 + " / " + _stageVieweres.Length;
     }
 
     private void SetContentPosition(int idx)
@@ -105,11 +111,10 @@ public class StageSelector : MonoBehaviour
                 x = (_widthOffset * (_stageVieweres.Length / 2)) - (idx * _widthOffset);
             }
         }
-        Debug.Log(x);
         _content.transform.localPosition = new Vector3(x, 0.0f, 0.0f);
     }
 
-    #region R/L Button
+    #region UI Button
     public void OnMoveContentLeftButtonClicked()
     {
         // 버튼이 여러번 눌려도 움직이려는 위치까지 이동하지 않았다면 실행 X
@@ -121,6 +126,7 @@ public class StageSelector : MonoBehaviour
             _prevIdx = _currIdx - 1;
             _onMove = OnMove.Left;
             _stageDataHolder.SetCurrentStage(_currIdx);
+            _textCurrentIndex.text = _currIdx + 1 + " / " + _stageVieweres.Length;
         }
     }
 
@@ -134,7 +140,13 @@ public class StageSelector : MonoBehaviour
             _prevIdx = _currIdx - 1;
             _onMove = OnMove.Right;
             _stageDataHolder.SetCurrentStage(_currIdx);
+            _textCurrentIndex.text = _currIdx + 1 + " / " + _stageVieweres.Length;
         }
+    }
+
+    public void OnGoToMenuButtonClicked()
+    {
+        SceneManager.LoadScene("StartScene");
     }
     #endregion
 }

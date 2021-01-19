@@ -16,8 +16,10 @@ public class Player : MonoBehaviour
     }
 
     private TowerManager _towerManager;
-    private int _money = 0;
-    private int _life = 0;
+
+    [Header("Player property")]
+    [SerializeField] private int _money = 0;
+    [SerializeField] private int _life = 0;
 
     private List<Tower> _towerList = new List<Tower>();
 
@@ -29,32 +31,36 @@ public class Player : MonoBehaviour
         }
     }
 
-    #region Property
+    #region Player basic method
     public void ResetGame()
     {
         _money = 0;
         _life = 0;
         _towerList.Clear();
     }
-    public void addMoney(int num)
+    public void AddMoney(int num)
     {
         _money += num;
     }
-    public int getMoney()
+    public int GetMoney()
     {
         return _money;
     }
-    public void addLife(int num)
+    public void AddLife(int num)
     {
         _life += num;
     }
-    public int getLife()
+    public int GetLife()
     {
         return _life;
     }
+    public void LoseLife(int num)
+    {
+        _life -= num;
+    }
     #endregion
 
-    #region Tower
+    #region Handle Tower
     public List<Tower> GetTowerList()
     {
         return _towerList;
@@ -116,7 +122,6 @@ public class Player : MonoBehaviour
 
     public void MergeTower(GameObject selectedObj)
     {
-        Tower mergedTower;
         Tower SelectedTower = GetTower(selectedObj.transform.parent);
 
         foreach (Tower tower in _towerList)

@@ -41,8 +41,9 @@ public class Stage : MonoBehaviour
         if (_stageState == StageState.Ongoing)
         {
             _timerText = GameObject.Find("Timer").GetComponent<Text>();
-            _timerText.text = "경과 시간:" + time + " \n현재 웨이브: " + _waveIdx + " 총 웨이브 수: " + _wave.GetNumOfWave()
-                                        + "\n 남은 몬스터 수: " + _monsters.Count;
+            _timerText.text = "경과 시간 : " + Mathf.Round(time) + " \n현재 웨이브/총 웨이브 수 : " + _waveIdx + "/" + _wave.GetNumOfWave()
+                                        + "\n남은 몬스터 수 : " + _monsters.Count 
+                                        + "\n[현재 체력: " + Player.GetInstance().GetLife() + "][현재 금액: " + Player.GetInstance().GetMoney() + "]";
             time += Time.deltaTime;
             
             // 맨 처음 웨이브라면 _nextWaveDelay 기다리지 않음

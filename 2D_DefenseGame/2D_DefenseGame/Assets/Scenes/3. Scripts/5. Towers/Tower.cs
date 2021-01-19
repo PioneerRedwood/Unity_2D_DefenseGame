@@ -4,17 +4,9 @@ using UnityEngine;
 
 public class Tower : Tile
 {
-    private Transform _targetTransform;
-    private Monster _currTarget;
-    public float _range = 2f;
-
-    public string _enemyTag = "Enemy";
-    public float _turnSpeed = 10f;
-
+    [Header("Tower Property")]
     public Bullet _bullet;
     public Transform _muzzle;
-    public float _attackDelay = 1f;
-    private float _fireCount = 0f;
 
     public enum TowerTier
     {
@@ -27,11 +19,21 @@ public class Tower : Tile
     public TowerTier _tier;
     public string _towerName;
 
-    private LineRenderer line;
+    [Header("Attacking")]
+    public float _range = 2f;
+    public float _damage = 1.0f;
+    public float _bulletSpeed = 20.0f;
+    public float _attackDelay = 1f;
+
+    private Transform _targetTransform;
+    private Monster _currTarget;
+
+    private string _enemyTag = "Enemy";
+    private float _turnSpeed = 10f;
+    private float _fireCount = 0f;
+
     void Start()
     {
-        line = GetComponent<LineRenderer>();
-
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
     }
 
@@ -99,6 +101,8 @@ public class Tower : Tile
     protected void Attack()
     {
         var tempBullet = Instantiate(_bullet, _muzzle.transform);
+        tempBullet.SetDamage(_damage);
+        tempBullet.SetSpeed(_bulletSpeed);
         tempBullet.SetTarget(_currTarget);
     }
 
@@ -110,18 +114,6 @@ public class Tower : Tile
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _range);
     }
-
-    // 원활히 작동 안됨
-    private void DrawLine()
-    {
-        if (_targetTransform != null)
-        {
-            line.startColor = Color.red;
-            line.SetPosition(0, _muzzle.transform.position);
-            line.SetPosition(1, _targetTransform.position);
-            line.startWidth = 0.1f;
-            line.endWidth = 0.1f;
-        }
-    }
+    
     #endregion
 }

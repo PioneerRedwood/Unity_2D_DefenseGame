@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 // 씬 이동시 필요한 스테이지에 대한 정보 래퍼 클래스
 public class StageDataHolder : MonoBehaviour
@@ -14,6 +13,7 @@ public class StageDataHolder : MonoBehaviour
         var tempObject = FindObjectsOfType<StageDataHolder>();
         if(tempObject.Length == 1)
         {
+            _clearCount = PlayerPrefs.GetInt("StageCount");
             DontDestroyOnLoad(this);
         }
         else
@@ -36,6 +36,7 @@ public class StageDataHolder : MonoBehaviour
     {
         _clearCount++;
         PlayerPrefs.SetInt("StageCount", _clearCount);
+        PlayerPrefs.Save();
     }
 
     public int GetClearCount()

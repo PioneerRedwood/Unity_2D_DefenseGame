@@ -4,24 +4,18 @@ using UnityEngine;
 
 public class SimpleMoveMonster : Monster
 {
-    [SerializeField] private float _hp = 300;
+    [Header("Monster property")]
+    [SerializeField] private float _hp = 300f;
+    [SerializeField] private float _speed = 0;
 
     public override void OnDamage(float damage)
     {
         _hp -= damage;
-        //Debug.Log(name + "   hp: " + _hp);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        MoveToNext();
+        MoveToNext(_speed);
         if (_hp <= 0)
         {
             Destroy(gameObject);
