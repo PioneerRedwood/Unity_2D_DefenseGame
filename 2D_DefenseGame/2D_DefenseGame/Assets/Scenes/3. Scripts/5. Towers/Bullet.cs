@@ -9,7 +9,6 @@ public class Bullet : MonoBehaviour
     private float _damage = 20.0f;
 
     private Monster _target;
-    private float _deltaTime = 0.0f;
 
     void Update()
     {
@@ -17,10 +16,9 @@ public class Bullet : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(transform.position, _target.transform.position, _speed * Time.deltaTime);
 
-            // 충돌 검사하는 부분
-            // 몬스터 크기에 맞게 충돌해야 함
+            // 충돌 검사하는 부분 0.25 미만이면 맞은것으로 판별
             if (GetDistance(new Vector2(transform.position.x, transform.position.y), 
-                new Vector2(_target.transform.position.x, _target.transform.position.y)) < 1.0f )
+                new Vector2(_target.transform.position.x, _target.transform.position.y)) < 0.25f )
             {
                 _target.OnDamage(_damage);
                 Destroy(gameObject);

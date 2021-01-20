@@ -6,13 +6,13 @@ using UnityEngine.UI;
 public class InfoPanel : MonoBehaviour
 {
     [SerializeField]
-    private Image _towerSprite;
+    private Image _towerSprite = null;
     [SerializeField]
-    private Text _towerDamage;
+    private Text _towerDamage = null;
     [SerializeField]
-    private Text _towerTier;
+    private Text _towerTier = null;
     [SerializeField]
-    private Text _towerRange;
+    private Text _towerRange = null;
 
     
     public void OnPanel(Transform tower)

@@ -7,11 +7,15 @@ public class Stage : MonoBehaviour
 {
     [Header("Stage")]
     [SerializeField] private Vector2Int _size = new Vector2Int(0, 0);
-    [SerializeField] private float _firstSpawnDelay = 0.0f;
-    [SerializeField] private float _monsterSpawnDelay = 0.0f;
     [SerializeField] private Wave _wave = null;
     [SerializeField] private Vector2Int[] _waypoints = null;
     [SerializeField] private float _nextWaveDelay = 30.0f;
+
+    [Header("Monster")]
+    [SerializeField] private float _firstSpawnDelay = 0.0f;
+    [SerializeField] private float _monsterSpawnDelay = 0.0f;
+    // 오류 #4-3
+    //[SerializeField] private GameObject _monsterTextPref = null;
 
     public Tile[,] _tiles;
     private StageManager _stageManager;
@@ -25,7 +29,7 @@ public class Stage : MonoBehaviour
 
     private void Start()
     {
-        // 초기화 진행으로 _stageIdx가 유효한 값이면 
+        // 초기화로 _stageIdx가 유효한 값이면
         if (_stageIdx < 0)
         {
             _stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
@@ -42,10 +46,10 @@ public class Stage : MonoBehaviour
         {
             _timerText = GameObject.Find("Timer").GetComponent<Text>();
             _timerText.text = "경과 시간 : " + Mathf.Round(time) + " \n현재 웨이브/총 웨이브 수 : " + _waveIdx + "/" + _wave.GetNumOfWave()
-                                        + "\n남은 몬스터 수 : " + _monsters.Count 
+                                        + "\n남은 몬스터 수 : " + _monsters.Count
                                         + "\n[현재 체력: " + Player.GetInstance().GetLife() + "][현재 금액: " + Player.GetInstance().GetMoney() + "]";
             time += Time.deltaTime;
-            
+
             // 맨 처음 웨이브라면 _nextWaveDelay 기다리지 않음
             if (_waveIdx == 0)
             {
@@ -132,12 +136,20 @@ public class Stage : MonoBehaviour
             var monster = Instantiate(_wave.GetWaveBundle(idx).monster,
                                         new Vector3(_waypoints[0].x, _waypoints[0].y, 0), Quaternion.identity);
 
+            // 오류남 일단 주석 처리 #4-3
+            //var monsterHPText = Instantiate(_monsterTextPref, monster.transform.position, Quaternion.identity);
+
+            //if (monster != null && monsterHPText != null)
             if (monster != null)
             {
                 monster.name = _wave.GetWaveBundle(idx).monster.ToString() + "" + _monsters.Count;
-                monster.transform.parent = transform;
+                monster.transform.SetParent(gameObject.transform);
 
                 monster.InitWaypoint(_waypoints);
+                //monsterHPText.name = monster.name + " HP Text";
+                //monsterHPText.transform.SetParent(monster.transform);
+                //monster.SetHPText(_monsterTextPref);
+
                 _monsters.Add(monster);
             }
             yield return new WaitForSeconds(_monsterSpawnDelay);

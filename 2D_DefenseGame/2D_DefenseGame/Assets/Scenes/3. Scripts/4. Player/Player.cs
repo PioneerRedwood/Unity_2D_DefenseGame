@@ -68,7 +68,7 @@ public class Player : MonoBehaviour
 
     public Tower GetTower(Transform parent)
     {
-        Tower find = new Tower();
+        Tower find = null;
         foreach (Tower tower in _towerList)
         {
             if (tower.transform.parent == parent)

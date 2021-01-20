@@ -6,9 +6,10 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private GameObject _UIPanel;
-    [SerializeField] private GameObject[] _buttons;
-    [SerializeField] private InfoPanel _InfoPanel;
+    [SerializeField] private GameObject _UIPanel = null;
+    [SerializeField] private GameObject[] _buttons = null;
+    [SerializeField] private InfoPanel _InfoPanel = null;
+    [SerializeField] private TowerAttackRange _TowerAttackRange = null;
 
     private GameObject _selectedObj;
 
@@ -127,6 +128,7 @@ public class UIManager : MonoBehaviour
         }
 
         _InfoPanel.OffPanel();
+        _TowerAttackRange.OffAttackRange();
     }
 
     #endregion
@@ -190,6 +192,7 @@ public class UIManager : MonoBehaviour
         Tower selectedTower = Player.GetInstance().GetTower(_selectedObj.transform.parent);
 
         _InfoPanel.OnPanel(selectedTower.transform);
+        _TowerAttackRange.OnAttackRange(selectedTower._range, selectedTower.transform.position);
     }
 
 

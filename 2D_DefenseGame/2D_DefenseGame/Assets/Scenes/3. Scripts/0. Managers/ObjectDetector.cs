@@ -5,7 +5,7 @@ using UnityEngine;
 public class ObjectDetector : MonoBehaviour
 {
     [SerializeField]
-    private UIManager UIManager;
+    private UIManager UIManager = null;
 
     private Camera Main;
     private Ray ray;
