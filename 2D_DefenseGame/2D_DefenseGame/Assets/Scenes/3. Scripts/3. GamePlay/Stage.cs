@@ -14,8 +14,6 @@ public class Stage : MonoBehaviour
     [Header("Monster")]
     [SerializeField] private float _firstSpawnDelay = 0.0f;
     [SerializeField] private float _monsterSpawnDelay = 0.0f;
-    // 오류 #4-3
-    //[SerializeField] private GameObject _monsterTextPref = null;
 
     public Tile[,] _tiles;
     private StageManager _stageManager;
@@ -136,20 +134,12 @@ public class Stage : MonoBehaviour
             var monster = Instantiate(_wave.GetWaveBundle(idx).monster,
                                         new Vector3(_waypoints[0].x, _waypoints[0].y, 0), Quaternion.identity);
 
-            // 오류남 일단 주석 처리 #4-3
-            //var monsterHPText = Instantiate(_monsterTextPref, monster.transform.position, Quaternion.identity);
-
-            //if (monster != null && monsterHPText != null)
             if (monster != null)
             {
                 monster.name = _wave.GetWaveBundle(idx).monster.ToString() + "" + _monsters.Count;
                 monster.transform.SetParent(gameObject.transform);
 
                 monster.InitWaypoint(_waypoints);
-                //monsterHPText.name = monster.name + " HP Text";
-                //monsterHPText.transform.SetParent(monster.transform);
-                //monster.SetHPText(_monsterTextPref);
-
                 _monsters.Add(monster);
             }
             yield return new WaitForSeconds(_monsterSpawnDelay);

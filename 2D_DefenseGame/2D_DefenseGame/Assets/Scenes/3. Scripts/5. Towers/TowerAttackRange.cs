@@ -16,7 +16,7 @@ public class TowerAttackRange : MonoBehaviour
         gameObject.SetActive(true);
 
         float diameter = range;
-        transform.localScale = Vector3.one * diameter* _imageScale;
+        transform.localScale = Vector3.one * diameter * _imageScale;
 
         transform.position = position;
     }

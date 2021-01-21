@@ -88,7 +88,6 @@ public class UIManager : MonoBehaviour
     //버튼 생성 후 이벤트리스너 부착
     public void CreateButton(int num)
     {
-
         GameObject Button = Instantiate(_buttons[num]);
 
         Button.transform.position = _UIPanel.transform.position;
@@ -194,9 +193,7 @@ public class UIManager : MonoBehaviour
         _InfoPanel.OnPanel(selectedTower.transform);
         _TowerAttackRange.OnAttackRange(selectedTower._range, selectedTower.transform.position);
     }
-
-
-
+    
     #endregion
 
 }

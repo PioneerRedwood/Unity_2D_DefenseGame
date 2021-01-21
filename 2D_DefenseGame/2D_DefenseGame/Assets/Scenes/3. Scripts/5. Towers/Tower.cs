@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Tower : Tile
 {
-
     public enum TowerTier
     {
         Common,
@@ -13,30 +12,23 @@ public class Tower : Tile
         Unique,
         Legendary
     }
-    public TowerTier _tier;
-    public string _towerName;
 
     [Header("Tower Property")]
-    public Bullet _bullet;
-    public Transform _muzzle;
-
-    [Header("Attacking")]
-    public float _range = 2f;
+    public TowerTier _tier;
+    public string _towerName;
     public float _damage = 1.0f;
-    public float _bulletSpeed = 20.0f;
-    public float _attackDelay = 1f;
+    public float _range = 2f;
 
     protected Transform _targetTransform;
-    protected Monster _currTarget;
+
+    public Monster _currTarget;
 
     protected string _enemyTag = "Enemy";
     protected float _turnSpeed = 10f;
-    protected float _fireCount = 0f;
 
     void Start()
     {
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
-        Debug.Log("Tower Class");
     }
 
     #region Updating target
@@ -98,9 +90,6 @@ public class Tower : Tile
         //    _fireCount += Time.deltaTime;
         //}
     //}
-
-
-
     #region Draw Range of tower
     private void OnDrawGizmosSelected()
     {

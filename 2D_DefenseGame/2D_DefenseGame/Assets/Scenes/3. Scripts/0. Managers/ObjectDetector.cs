@@ -5,16 +5,16 @@ using UnityEngine;
 public class ObjectDetector : MonoBehaviour
 {
     [SerializeField]
-    private UIManager UIManager = null;
+    private UIManager _UIManager = null;
 
-    private Camera Main;
-    private Ray ray;
-    private RaycastHit Hit;
+    private Camera _main;
+    private Ray _ray;
+    private RaycastHit _hit;
 
     // Start is called before the first frame update
     void Start()
     {
-        Main = Camera.main;   
+        _main = Camera.main;   
     }
 
     // Update is called once per frame
@@ -22,21 +22,20 @@ public class ObjectDetector : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            _ray = _main.ScreenPointToRay(Input.mousePosition);
 
-            ray = Main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out Hit, Mathf.Infinity))
+            if (Physics.Raycast(_ray, out _hit, Mathf.Infinity))
             {
 
-                if (Hit.transform.CompareTag("Ground"))
+                if (_hit.transform.CompareTag("Ground"))
                 {
-                    UIManager.GroundClick(Hit.collider.gameObject);
-                    Debug.Log(Hit.collider.gameObject.name);
+                    _UIManager.GroundClick(_hit.collider.gameObject);
+                    Debug.Log(_hit.collider.gameObject.name);
                 }
-                else if(Hit.transform.CompareTag("Route"))
+                else if(_hit.transform.CompareTag("Route"))
                 {
-                    UIManager.RouteClick(Hit.collider.gameObject);
-                    Debug.Log(Hit.collider.gameObject.name);
+                    _UIManager.RouteClick(_hit.collider.gameObject);
+                    Debug.Log(_hit.collider.gameObject.name);
                 }
                 
             }

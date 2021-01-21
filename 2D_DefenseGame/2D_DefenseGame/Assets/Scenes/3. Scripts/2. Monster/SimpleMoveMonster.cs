@@ -8,15 +8,27 @@ public class SimpleMoveMonster : Monster
     [SerializeField] private float _hp = 300f;
     [SerializeField] private float _speed = 0;
 
+    private float _currHP = 0f;
+
+    private void Start()
+    {
+        _currHP = _hp;
+    }
+
     public override void OnDamage(float damage)
     {
-        _hp -= damage;
+        _currHP -= damage;
     }
-    
+
+    protected override void ShowHP()
+    {
+        _hpPref.fillAmount = _currHP / _hp;
+    }
+
     void Update()
     {
         MoveToNext(_speed);
-        ShowHP(_hp);
+        ShowHP();
 
         if (_hp <= 0)
         {

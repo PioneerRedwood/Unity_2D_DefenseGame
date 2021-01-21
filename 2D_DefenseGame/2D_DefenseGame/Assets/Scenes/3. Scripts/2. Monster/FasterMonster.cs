@@ -10,6 +10,8 @@ public class FasterMonster : Monster
     [SerializeField] private float _hp = 300f;
     [SerializeField] private float _speed = 0;
 
+    private float _currHP = 0f;
+
     private float _basicSpeed = 0f;
     private bool _isAttacked = false;
     private float _deltaTime = 0f;
@@ -23,9 +25,15 @@ public class FasterMonster : Monster
         _speed = _speed * 0.8f;
     }
 
+    protected override void ShowHP()
+    {
+        _hpPref.fillAmount = _currHP / _hp;
+    }
+
     void Start()
     {
         _basicSpeed = _speed;
+        _currHP = _hp;
     }
 
     void Update()
@@ -37,7 +45,7 @@ public class FasterMonster : Monster
         }
 
         MoveToNext(_speed);
-        //ShowHP(_hp);
+        ShowHP();
         if (_hp <= 0)
         {
             Destroy(gameObject);

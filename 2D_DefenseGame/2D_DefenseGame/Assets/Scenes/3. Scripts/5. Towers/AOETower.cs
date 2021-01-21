@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletTower : Tower
+public class AOETower : Tower
 {
-    [Header("BulletTower Property")]
+    [Header("Tower Property")]
     public Bullet _bullet;
     public Transform _muzzle;
 
@@ -53,3 +53,4 @@ public class BulletTower : Tower
     #endregion
 
 }
+
