@@ -5,17 +5,10 @@ using UnityEngine;
 public class LaserTower : Tower
 {
     [Header("LasertTower Property")]
-    public Transform _muzzle;
-    public LineRenderer _lineRenderer;
-    public Transform _hitEffect;
-    public LayerMask _targetLayer;
-
-    [Header("Attacking")]
-    public float _bulletSpeed = 20.0f;
-    public float _attackDelay = 1f;
-
-    protected float _fireCount = 0f;
-
+    [SerializeField] private Transform _muzzle = null;
+    [SerializeField] private LineRenderer _lineRenderer = null;
+    [SerializeField] private Transform _hitEffect = null;
+    [SerializeField] private LayerMask _targetLayer = 0;
 
     void Update()
     {
@@ -36,12 +29,11 @@ public class LaserTower : Tower
          }
     }
 
-
+    #region Laser attack
     private void SpawnLaser()
     {
         Vector3 direction = _currTarget.transform.position - _muzzle.position;
         RaycastHit2D[] hit = Physics2D.RaycastAll(_muzzle.position, direction, _range, _targetLayer);
-
 
         for (int i = 0; i <hit.Length; i++)
         {
@@ -68,10 +60,5 @@ public class LaserTower : Tower
         _lineRenderer.gameObject.SetActive(false);
         _hitEffect.gameObject.SetActive(false);
     }
-
-
-
-
-
-
+    #endregion
 }

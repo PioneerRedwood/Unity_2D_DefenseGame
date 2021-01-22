@@ -10,11 +10,6 @@ public class SimpleMoveMonster : Monster
 
     private float _currHP = 0f;
 
-    private void Start()
-    {
-        _currHP = _hp;
-    }
-
     public override void OnDamage(float damage)
     {
         _currHP -= damage;
@@ -25,12 +20,17 @@ public class SimpleMoveMonster : Monster
         _hpPref.fillAmount = _currHP / _hp;
     }
 
+    private void Start()
+    {
+        _currHP = _hp;
+    }
+
     void Update()
     {
         MoveToNext(_speed);
         ShowHP();
 
-        if (_hp <= 0)
+        if (_currHP <= 0)
         {
             Destroy(gameObject);
             DestroyMonster();

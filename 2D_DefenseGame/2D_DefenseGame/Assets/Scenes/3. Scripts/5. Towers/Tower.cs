@@ -13,7 +13,7 @@ public class Tower : Tile
         Legendary
     }
 
-    [Header("Tower Property")]
+    [Header("Basic Tower Property")]
     public TowerTier _tier;
     public string _towerName;
     public float _damage = 1.0f;
@@ -66,6 +66,7 @@ public class Tower : Tile
     #endregion
 
 
+    // 기본 타워 기능 #4-5이후 사용하지 않음
     //void Update()
     //{
         // 타겟이 없으면 돌기만 함

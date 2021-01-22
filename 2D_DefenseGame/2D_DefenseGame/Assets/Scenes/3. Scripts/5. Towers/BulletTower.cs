@@ -5,12 +5,12 @@ using UnityEngine;
 public class BulletTower : Tower
 {
     [Header("BulletTower Property")]
-    public Bullet _bullet;
-    public Transform _muzzle;
+    [SerializeField] private Bullet _bullet = null;
+    [SerializeField] private Transform _muzzle = null;
 
     [Header("Attacking")]
-    public float _bulletSpeed = 20.0f;
-    public float _attackDelay = 1f;
+    [SerializeField] private float _bulletSpeed = 20.0f;
+    [SerializeField] private float _attackDelay = 1f;
 
     protected float _fireCount = 0f;
 
@@ -27,7 +27,6 @@ public class BulletTower : Tower
             Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
 
-            //DrawLine();
             // Attack
             if (_attackDelay <= _fireCount)
             {

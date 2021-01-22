@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//
+// Area Of Effect Tower : 범위 공격 타워
+//
+
 public class AOETower : Tower
 {
-    [Header("Tower Property")]
-    public Bullet _bullet;
-    public Transform _muzzle;
+    [Header("AOETower Property")]
+    [SerializeField] private AOEBullet _bullet = null;
+    [SerializeField] private Transform _muzzle = null;
 
     [Header("Attacking")]
-    public float _bulletSpeed = 20.0f;
-    public float _attackDelay = 1f;
+    [SerializeField] private float _bulletSpeed = 20.0f;
+    [SerializeField] private float _attackDelay = 1f;
 
-    protected float _fireCount = 0f;
+    private float _fireCount = 0f;
 
     void Update()
     {
@@ -42,9 +46,6 @@ public class AOETower : Tower
     void Attack()
     {
         var tempBullet = Instantiate(_bullet, _muzzle.transform);
-
-        Debug.Log("shoot");
-        Debug.Log(tempBullet);
 
         tempBullet.SetDamage(_damage);
         tempBullet.SetSpeed(_bulletSpeed);
