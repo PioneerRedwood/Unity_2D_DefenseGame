@@ -23,7 +23,6 @@ public class LaserTower : Tower
         {
             Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
-
             EnableLaser();
             SpawnLaser();
          }
@@ -39,7 +38,6 @@ public class LaserTower : Tower
         {
             if(hit[i].transform == _currTarget.transform)
             {
-
                 _lineRenderer.SetPosition(0, _muzzle.position);
                 _lineRenderer.SetPosition(1, new Vector3(hit[i].point.x, hit[i].point.y, 0) + Vector3.back);
 
@@ -61,4 +59,6 @@ public class LaserTower : Tower
         _hitEffect.gameObject.SetActive(false);
     }
     #endregion
+
+
 }

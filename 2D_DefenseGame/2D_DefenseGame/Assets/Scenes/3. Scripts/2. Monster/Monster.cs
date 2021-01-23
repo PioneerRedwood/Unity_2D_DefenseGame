@@ -6,24 +6,22 @@ using UnityEngine.UI;
 public abstract class Monster : MonoBehaviour
 {
     [Header("Monster Property")]
-    public Image _hpPref = null;
+    public Image _currentHPPref = null;
 
     protected Vector2Int[] _waypoints { get; set; }
     protected Vector2Int _nextPos;
     protected int _wayPointIdx = 0;
     
     #region Damage
+
     public abstract void OnDamage(float damage);
 
     protected abstract void ShowHP();
 
-    protected void DestroyMonster()
-    {
-        Destroy(gameObject);
-    }
     #endregion
 
     #region Waypoint movement
+
     public void InitWaypoint(Vector2Int[] waypoints)
     {
         _waypoints = waypoints;
@@ -47,5 +45,6 @@ public abstract class Monster : MonoBehaviour
             Player.GetInstance().LoseLife(1);
         }
     }
+
     #endregion
 }

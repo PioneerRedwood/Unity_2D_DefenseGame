@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // summary:
-//    평상시엔 이동속도가 빠르지만 공격 받으면 이동속도가 둔화
+//    기본 이동속도가 빠르지만 공격 받으면 둔화
 //
 public class FasterMonster : Monster
 {
@@ -32,7 +32,7 @@ public class FasterMonster : Monster
 
     protected override void ShowHP()
     {
-        _hpPref.fillAmount = _currHP / _hp;
+        _currentHPPref.fillAmount = _currHP / _hp;
     }
 
     void Start()

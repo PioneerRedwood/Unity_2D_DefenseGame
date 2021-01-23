@@ -17,7 +17,7 @@ public class SimpleMoveMonster : Monster
 
     protected override void ShowHP()
     {
-        _hpPref.fillAmount = _currHP / _hp;
+        _currentHPPref.fillAmount = _currHP / _hp;
     }
 
     private void Start()
@@ -33,7 +33,6 @@ public class SimpleMoveMonster : Monster
         if (_currHP <= 0)
         {
             Destroy(gameObject);
-            DestroyMonster();
         }
     }
 }

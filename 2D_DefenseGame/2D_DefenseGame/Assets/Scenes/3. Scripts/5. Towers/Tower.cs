@@ -20,14 +20,17 @@ public class Tower : Tile
     public float _range = 2f;
 
     protected Transform _targetTransform;
-
-    public Monster _currTarget;
-
+    protected Monster _currTarget;
     protected string _enemyTag = "Enemy";
     protected float _turnSpeed = 10f;
 
+    private float _stateChangedTime = 0.0f;
+    private float _basicDamage = 0.0f;
+    private float _duration = 0.0f;
+
     void Start()
     {
+        _basicDamage = _damage;
         InvokeRepeating("UpdateTarget", 0f, 0.5f);
     }
 
@@ -62,34 +65,50 @@ public class Tower : Tile
             _targetTransform = null;
             _currTarget = null;
         }
+
+        if (_stateChangedTime != 0.0f && ((Time.time - _stateChangedTime) >= _duration))
+        {
+            _damage = _basicDamage;
+            _duration = 0.0f;
+            _stateChangedTime = 0.0f;
+        }
     }
     #endregion
 
-
+    public void DecreaseDamage(float decrease, float duration)
+    {
+        // duration이 0.0이 아니면 더이상 공격력을 깎지 않음
+        if (_duration == 0.0f)
+        {
+            _damage *= decrease;
+            _duration = duration;
+            _stateChangedTime = Time.time;
+        }
+    }
     // 기본 타워 기능 #4-5이후 사용하지 않음
     //void Update()
     //{
-        // 타겟이 없으면 돌기만 함
-        //if (_targetTransform == null)
-        //{
-        //    transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);
-        //    return;
-        //}
-        //else
-        //{
-        //    // 지정된 적 방향으로 회전
-        //    Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
-        //    transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
+    // 타겟이 없으면 돌기만 함
+    //if (_targetTransform == null)
+    //{
+    //    transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);
+    //    return;
+    //}
+    //else
+    //{
+    //    // 지정된 적 방향으로 회전
+    //    Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
+    //    transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
 
-        //    //DrawLine();
-        //    // Attack
-        //    if (_attackDelay <= _fireCount)
-        //    {
-        //        Attack();
-        //        _fireCount = 0f;
-        //    }
-        //    _fireCount += Time.deltaTime;
-        //}
+    //    //DrawLine();
+    //    // Attack
+    //    if (_attackDelay <= _fireCount)
+    //    {
+    //        Attack();
+    //        _fireCount = 0f;
+    //    }
+    //    _fireCount += Time.deltaTime;
+    //}
     //}
     #region Draw Range of tower
     private void OnDrawGizmosSelected()
@@ -97,6 +116,6 @@ public class Tower : Tile
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, _range);
     }
-    
+
     #endregion
 }

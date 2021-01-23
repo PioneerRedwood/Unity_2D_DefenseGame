@@ -4,6 +4,7 @@ using UnityEngine;
 
 //
 // Area Of Effect Tower : 범위 공격 타워
+// Bullet 종류가 다름
 //
 
 public class AOETower : Tower
@@ -15,7 +16,6 @@ public class AOETower : Tower
     [Header("Attacking")]
     [SerializeField] private float _bulletSpeed = 20.0f;
     [SerializeField] private float _attackDelay = 1f;
-
     private float _fireCount = 0f;
 
     void Update()
@@ -27,12 +27,9 @@ public class AOETower : Tower
         }
         else
         {
-            // 지정된 적 방향으로 회전
             Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
-
-            //DrawLine();
-            // Attack
+            
             if (_attackDelay <= _fireCount)
             {
                 Attack();
