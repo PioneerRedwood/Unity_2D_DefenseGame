@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -20,6 +21,26 @@ public class Player : MonoBehaviour
     [Header("Player property")]
     [SerializeField] private int _money = 0;
     [SerializeField] private int _life = 0;
+
+    [Header("Tower tier cost")]
+    [SerializeField] private uint _commonUpCost = 0;
+    [SerializeField] private uint _uncommonUpCost = 0;
+    [SerializeField] private uint _rareUpCost = 0;
+    [SerializeField] private uint _uniqueUpCost = 0;
+    [SerializeField] private uint _legendaryUpCost = 0;
+
+    [Header("Tower tier up damage")]
+    [SerializeField] private uint _commonDamageUp = 0;
+    [SerializeField] private uint _uncommonDamageUp = 0;
+    [SerializeField] private uint _rareDamageUp = 0;
+    [SerializeField] private uint _uniqueDamageUp = 0;
+    [SerializeField] private uint _legendaryDamageUp = 0;
+
+    private uint _commonLevel = 1;
+    private uint _uncommonLevel = 1;
+    private uint _rareLevel = 1;
+    private uint _uniqueLevel = 1;
+    private uint _legendaryLevel = 1;
 
     private List<Tower> _towerList = new List<Tower>();
 
@@ -45,6 +66,10 @@ public class Player : MonoBehaviour
     public int GetMoney()
     {
         return _money;
+    }
+    public void LoseMoney(int num)
+    {
+        _money -= num;
     }
     public void AddLife(int num)
     {
@@ -178,7 +203,6 @@ public class Player : MonoBehaviour
         {
             _towerManager = GameObject.FindObjectOfType<TowerManager>();
         }
-
     }
 
     private Tower GetRandomTower(Tower[] List)
@@ -188,6 +212,75 @@ public class Player : MonoBehaviour
         return randomTower;
     }
 
+    public void UpgradeCommonTower()
+    {
+        // _towerList에 기존에 씬에 둔 타워가 저장이 되지 않아 임의로 배열 만들어서 넣어둠
+        Tower[] towerList = FindObjectsOfType<Tower>();
+        Debug.Log("Up Common Tower " + towerList.Length);
+
+        if(_money >= (int)(_commonUpCost * _commonLevel))
+        {
+            foreach (Tower tower in towerList)
+            {
+                if (tower._tier == Tower.TowerTier.Common)
+                {
+                    tower._defaultDamage += _commonDamageUp * _commonLevel;
+                }
+            }
+            _commonLevel++;
+            _money -= (int)(_commonUpCost * _commonLevel);
+            GameObject.Find("CommonUpText").GetComponent<Text>().text = "Common Up \nCost: " + (_commonUpCost * _commonLevel);
+        }
+    }
+
+    public void UpgradeUncommonTower()
+    {
+        Debug.Log("Up Uncommon Tower");
+        foreach (Tower tower in _towerList)
+        {
+            if (tower._tier == Tower.TowerTier.Uncommon)
+            {
+                // 타워 업그레이드
+                
+            }
+        }
+    }
+
+    public void UpgradeRareTower()
+    {
+        foreach (Tower tower in _towerList)
+        {
+            if (tower._tier == Tower.TowerTier.Rare)
+            {
+                // 타워 업그레이드 
+
+            }
+        }
+    }
+
+    public void UpgradeUniqueTower()
+    {
+        foreach (Tower tower in _towerList)
+        {
+            if (tower._tier == Tower.TowerTier.Unique)
+            {
+                // 타워 업그레이드
+
+            }
+        }
+    }
+
+    public void UpgradeLegendaryTower()
+    {
+        foreach (Tower tower in _towerList)
+        {
+            if (tower._tier == Tower.TowerTier.Legendary)
+            {
+                // 타워 업그레이드
+
+            }
+        }
+    }
     #endregion
 
 }

@@ -14,8 +14,10 @@ public class BulletTower : Tower
 
     protected float _fireCount = 0f;
 
-    void Update()
+    new void Update()
     {
+        base.Update();
+
         if (_targetTransform == null)
         {
             transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);
@@ -43,7 +45,6 @@ public class BulletTower : Tower
         var tempBullet = Instantiate(_bullet, _muzzle.transform);
 
         Debug.Log("shoot");
-        Debug.Log(tempBullet);
 
         tempBullet.SetDamage(_damage);
         tempBullet.SetSpeed(_bulletSpeed);

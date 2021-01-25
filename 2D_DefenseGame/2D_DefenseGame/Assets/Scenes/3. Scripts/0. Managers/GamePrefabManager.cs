@@ -14,10 +14,4 @@ public class GamePrefabManager : SingletonScriptableObject<GamePrefabManager>
 
     // Tower
     public Tower towerPrefab;
-
-    // Start
-    public StartPoint startPointPrefab;
-
-    // End
-    public EndPoint endPointPrefab;
 }

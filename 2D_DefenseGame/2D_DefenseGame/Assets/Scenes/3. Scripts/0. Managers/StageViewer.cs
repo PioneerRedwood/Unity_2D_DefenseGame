@@ -11,7 +11,12 @@ public class StageViewer : MonoBehaviour
     public Image _image;
 
     private int _idx = -1;
-    private bool _isClear = false;
+
+    public enum StageViewState
+    {
+        NotTried, Cleared, Failed
+    };
+    public StageViewState _state = StageViewState.NotTried;
 
     public void SetStageIndex(int idx)
     {
@@ -26,9 +31,10 @@ public class StageViewer : MonoBehaviour
         }
     }
 
-    public void OnClearStage()
+    // 스테이지 성공 / 실패 시 UI 변경
+    public void InitStageViewer(StageViewState idx)
     {
-        if (!_isClear)
+        if (idx == StageViewState.Cleared)
         {
             // text
             _text.text = "Clear";
@@ -38,7 +44,22 @@ public class StageViewer : MonoBehaviour
             tempColor.a = 0.2f;
             _image.color = tempColor;
 
-            _isClear = true;
+            _state = StageViewState.Cleared;
+        }
+        // 클리어 말곤 아무 반응 없음
+        else if(idx == StageViewState.Failed)
+        {
+            _text.text = "Failed";
+
+            Color tempColor = _image.color;
+            tempColor.a = 0.2f;
+            _image.color = tempColor;
+
+            _state = StageViewState.Failed;
+        }
+        else
+        {
+            // 아직 시도하지 않은 스테이지일때 표시
         }
     }
 }

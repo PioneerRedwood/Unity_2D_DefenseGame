@@ -8,19 +8,13 @@ using UnityEngine;
 public class FasterMonster : Monster
 {
     [Header("FasterMonster property")]
-    [SerializeField] private float _hp = 300f;
-    [SerializeField] private float _speed = 0;
-
-    private float _currHP = 0f;
-
-    private float _basicSpeed = 0f;
-    private bool _isAttacked = false;
-    private float _deltaTime = 0f;
-    private float _damagedTime = 0f;
-
-    // 둔화 시간과 정도
     [SerializeField] private float _delayTime = 0.2f;
     [SerializeField] private float _delay = 0.95f;
+
+    private bool _isAttacked = false;
+    private float _basicSpeed = 0f;
+    private float _deltaTime = 0f;
+    private float _damagedTime = 0f;
 
     public override void OnDamage(float damage)
     {

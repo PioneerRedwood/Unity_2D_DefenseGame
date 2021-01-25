@@ -5,10 +5,11 @@ using UnityEngine.UI;
 
 public class Stage : MonoBehaviour
 {
+    // 직렬화
     [Header("Stage")]
     [SerializeField] private Vector2Int _size = new Vector2Int(0, 0);
     [SerializeField] private Wave _wave = null;
-    [SerializeField] private Vector2Int[] _waypoints = null;
+    [SerializeField] private Vector2[] _waypoints = null;
     [SerializeField] private float _nextWaveDelay = 30.0f;
 
     [Header("Monster")]
@@ -43,9 +44,9 @@ public class Stage : MonoBehaviour
         if (_stageState == StageState.Ongoing)
         {
             _timerText = GameObject.Find("Timer").GetComponent<Text>();
-            _timerText.text = "경과 시간 : " + Mathf.Round(time) + " \n현재 웨이브/총 웨이브 수 : " + _waveIdx + "/" + _wave.GetNumOfWave()
-                                        + "\n남은 몬스터 수 : " + _monsters.Count
-                                        + "\n[현재 체력: " + Player.GetInstance().GetLife() + "][현재 금액: " + Player.GetInstance().GetMoney() + "]";
+            _timerText.text = "경과 시간: " + Mathf.Round(time) + " \n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave()
+                                        + "\n남은 몬스터 수: " + _monsters.Count
+                                        + "\nHP: " + Player.GetInstance().GetLife() + "\nMoney: " + Player.GetInstance().GetMoney();
             time += Time.deltaTime;
 
             // 맨 처음 웨이브라면 _nextWaveDelay 기다리지 않음
@@ -61,6 +62,11 @@ public class Stage : MonoBehaviour
                 time = 0;
                 LoadWave(_waveIdx++);
             }
+
+            if (Player.GetInstance().GetLife() <= 0)
+            {
+                _stageState = StageState.Fail;
+            }
         }
     }
 
@@ -70,7 +76,6 @@ public class Stage : MonoBehaviour
         Ongoing, Fail, Success, Unload, Paused, Wait
     }
     private StageState _stageState { get; set; }
-
 
     #region Grid
     public void CreateGrid()
@@ -108,10 +113,11 @@ public class Stage : MonoBehaviour
         _stageIdx = idx;
     }
 
+    // Wave 시작
     private void LoadWave(int index)
     {
-        // 해당 index번째 Wave 코루틴 실행
         StartCoroutine(SpawnMonster(index));
+        Player.GetInstance().AddMoney(300);
     }
 
     public StageState GetState()
@@ -121,18 +127,17 @@ public class Stage : MonoBehaviour
     #endregion
 
     #region Monster
-    /*
-    * 웨이브 진행 중 몬스터 스폰
-    * https://www.youtube.com/watch?v=r8N6J79W0go&ab_channel=Unity 참고함
-    */
+    // 몬스터 스폰
     private IEnumerator SpawnMonster(int idx)
     {
         yield return new WaitForSeconds(_firstSpawnDelay);
         _stageState = StageState.Ongoing;
         for (int i = 0; i < _wave.GetWaveBundle(idx).numOfMonster; i++)
         {
-            var monster = Instantiate(_wave.GetWaveBundle(idx).monster,
-                                        new Vector3(_waypoints[0].x, _waypoints[0].y, 0), Quaternion.identity);
+            var monster =
+                Instantiate(_wave.GetWaveBundle(idx).monster,
+                            new Vector3(_waypoints[0].x, _waypoints[0].y, 0),
+                            Quaternion.identity);
 
             if (monster != null)
             {
@@ -149,7 +154,7 @@ public class Stage : MonoBehaviour
     // 스테이지 위치값에 따른 Waypoints에 offset 추가
     public void SpawnPointOffset()
     {
-        Vector2Int offset = new Vector2Int((int)gameObject.transform.position.x, (int)gameObject.transform.position.y);
+        Vector2 offset = new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
 
         for (int i = 0; i < _waypoints.Length; i++)
         {

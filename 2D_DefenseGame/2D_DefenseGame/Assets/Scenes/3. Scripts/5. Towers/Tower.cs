@@ -16,35 +16,46 @@ public class Tower : Tile
     [Header("Basic Tower Property")]
     public TowerTier _tier;
     public string _towerName;
-    public float _damage = 1.0f;
+    public float _defaultDamage = 0.0f;
     public float _range = 2f;
+
+    // 현재 적용되는 데미지
+    public float _damage = 1.0f;
 
     protected Transform _targetTransform;
     protected Monster _currTarget;
     protected string _enemyTag = "Enemy";
     protected float _turnSpeed = 10f;
+    protected GameObject[] _enemies = null;
 
     private float _stateChangedTime = 0.0f;
-    private float _basicDamage = 0.0f;
+    private float _increaseDamage = 0;
+    private float _decreaseDamage = 0;
     private float _duration = 0.0f;
+    private float _stateChangedbuffTime = 0.0f;
+    private float _buffduration = 0.0f;
 
-    void Start()
+    void Awake()
     {
-        _basicDamage = _damage;
-        InvokeRepeating("UpdateTarget", 0f, 0.5f);
+        _damage = _defaultDamage;
+    }
+
+    protected void Update()
+    {
+        UpdateTarget();
     }
 
     #region Updating target
     void UpdateTarget()
     {
         // 태그로 적들을 배열로 가져옴
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag(_enemyTag);
+        _enemies = GameObject.FindGameObjectsWithTag(_enemyTag);
         GameObject nearestEnemy = null;
 
         float shortestDistance = Mathf.Infinity;
 
         // 필드 내 적 중에서 가장 가까운 놈을 찾아내서 등록
-        foreach (GameObject enemy in enemies)
+        foreach (GameObject enemy in _enemies)
         {
             float distanceToEnemy = Vector2.Distance(transform.position, enemy.transform.position);
             if (distanceToEnemy < shortestDistance)
@@ -66,49 +77,108 @@ public class Tower : Tile
             _currTarget = null;
         }
 
+
+        if (_stateChangedbuffTime != 0.0f && ((Time.time - _stateChangedbuffTime) >= _buffduration))
+        {
+            ResetDamage(true);
+        }
+
         if (_stateChangedTime != 0.0f && ((Time.time - _stateChangedTime) >= _duration))
         {
-            _damage = _basicDamage;
+            ResetDamage(false);
+        }
+
+        LoadDamage();
+    }
+    #endregion
+
+    /// <summary>
+    /// ControlDamage 
+    /// 어떤 방식으로 데미지를 변경할지 정할 필요가 있음
+    /// </summary>
+    /// <param name="controlValue">변경 수치(양수면 버프 음수면 너프)</param>
+    /// <param name="duration">지속되는 기간</param>
+
+    public void DecreaseDamage(float value, float duration)
+    {
+        if (value >= _decreaseDamage)
+        {
+            _decreaseDamage = value;
+            _duration = duration;
+            _stateChangedTime = Time.time;
+
+            LoadDamage();
+        }
+    }
+
+    public void IncreaseDamage(float value, float duration)
+    {
+        if (value >= _increaseDamage )
+        {
+            _increaseDamage = value;
+            _buffduration = duration;
+            _stateChangedbuffTime  = Time.time;
+
+            LoadDamage();
+        }
+    }
+
+
+    public void LoadDamage()
+    {
+        _damage = _defaultDamage + _defaultDamage * _increaseDamage - _defaultDamage * _decreaseDamage;
+    }
+
+    public void LoadAllBufferTower()
+    {
+
+    }
+
+    public void ResetDamage(bool Selector)
+    {
+        _damage = _defaultDamage;
+
+        if (Selector)
+        {
+            Debug.Log("buffOriginal");
+            _increaseDamage = 0.0f;
+            _buffduration = 0.0f;
+            _stateChangedbuffTime = 0.0f;
+
+        }
+        else if (!Selector)
+        {
+            //Debug.Log("debufOriginal");
+            _decreaseDamage = 0.0f;
             _duration = 0.0f;
             _stateChangedTime = 0.0f;
         }
     }
-    #endregion
 
-    public void DecreaseDamage(float decrease, float duration)
-    {
-        // duration이 0.0이 아니면 더이상 공격력을 깎지 않음
-        if (_duration == 0.0f)
-        {
-            _damage *= decrease;
-            _duration = duration;
-            _stateChangedTime = Time.time;
-        }
-    }
+
+
+
     // 기본 타워 기능 #4-5이후 사용하지 않음
     //void Update()
     //{
     // 타겟이 없으면 돌기만 함
-    //if (_targetTransform == null)
-    //{
+    //  if (_targetTransform == null)
+    //  {
     //    transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);
     //    return;
-    //}
-    //else
-    //{
-    //    // 지정된 적 방향으로 회전
-    //    Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
-    //    transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
-
-    //    //DrawLine();
-    //    // Attack
-    //    if (_attackDelay <= _fireCount)
-    //    {
-    //        Attack();
-    //        _fireCount = 0f;
-    //    }
-    //    _fireCount += Time.deltaTime;
-    //}
+    //  }
+    //  else
+    //  {
+    //        // 지정된 적 방향으로 회전
+    //      Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
+    //      transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
+    //      if (_attackDelay <= _fireCount)
+    //      {
+    //            Attack();
+    //          _fireCount = 0f;
+    //      }
+    //      _fireCount += Time.deltaTime;
+    //  }
     //}
     #region Draw Range of tower
     private void OnDrawGizmosSelected()

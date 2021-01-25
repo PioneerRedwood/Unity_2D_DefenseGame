@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class SimpleMoveMonster : Monster
 {
-    [Header("SimpleMoveMonster property")]
-    [SerializeField] private float _hp = 300f;
-    [SerializeField] private float _speed = 0;
-
-    private float _currHP = 0f;
-
     public override void OnDamage(float damage)
     {
         _currHP -= damage;

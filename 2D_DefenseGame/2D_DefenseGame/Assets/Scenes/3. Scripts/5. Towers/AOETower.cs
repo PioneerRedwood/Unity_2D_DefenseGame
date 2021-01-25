@@ -18,8 +18,10 @@ public class AOETower : Tower
     [SerializeField] private float _attackDelay = 1f;
     private float _fireCount = 0f;
 
-    void Update()
+    new void Update()
     {
+        base.Update();
+
         if (_targetTransform == null)
         {
             transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);

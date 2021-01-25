@@ -13,9 +13,8 @@ public class StageSelector : MonoBehaviour
     public StageDataHolder _stageDataHolder;
     public Text _textCurrentIndex;
 
-    [Header("General")]
-    [SerializeField] private int _widthOffset = 1366;
-    [SerializeField] private float _speed = 40.0f;
+    private int _widthOffset = 1366;
+    private float _speed = 40.0f;
 
     private enum OnMove { Stop, Right, Left };
     private OnMove _onMove = OnMove.Stop;
@@ -52,7 +51,6 @@ public class StageSelector : MonoBehaviour
     {
         int idx = 0;
         // _stageDataHolder.GetClearCount() 는 PlayerPrefs.GetInt("StageCount")에 저장됨
-        Debug.Log(PlayerPrefs.GetInt("StageCount"));
 
         foreach (StageViewer viewer in _stageVieweres)
         {
@@ -62,7 +60,7 @@ public class StageSelector : MonoBehaviour
             // 전에 클리어한 부분 있으면 Clear한 것 표시
             if (idx < PlayerPrefs.GetInt("StageCount"))
             {
-                tempViewer.OnClearStage();
+                tempViewer.InitStageViewer(StageViewer.StageViewState.Cleared);
             }
             tempViewer.SetStageIndex(idx++);
         }

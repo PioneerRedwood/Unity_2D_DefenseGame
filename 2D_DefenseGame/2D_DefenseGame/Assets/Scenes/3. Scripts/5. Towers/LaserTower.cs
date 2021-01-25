@@ -10,8 +10,10 @@ public class LaserTower : Tower
     [SerializeField] private Transform _hitEffect = null;
     [SerializeField] private LayerMask _targetLayer = 0;
 
-    void Update()
+    new void Update()
     {
+        base.Update();
+
         if (_targetTransform == null)
         {
             transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);

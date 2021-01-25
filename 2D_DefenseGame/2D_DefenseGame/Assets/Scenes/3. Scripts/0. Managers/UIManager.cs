@@ -11,10 +11,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private InfoPanel _InfoPanel = null;
     [SerializeField] private TowerAttackRange _TowerAttackRange = null;
 
+    [Header("Tower")]
+    [SerializeField] private int _towerPrice = 0;
+
     private GameObject _selectedObj;
-
-    private int _towerPrice = 0;
-
     private Ground _groundComponent;
     private Route _routeComponent;
 
@@ -143,6 +143,10 @@ public class UIManager : MonoBehaviour
             Debug.Log("Not Enough Minerals");
             return;
         }
+        else
+        {
+            Player.GetInstance().LoseMoney(_towerPrice);
+        }
 
         if (_groundComponent.IsBuildTower)
         {
@@ -170,15 +174,36 @@ public class UIManager : MonoBehaviour
 
     public void SellButton()
     {
-        Debug.Log("SELL");
+        int sellPrice = 0;
         if (_groundComponent.IsBuildTower == false)
         {
             return;
         }
+        switch(Player.GetInstance().GetTower(_selectedObj.transform.parent)._tier)
+        {
+            case Tower.TowerTier.Common:
+                sellPrice = _towerPrice / 2;
+                break;
+            case Tower.TowerTier.Uncommon:
+                sellPrice = _towerPrice;
+                break;
+            case Tower.TowerTier.Rare:
+                sellPrice = _towerPrice * 2;
+                break;
+            case Tower.TowerTier.Unique:
+                sellPrice = _towerPrice * 4;
+                break;
+            case Tower.TowerTier.Legendary:
+                sellPrice = _towerPrice * 8;
+                break;
+            default:
+                break;
+        }
 
         Player.GetInstance().DeleteTower(_selectedObj.transform.parent);
-        Player.GetInstance().AddMoney(_towerPrice / 2);
+        Player.GetInstance().AddMoney(sellPrice);
 
+        Debug.Log("SELL " + sellPrice);
         _groundComponent.IsBuildTower = false;
         LoadPanel(_selectedObj);
     }

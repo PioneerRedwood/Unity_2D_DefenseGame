@@ -43,17 +43,17 @@ public class StageManager : MonoBehaviour
             // 스테이지 클리어시 해야하는 동작 추가 바람
             if (_currentStage.GetState() == Stage.StageState.Success)
             {
+                Debug.Log("Success!");
                 Destroy(_currentStage, 1.0f);
                 if(_currStageIdx >= PlayerPrefs.GetInt("StageCount"))
                 {
                     _stageDataHolder.GetComponent<StageDataHolder>().AddClearCount();
                 }
                 SceneManager.LoadScene("StageSelectScene");
-                Debug.Log("Stage Clear!" + PlayerPrefs.GetInt("StageCount"));
             }
             else if (_currentStage.GetState() == Stage.StageState.Fail)
             {
-                Debug.Log("Stage Fail!");
+                Debug.Log("Failed");
                 Destroy(_currentStage, 1.0f);
                 SceneManager.LoadScene("StageSelectScene");
             }

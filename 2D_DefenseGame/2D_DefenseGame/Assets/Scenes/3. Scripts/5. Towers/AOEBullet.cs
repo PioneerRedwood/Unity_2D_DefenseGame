@@ -31,7 +31,7 @@ public class AOEBullet : MonoBehaviour
                     //Debug.Log(i);
                     if (GetDistance(new Vector2(_target.transform.position.x, _target.transform.position.y), new Vector2(_enemies[i].transform.position.x, _enemies[i].transform.position.y)) < _aoeRange)
                     {
-                        Debug.Log("damage!!");
+                        //Debug.Log("damage!!");
                         _enemies[i].transform.GetComponent<Monster>().OnDamage(_damage);
                     }
                 }
