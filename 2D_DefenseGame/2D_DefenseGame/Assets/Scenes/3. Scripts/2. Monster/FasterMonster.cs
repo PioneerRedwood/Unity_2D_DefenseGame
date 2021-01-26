@@ -8,11 +8,11 @@ using UnityEngine;
 public class FasterMonster : Monster
 {
     [Header("FasterMonster property")]
+    [Range(0, 1)]
+    [SerializeField] private float _delay = 1.0f;
     [SerializeField] private float _delayTime = 0.2f;
-    [SerializeField] private float _delay = 0.95f;
 
     private bool _isAttacked = false;
-    private float _basicSpeed = 0f;
     private float _deltaTime = 0f;
     private float _damagedTime = 0f;
 
@@ -21,7 +21,10 @@ public class FasterMonster : Monster
         _currHP -= damage;
         _isAttacked = true;
         _damagedTime = _deltaTime;
-        _speed *= _delay;
+        if (_currSpeed > _speed * _delay)
+        {
+            _currSpeed = _currSpeed * _delay;
+        }
     }
 
     protected override void ShowHP()
@@ -32,21 +35,22 @@ public class FasterMonster : Monster
     void Start()
     {
         _currHP = _hp;
-        _basicSpeed = _speed;
+        _currSpeed = _speed;
     }
 
     void Update()
     {
         _deltaTime += Time.deltaTime;
+
         if(_isAttacked && ((_deltaTime - _damagedTime) >= _delayTime))
         {
             _isAttacked = false;
-            _speed = _basicSpeed;
+            _currSpeed = _speed;
             _deltaTime = 0;
             _damagedTime = 0;
         }
 
-        MoveToNext(_speed);
+        MoveToNext();
         ShowHP();
         if (_currHP <= 0)
         {

@@ -5,15 +5,11 @@ using UnityEngine;
 public class BuffTower : Tower
 {
     [Header("BuffTower Property")]
-    [SerializeField]
     [Range(0, 1)]
-    private float _addDamageBuff = 0;
-    [SerializeField]
-    private float _addBuffduration = 0;
-
+    [SerializeField] private float _addDamageBuff = 0;
+    [SerializeField] private float _addBuffduration = 0;
 
     private Tower[] _towers;
-
 
     new void Update()
     {
@@ -31,8 +27,6 @@ public class BuffTower : Tower
                 if (transform == _towers[i].transform) { }
                 else
                 {
-                    Debug.Log(_addDamageBuff + "/" + _addBuffduration);
-                    Debug.Log(_towers[i]);
 
                     _towers[i].IncreaseDamage(_addDamageBuff, _addBuffduration);
                 }
@@ -42,7 +36,6 @@ public class BuffTower : Tower
 
     void Attack()
     {
-
         for (int i = _enemies.Length; i > -1; --i)
         {
             Vector3 distance = _enemies[i].transform.position - transform.position;
@@ -57,10 +50,7 @@ public class BuffTower : Tower
 
     void GetTower()
     {
-
         _towers = GameObject.FindObjectsOfType<Tower>();
-
     }
-
 
 }

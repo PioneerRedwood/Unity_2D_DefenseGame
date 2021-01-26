@@ -4,37 +4,28 @@ using UnityEngine;
 
 public class SlowTower : Tower
 {
-
-    [SerializeField]
-    private float _slow = 0.0f;
-    private Monster[] _enemies = null;
+    [Header("SlowTower property")]
+    [Range(0, 1)]
+    [SerializeField] private float _slow = 0.0f;
 
     new void Update()
     {
         base.Update();
 
-
-
-    }
-
-
-
-    private void GetEnemy()
-    {
-        for(int i = base._enemies.Length ; i > -1; --i)
+        for (int i = 0; i < _enemies.Length; i++)
         {
-            _enemies[i] = base._enemies[i].GetComponent<Monster>();
+            if (Vector3.Distance(transform.position, _enemies[i].transform.position) < _range)
+            {
+                _enemies[i].GetComponent<Monster>().DecreaseSpeed(transform, _slow, _range);
+            }
+            else
+            {
+                if (_enemies[i].GetComponent<Monster>()._giveBuff == transform)
+                {
+                    _enemies[i].GetComponent<Monster>().ResetBuff();
+                }
+            }
         }
-    }
 
-    // 함수 하나로 float Vector2.Distance(Vector2 x, Vector2 y)
-    private float GetDistance(Vector2 x, Vector2 y)
-    {
-        return Vector2.Distance(x, y);
-        //float xm = x.x - y.x;
-        //float ym = x.y - y.y;
-
-        //return Mathf.Sqrt(Mathf.Pow(xm, 2) + Mathf.Pow(ym, 2));
     }
-    
 }

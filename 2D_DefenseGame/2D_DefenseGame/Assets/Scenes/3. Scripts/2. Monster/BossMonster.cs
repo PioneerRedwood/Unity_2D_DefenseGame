@@ -35,7 +35,7 @@ public class BossMonster : Monster
 
     void Update()
     {
-        MoveToNext(_speed);
+        MoveToNext();
         ShowHP();
         if(_currHP <= 0)
         {

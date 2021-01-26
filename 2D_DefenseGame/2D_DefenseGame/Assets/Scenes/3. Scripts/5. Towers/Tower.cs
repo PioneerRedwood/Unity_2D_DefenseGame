@@ -140,7 +140,6 @@ public class Tower : Tile
 
         if (Selector)
         {
-            Debug.Log("buffOriginal");
             _increaseDamage = 0.0f;
             _buffduration = 0.0f;
             _stateChangedbuffTime = 0.0f;
@@ -148,38 +147,12 @@ public class Tower : Tile
         }
         else if (!Selector)
         {
-            //Debug.Log("debufOriginal");
             _decreaseDamage = 0.0f;
             _duration = 0.0f;
             _stateChangedTime = 0.0f;
         }
     }
 
-
-
-
-    // 기본 타워 기능 #4-5이후 사용하지 않음
-    //void Update()
-    //{
-    // 타겟이 없으면 돌기만 함
-    //  if (_targetTransform == null)
-    //  {
-    //    transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);
-    //    return;
-    //  }
-    //  else
-    //  {
-    //        // 지정된 적 방향으로 회전
-    //      Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
-    //      transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
-    //      if (_attackDelay <= _fireCount)
-    //      {
-    //            Attack();
-    //          _fireCount = 0f;
-    //      }
-    //      _fireCount += Time.deltaTime;
-    //  }
-    //}
     #region Draw Range of tower
     private void OnDrawGizmosSelected()
     {
