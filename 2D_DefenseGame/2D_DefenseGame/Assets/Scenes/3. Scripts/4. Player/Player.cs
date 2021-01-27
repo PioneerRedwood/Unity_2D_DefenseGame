@@ -218,7 +218,7 @@ public class Player : MonoBehaviour
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Common Tower " + towerList.Length);
 
-        if(_money >= (int)(_commonUpCost * _commonLevel))
+        if (_money >= (int)(_commonUpCost * _commonLevel))
         {
             foreach (Tower tower in towerList)
             {
@@ -235,50 +235,81 @@ public class Player : MonoBehaviour
 
     public void UpgradeUncommonTower()
     {
-        Debug.Log("Up Uncommon Tower");
-        foreach (Tower tower in _towerList)
+        Tower[] towerList = FindObjectsOfType<Tower>();
+        Debug.Log("Up Uncommon Tower " + towerList.Length);
+
+        if (_money >= (int)(_uncommonUpCost * _uncommonLevel))
         {
-            if (tower._tier == Tower.TowerTier.Uncommon)
+            foreach (Tower tower in towerList)
             {
-                // 타워 업그레이드
-                
+                if (tower._tier == Tower.TowerTier.Uncommon)
+                {
+                    tower._defaultDamage += _uncommonDamageUp * _uncommonLevel;
+                }
             }
+            _uncommonLevel++;
+            _money -= (int)(_uncommonUpCost * _uncommonLevel);
+            GameObject.Find("UncommonUpText").GetComponent<Text>().text = "Uncommon Up \nCost: " + (_uncommonUpCost * _uncommonLevel);
         }
     }
 
     public void UpgradeRareTower()
     {
-        foreach (Tower tower in _towerList)
-        {
-            if (tower._tier == Tower.TowerTier.Rare)
-            {
-                // 타워 업그레이드 
+        Tower[] towerList = FindObjectsOfType<Tower>();
+        Debug.Log("Up Rare Tower " + towerList.Length);
 
+        if (_money >= (int)(_rareUpCost * _rareLevel))
+        {
+            foreach (Tower tower in towerList)
+            {
+                if (tower._tier == Tower.TowerTier.Rare)
+                {
+                    tower._defaultDamage += _rareDamageUp * _rareLevel;
+                }
             }
+            _rareLevel++;
+            _money -= (int)(_rareUpCost * _rareLevel);
+            GameObject.Find("RareUpText").GetComponent<Text>().text = "Rare Up \nCost: " + (_rareUpCost * _rareLevel);
         }
     }
 
     public void UpgradeUniqueTower()
     {
-        foreach (Tower tower in _towerList)
-        {
-            if (tower._tier == Tower.TowerTier.Unique)
-            {
-                // 타워 업그레이드
+        Tower[] towerList = FindObjectsOfType<Tower>();
+        Debug.Log("Up Unique Tower " + towerList.Length);
 
+        if (_money >= (int)(_uniqueUpCost * _uniqueLevel))
+        {
+            foreach (Tower tower in towerList)
+            {
+                if (tower._tier == Tower.TowerTier.Unique)
+                {
+                    tower._defaultDamage += _uniqueDamageUp * _uniqueLevel;
+                }
             }
+            _uniqueLevel++;
+            _money -= (int)(_uniqueUpCost * _uniqueLevel);
+            GameObject.Find("UniqueUpText").GetComponent<Text>().text = "Unique Up \nCost: " + (_uniqueUpCost * _uniqueLevel);
         }
     }
 
     public void UpgradeLegendaryTower()
     {
-        foreach (Tower tower in _towerList)
-        {
-            if (tower._tier == Tower.TowerTier.Legendary)
-            {
-                // 타워 업그레이드
+        Tower[] towerList = FindObjectsOfType<Tower>();
+        Debug.Log("Up Legendary Tower " + towerList.Length);
 
+        if (_money >= (int)(_legendaryUpCost * _legendaryLevel))
+        {
+            foreach (Tower tower in towerList)
+            {
+                if (tower._tier == Tower.TowerTier.Legendary)
+                {
+                    tower._defaultDamage += _legendaryDamageUp * _legendaryLevel;
+                }
             }
+            _legendaryLevel++;
+            _money -= (int)(_legendaryUpCost * _legendaryLevel);
+            GameObject.Find("LegendaryUpText").GetComponent<Text>().text = "Legendary Up \nCost: " + (_legendaryUpCost * _legendaryLevel);
         }
     }
     #endregion
