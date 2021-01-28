@@ -8,8 +8,10 @@ public class UIManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject _UIPanel = null;
     [SerializeField] private GameObject[] _buttons = null;
-    [SerializeField] private InfoPanel _InfoPanel = null;
-    [SerializeField] private TowerAttackRange _TowerAttackRange = null;
+    [SerializeField] private InfoPanel _infoPanel = null;
+    [SerializeField] private TowerAttackRange _towerAttackRange = null;
+    [SerializeField] private GameObject _towerUpgradePanel = null;
+    private bool _isTowerUpgradePanelOpen = false;
 
     [Header("Tower")]
     [SerializeField] private int _towerPrice = 0;
@@ -126,8 +128,8 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        _InfoPanel.OffPanel();
-        _TowerAttackRange.OffAttackRange();
+        _infoPanel.OffPanel();
+        _towerAttackRange.OffAttackRange();
     }
 
     #endregion
@@ -215,10 +217,34 @@ public class UIManager : MonoBehaviour
     {
         Tower selectedTower = Player.GetInstance().GetTower(_selectedObj.transform.parent);
 
-        _InfoPanel.OnPanel(selectedTower.transform);
-        _TowerAttackRange.OnAttackRange(selectedTower._range, selectedTower.transform.position);
+        _infoPanel.OnPanel(selectedTower.transform);
+        _towerAttackRange.OnAttackRange(selectedTower._range, selectedTower.transform.position);
     }
-    
+
     #endregion
 
+    #region Tower upgrade Panel
+    
+    public void OnTowerUpgradePanelButtonClicked()
+    {
+        if(!_isTowerUpgradePanelOpen)
+        {
+            _towerUpgradePanel.GetComponent<Animator>().SetBool("Clicked", true);
+            _isTowerUpgradePanelOpen = true;
+
+            Sprite rightArrow = Resources.Load<Sprite>("right arrow");
+            _towerUpgradePanel.GetComponentInChildren<Image>().sprite = rightArrow;
+            
+        }
+        else
+        {
+            _towerUpgradePanel.GetComponent<Animator>().SetBool("Clicked", false);
+            _isTowerUpgradePanelOpen = false;
+
+            Sprite leftArrow = Resources.Load<Sprite>("left arrow");
+            _towerUpgradePanel.GetComponentInChildren<Image>().sprite = leftArrow;
+        }
+    }
+
+    #endregion
 }

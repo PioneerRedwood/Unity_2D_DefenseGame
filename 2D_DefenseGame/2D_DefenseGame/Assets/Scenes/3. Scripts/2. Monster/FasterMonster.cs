@@ -12,19 +12,43 @@ public class FasterMonster : Monster
     [SerializeField] private float _delay = 1.0f;
     [SerializeField] private float _delayTime = 0.2f;
 
+    private float _currDelay = 0.0f;
     private bool _isAttacked = false;
     private float _deltaTime = 0f;
     private float _damagedTime = 0f;
+
+    // FasterMonster 전용 이동 함수
+    new void MoveToNext()
+    {
+        _currSpeed = _speed - _speed * _currSlow - _speed * _currDelay;
+        if(_currSpeed < _speed * 0.3)
+        {
+            _currSpeed = _speed * 0.3f;
+        }
+
+
+        transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
+
+        if ((Vector2)transform.position == _nextPos && _nextPos != _waypoints[_waypoints.Length - 1])
+        {
+            _nextPos = _waypoints[++_wayPointIdx];
+        }
+
+        if ((Vector2)transform.position == _waypoints[_waypoints.Length - 1])
+        {
+            Destroy(gameObject);
+            Player.GetInstance().LoseLife(1);
+        }
+    }
+
 
     public override void OnDamage(float damage)
     {
         _currHP -= damage;
         _isAttacked = true;
         _damagedTime = _deltaTime;
-        if (_currSpeed > _speed * _delay)
-        {
-            _currSpeed = _currSpeed * _delay;
-        }
+        _currDelay = _delay;
+
     }
 
     protected override void ShowHP()
@@ -45,12 +69,13 @@ public class FasterMonster : Monster
         if(_isAttacked && ((_deltaTime - _damagedTime) >= _delayTime))
         {
             _isAttacked = false;
-            _currSpeed = _speed;
+            _currDelay = 0.0f;
             _deltaTime = 0;
             _damagedTime = 0;
         }
 
         MoveToNext();
+
         ShowHP();
         if (_currHP <= 0)
         {

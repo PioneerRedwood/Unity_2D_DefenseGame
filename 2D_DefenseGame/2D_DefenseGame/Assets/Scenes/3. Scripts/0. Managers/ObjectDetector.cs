@@ -30,12 +30,10 @@ public class ObjectDetector : MonoBehaviour
                 if (_hit.transform.CompareTag("Ground"))
                 {
                     _UIManager.GroundClick(_hit.collider.gameObject);
-                    Debug.Log(_hit.collider.gameObject.name);
                 }
                 else if(_hit.transform.CompareTag("Route"))
                 {
                     _UIManager.RouteClick(_hit.collider.gameObject);
-                    Debug.Log(_hit.collider.gameObject.name);
                 }
                 
             }

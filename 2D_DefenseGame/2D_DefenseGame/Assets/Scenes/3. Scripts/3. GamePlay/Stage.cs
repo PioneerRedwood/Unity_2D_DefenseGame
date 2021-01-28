@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class Stage : MonoBehaviour
 {
-    // 직렬화
     [Header("Stage")]
     [SerializeField] private Vector2Int _size = new Vector2Int(0, 0);
     [SerializeField] private Wave _wave = null;
     [SerializeField] private Vector2[] _waypoints = null;
     [SerializeField] private float _nextWaveDelay = 30.0f;
+    [SerializeField] private uint _earningMoney = 0;
 
     [Header("Monster")]
     [SerializeField] private float _firstSpawnDelay = 0.0f;
@@ -117,12 +117,17 @@ public class Stage : MonoBehaviour
     private void LoadWave(int index)
     {
         StartCoroutine(SpawnMonster(index));
-        Player.GetInstance().AddMoney(300);
+        Player.GetInstance().AddMoney((int)_earningMoney);
     }
 
     public StageState GetState()
     {
         return _stageState;
+    }
+
+    public void SetState(StageState State)
+    {
+        _stageState = State;
     }
     #endregion
 

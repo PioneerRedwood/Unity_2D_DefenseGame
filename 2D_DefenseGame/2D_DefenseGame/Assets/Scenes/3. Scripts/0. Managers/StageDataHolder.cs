@@ -11,15 +11,19 @@ public class StageDataHolder : MonoBehaviour
     private void Start()
     {
         var tempObject = FindObjectsOfType<StageDataHolder>();
-        if(tempObject.Length == 1)
+        Debug.Log("hello");
+
+        if (tempObject.Length == 1)
         {
-            _clearCount = PlayerPrefs.GetInt("StageCount");
+             _clearCount = PlayerPrefs.GetInt("StageCount");
             DontDestroyOnLoad(this);
+
         }
         else
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
+
     }
 
     public int GetCurrentStage()

@@ -16,7 +16,7 @@ public class LaserTower : Tower
 
         if (_targetTransform == null)
         {
-            transform.Rotate(new Vector3(0f, 0f, 0.5f), Space.Self);
+            transform.Rotate(new Vector3(0f, 0f, 1f) * 80 * Time.deltaTime, Space.Self);
             DisableLaser();
 
             return;

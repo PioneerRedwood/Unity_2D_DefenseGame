@@ -13,7 +13,6 @@ public class StageSelector : MonoBehaviour
     public StageDataHolder _stageDataHolder;
     public Text _textCurrentIndex;
 
-    private int _widthOffset = 1366;
     private float _speed = 40.0f;
 
     private enum OnMove { Stop, Right, Left };
@@ -27,7 +26,20 @@ public class StageSelector : MonoBehaviour
 
     void Start()
     {
-        _stageDataHolder = GameObject.Find("StageDataHolder").GetComponent<StageDataHolder>();
+        Time.timeScale = 1;
+        _content.GetComponent<HorizontalLayoutGroup>().spacing = Screen.width;
+
+        if (GameObject.Find("StageDataHolder") == null)
+        {
+            GameObject stageHolder = new GameObject("StageDataHolder");
+            stageHolder.AddComponent<StageDataHolder>();
+            _stageDataHolder = stageHolder.GetComponent<StageDataHolder>();
+        }
+        else
+        {
+            _stageDataHolder = GameObject.Find("StageDataHolder").GetComponent<StageDataHolder>();
+        }
+        
         OnSelectorReload();
     }
 
@@ -35,7 +47,7 @@ public class StageSelector : MonoBehaviour
     {
         if (_onMove != OnMove.Stop)
         {
-            Debug.Log("이전: " + _prevIdx + " 현재: " + _currIdx + " 다음: " + _nextIdx);
+            //Debug.Log("이전: " + _prevIdx + " 현재: " + _currIdx + " 다음: " + _nextIdx);
 
             _content.transform.position =
                 Vector2.Lerp(new Vector2(_content.transform.position.x, _content.transform.position.y), new Vector2(_nextXPos, _content.transform.position.y), _speed * Time.deltaTime);
@@ -77,6 +89,7 @@ public class StageSelector : MonoBehaviour
             _currIdx = PlayerPrefs.GetInt("StageCount");
             _nextIdx = _currIdx + 1;
             _prevIdx = _currIdx - 1;
+
             SetContentPosition(PlayerPrefs.GetInt("StageCount"));
         }
         _textCurrentIndex.text = _currIdx + 1 + " / " + _stageVieweres.Length;
@@ -90,11 +103,11 @@ public class StageSelector : MonoBehaviour
             // 초기 컨텐츠 위치
             if (_stageVieweres.Length % 2 == 0)
             {
-                x = _widthOffset * (_stageVieweres.Length / 2) - (_widthOffset / 2);
+                x = Screen.width * (_stageVieweres.Length / 2) - (Screen.width / 2);
             }
             else
             {
-                x = _widthOffset * (_stageVieweres.Length / 2);
+                x = Screen.width * (_stageVieweres.Length / 2);
             }
         }
         else
@@ -102,11 +115,11 @@ public class StageSelector : MonoBehaviour
             // 클리어 후
             if (_stageVieweres.Length % 2 == 0)
             {
-                x = (_widthOffset * (_stageVieweres.Length / 2) - (_widthOffset / 2)) - (idx * _widthOffset);
+                x = (Screen.width * (_stageVieweres.Length / 2) - (Screen.width / 2)) - (idx * Screen.width);
             }
             else
             {
-                x = (_widthOffset * (_stageVieweres.Length / 2)) - (idx * _widthOffset);
+                x = (Screen.width * (_stageVieweres.Length / 2)) - (idx * Screen.width);
             }
         }
         _content.transform.localPosition = new Vector3(x, 0.0f, 0.0f);
@@ -118,7 +131,7 @@ public class StageSelector : MonoBehaviour
         // 버튼이 여러번 눌려도 움직이려는 위치까지 이동하지 않았다면 실행 X
         if (_currIdx > 0 && _onMove == OnMove.Stop)
         {
-            _nextXPos = _content.transform.position.x + _widthOffset;
+            _nextXPos = _content.transform.position.x + Screen.width;
             --_currIdx;
             _nextIdx = _currIdx + 1;
             _prevIdx = _currIdx - 1;
@@ -132,7 +145,7 @@ public class StageSelector : MonoBehaviour
     {
         if (_currIdx < _stageVieweres.Length - 1 && _onMove == OnMove.Stop)
         {
-            _nextXPos = _content.transform.position.x - _widthOffset;
+            _nextXPos = _content.transform.position.x - Screen.width;
             ++_currIdx;
             _nextIdx = _currIdx + 1;
             _prevIdx = _currIdx - 1;

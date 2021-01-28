@@ -10,6 +10,7 @@ public class StageManager : MonoBehaviour
     [Header("Stage")]
     [SerializeField] private Stage[] _stages = null;
     [SerializeField] public Vector3 _stageHolder;
+    [SerializeField] private GameObject _GameOverPanel = null;
 
     private GameObject _stageDataHolder;
     private Stage _currentStage;
@@ -43,7 +44,7 @@ public class StageManager : MonoBehaviour
             // 스테이지 클리어시 해야하는 동작 추가 바람
             if (_currentStage.GetState() == Stage.StageState.Success)
             {
-                Debug.Log("Success!");
+                Debug.Log("Stage clear!");
                 Destroy(_currentStage, 1.0f);
                 if(_currStageIdx >= PlayerPrefs.GetInt("StageCount"))
                 {
@@ -53,9 +54,14 @@ public class StageManager : MonoBehaviour
             }
             else if (_currentStage.GetState() == Stage.StageState.Fail)
             {
-                Debug.Log("Failed");
-                Destroy(_currentStage, 1.0f);
-                SceneManager.LoadScene("StageSelectScene");
+                //Debug.Log("Stage failed");
+                //Destroy(_currentStage, 1.0f);
+                //SceneManager.LoadScene("StageSelectScene");
+
+                Time.timeScale = 0;
+                _GameOverPanel.SetActive(true);
+                _currentStage.SetState(Stage.StageState.Paused);
+
             }
         }
     }
@@ -93,4 +99,24 @@ public class StageManager : MonoBehaviour
     }
 
     #endregion
+
+    public void ReloadStage()
+    {
+        Destroy(_currentStage.gameObject);
+
+        LoadStage(_currStageIdx);
+        Player.GetInstance().ResetGame();
+        Time.timeScale = 1;
+        _GameOverPanel.SetActive(false);
+        Debug.Log("retry");
+    }
+
+    public void QuitToStageSelectorScene()
+    {
+        Debug.Log("go");
+        Time.timeScale = 1;
+        SceneManager.LoadScene("StageSelectScene");
+    }
+
+
 }

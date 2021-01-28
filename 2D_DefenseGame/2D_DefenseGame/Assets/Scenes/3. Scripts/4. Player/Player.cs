@@ -21,6 +21,8 @@ public class Player : MonoBehaviour
     [Header("Player property")]
     [SerializeField] private int _money = 0;
     [SerializeField] private int _life = 0;
+    private int _currMoney;
+    private int _currLife;
 
     [Header("Tower tier cost")]
     [SerializeField] private uint _commonUpCost = 0;
@@ -35,6 +37,7 @@ public class Player : MonoBehaviour
     [SerializeField] private uint _rareDamageUp = 0;
     [SerializeField] private uint _uniqueDamageUp = 0;
     [SerializeField] private uint _legendaryDamageUp = 0;
+
 
     private uint _commonLevel = 1;
     private uint _uncommonLevel = 1;
@@ -52,36 +55,43 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _currMoney = _money;
+        _currLife = _life;
+    }
+
+
     #region Player basic method
     public void ResetGame()
     {
-        _money = 0;
-        _life = 0;
+        _currMoney = _money;
+        _currLife = _life;
         _towerList.Clear();
     }
     public void AddMoney(int num)
     {
-        _money += num;
+        _currMoney += num;
     }
     public int GetMoney()
     {
-        return _money;
+        return _currMoney;
     }
     public void LoseMoney(int num)
     {
-        _money -= num;
+        _currMoney -= num;
     }
     public void AddLife(int num)
     {
-        _life += num;
+        _currLife += num;
     }
     public int GetLife()
     {
-        return _life;
+        return _currLife;
     }
     public void LoseLife(int num)
     {
-        _life -= num;
+        _currLife -= num;
     }
     #endregion
 
@@ -218,7 +228,7 @@ public class Player : MonoBehaviour
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Common Tower " + towerList.Length);
 
-        if (_money >= (int)(_commonUpCost * _commonLevel))
+        if (_currMoney >= (int)(_commonUpCost * _commonLevel))
         {
             foreach (Tower tower in towerList)
             {
@@ -227,9 +237,12 @@ public class Player : MonoBehaviour
                     tower._defaultDamage += _commonDamageUp * _commonLevel;
                 }
             }
-            _commonLevel++;
-            _money -= (int)(_commonUpCost * _commonLevel);
+            _currMoney -= (int)(_commonUpCost * _commonLevel++);
             GameObject.Find("CommonUpText").GetComponent<Text>().text = "Common Up \nCost: " + (_commonUpCost * _commonLevel);
+        }
+        else
+        {
+            Debug.Log("Not enough minerals");
         }
     }
 
@@ -238,7 +251,7 @@ public class Player : MonoBehaviour
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Uncommon Tower " + towerList.Length);
 
-        if (_money >= (int)(_uncommonUpCost * _uncommonLevel))
+        if (_currMoney >= (int)(_uncommonUpCost * _uncommonLevel))
         {
             foreach (Tower tower in towerList)
             {
@@ -247,9 +260,12 @@ public class Player : MonoBehaviour
                     tower._defaultDamage += _uncommonDamageUp * _uncommonLevel;
                 }
             }
-            _uncommonLevel++;
-            _money -= (int)(_uncommonUpCost * _uncommonLevel);
+            _currMoney -= (int)(_uncommonUpCost * _uncommonLevel++);
             GameObject.Find("UncommonUpText").GetComponent<Text>().text = "Uncommon Up \nCost: " + (_uncommonUpCost * _uncommonLevel);
+        }
+        else
+        {
+            Debug.Log("Not enough minerals");
         }
     }
 
@@ -258,7 +274,7 @@ public class Player : MonoBehaviour
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Rare Tower " + towerList.Length);
 
-        if (_money >= (int)(_rareUpCost * _rareLevel))
+        if (_currMoney >= (int)(_rareUpCost * _rareLevel))
         {
             foreach (Tower tower in towerList)
             {
@@ -267,9 +283,12 @@ public class Player : MonoBehaviour
                     tower._defaultDamage += _rareDamageUp * _rareLevel;
                 }
             }
-            _rareLevel++;
-            _money -= (int)(_rareUpCost * _rareLevel);
+            _currMoney -= (int)(_rareUpCost * _rareLevel++);
             GameObject.Find("RareUpText").GetComponent<Text>().text = "Rare Up \nCost: " + (_rareUpCost * _rareLevel);
+        }
+        else
+        {
+            Debug.Log("Not enough minerals");
         }
     }
 
@@ -278,7 +297,7 @@ public class Player : MonoBehaviour
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Unique Tower " + towerList.Length);
 
-        if (_money >= (int)(_uniqueUpCost * _uniqueLevel))
+        if (_currMoney >= (int)(_uniqueUpCost * _uniqueLevel))
         {
             foreach (Tower tower in towerList)
             {
@@ -287,9 +306,12 @@ public class Player : MonoBehaviour
                     tower._defaultDamage += _uniqueDamageUp * _uniqueLevel;
                 }
             }
-            _uniqueLevel++;
-            _money -= (int)(_uniqueUpCost * _uniqueLevel);
+            _currMoney -= (int)(_uniqueUpCost * _uniqueLevel++);
             GameObject.Find("UniqueUpText").GetComponent<Text>().text = "Unique Up \nCost: " + (_uniqueUpCost * _uniqueLevel);
+        }
+        else
+        {
+            Debug.Log("Not enough minerals");
         }
     }
 
@@ -298,7 +320,7 @@ public class Player : MonoBehaviour
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Legendary Tower " + towerList.Length);
 
-        if (_money >= (int)(_legendaryUpCost * _legendaryLevel))
+        if (_currMoney >= (int)(_legendaryUpCost * _legendaryLevel))
         {
             foreach (Tower tower in towerList)
             {
@@ -307,9 +329,12 @@ public class Player : MonoBehaviour
                     tower._defaultDamage += _legendaryDamageUp * _legendaryLevel;
                 }
             }
-            _legendaryLevel++;
-            _money -= (int)(_legendaryUpCost * _legendaryLevel);
+            _currMoney -= (int)(_legendaryUpCost * _legendaryLevel++);
             GameObject.Find("LegendaryUpText").GetComponent<Text>().text = "Legendary Up \nCost: " + (_legendaryUpCost * _legendaryLevel);
+        }
+        else
+        {
+            Debug.Log("Not enough minerals");
         }
     }
     #endregion

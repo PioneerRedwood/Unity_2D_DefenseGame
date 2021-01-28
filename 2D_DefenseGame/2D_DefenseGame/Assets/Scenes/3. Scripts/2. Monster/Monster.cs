@@ -60,11 +60,9 @@ public abstract class Monster : MonoBehaviour
             Player.GetInstance().LoseLife(1);
         }
     }
-
     #endregion
 
     #region Control Properties
-
     public float GetcurrSpeed()
     {
         return _currSpeed;
