@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -21,6 +22,7 @@ public class Player : MonoBehaviour
     [Header("Player property")]
     [SerializeField] private int _money = 0;
     [SerializeField] private int _life = 0;
+
     private int _currMoney;
     private int _currLife;
 
@@ -38,7 +40,6 @@ public class Player : MonoBehaviour
     [SerializeField] private uint _uniqueDamageUp = 0;
     [SerializeField] private uint _legendaryDamageUp = 0;
 
-
     private uint _commonLevel = 1;
     private uint _uncommonLevel = 1;
     private uint _rareLevel = 1;
@@ -46,6 +47,9 @@ public class Player : MonoBehaviour
     private uint _legendaryLevel = 1;
 
     private List<Tower> _towerList = new List<Tower>();
+
+    private bool _isAlertOpen = false;
+    private Text alertText = null;
 
     void Awake()
     {
@@ -59,8 +63,12 @@ public class Player : MonoBehaviour
     {
         _currMoney = _money;
         _currLife = _life;
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("GameScene"))
+        {
+            alertText = GameObject.Find("AlertText").GetComponent<Text>();
+            alertText.CrossFadeAlpha(0f, 0f, true);
+        }
     }
-
 
     #region Player basic method
     public void ResetGame()
@@ -93,9 +101,29 @@ public class Player : MonoBehaviour
     {
         _currLife -= num;
     }
+
+    public void ShowAlert(string msg)
+    {
+        if (!_isAlertOpen)
+        {
+            alertText.text = msg;
+            alertText.CrossFadeAlpha(1f, 0.5f, true);
+            _isAlertOpen = true;
+            StartCoroutine(DelayAlert());
+        }
+    }
+
+    private IEnumerator DelayAlert()
+    {
+        yield return new WaitForSeconds(1f);
+        alertText.CrossFadeAlpha(0f, 0.5f, true);
+        _isAlertOpen = false;
+    }
+
     #endregion
 
     #region Handle Tower
+
     public List<Tower> GetTowerList()
     {
         return _towerList;
@@ -222,7 +250,10 @@ public class Player : MonoBehaviour
         return randomTower;
     }
 
-    public void UpgradeCommonTower()
+    #endregion
+
+    #region Upgrade tower
+    private void UpgradeCommonTower()
     {
         // _towerList에 기존에 씬에 둔 타워가 저장이 되지 않아 임의로 배열 만들어서 넣어둠
         Tower[] towerList = FindObjectsOfType<Tower>();
@@ -239,14 +270,15 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_commonUpCost * _commonLevel++);
             GameObject.Find("CommonUpText").GetComponent<Text>().text = "Common Up \nCost: " + (_commonUpCost * _commonLevel);
+            ShowAlert("Common Tower 업그레이드 완료");
         }
         else
         {
-            Debug.Log("Not enough minerals");
+            ShowAlert("자원이 부족합니다");
         }
     }
 
-    public void UpgradeUncommonTower()
+    private void UpgradeUncommonTower()
     {
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Uncommon Tower " + towerList.Length);
@@ -262,14 +294,15 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_uncommonUpCost * _uncommonLevel++);
             GameObject.Find("UncommonUpText").GetComponent<Text>().text = "Uncommon Up \nCost: " + (_uncommonUpCost * _uncommonLevel);
+            ShowAlert("Uncommon Tower 업그레이드 완료");
         }
         else
         {
-            Debug.Log("Not enough minerals");
+            ShowAlert("자원이 부족합니다");
         }
     }
 
-    public void UpgradeRareTower()
+    private void UpgradeRareTower()
     {
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Rare Tower " + towerList.Length);
@@ -285,14 +318,15 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_rareUpCost * _rareLevel++);
             GameObject.Find("RareUpText").GetComponent<Text>().text = "Rare Up \nCost: " + (_rareUpCost * _rareLevel);
+            ShowAlert("Rare Tower 업그레이드 완료");
         }
         else
         {
-            Debug.Log("Not enough minerals");
+            ShowAlert("자원이 부족합니다");
         }
     }
 
-    public void UpgradeUniqueTower()
+    private void UpgradeUniqueTower()
     {
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Unique Tower " + towerList.Length);
@@ -308,14 +342,15 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_uniqueUpCost * _uniqueLevel++);
             GameObject.Find("UniqueUpText").GetComponent<Text>().text = "Unique Up \nCost: " + (_uniqueUpCost * _uniqueLevel);
+            ShowAlert("Unique Tower 업그레이드 완료");
         }
         else
         {
-            Debug.Log("Not enough minerals");
+            ShowAlert("자원이 부족합니다");
         }
     }
 
-    public void UpgradeLegendaryTower()
+    private void UpgradeLegendaryTower()
     {
         Tower[] towerList = FindObjectsOfType<Tower>();
         Debug.Log("Up Legendary Tower " + towerList.Length);
@@ -331,12 +366,12 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_legendaryUpCost * _legendaryLevel++);
             GameObject.Find("LegendaryUpText").GetComponent<Text>().text = "Legendary Up \nCost: " + (_legendaryUpCost * _legendaryLevel);
+            ShowAlert("Legendary Tower 업그레이드 완료");
         }
         else
         {
-            Debug.Log("Not enough minerals");
+            ShowAlert("자원이 부족합니다");
         }
     }
     #endregion
-
 }

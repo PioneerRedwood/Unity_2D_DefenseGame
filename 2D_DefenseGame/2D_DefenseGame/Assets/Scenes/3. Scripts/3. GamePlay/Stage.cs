@@ -44,7 +44,7 @@ public class Stage : MonoBehaviour
         if (_stageState == StageState.Ongoing)
         {
             _timerText = GameObject.Find("Timer").GetComponent<Text>();
-            _timerText.text = "경과 시간: " + Mathf.Round(time) + " \n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave()
+            _timerText.text = "다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)) + " \n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave()
                                         + "\n남은 몬스터 수: " + _monsters.Count
                                         + "\nHP: " + Player.GetInstance().GetLife() + "\nMoney: " + Player.GetInstance().GetMoney();
             time += Time.deltaTime;

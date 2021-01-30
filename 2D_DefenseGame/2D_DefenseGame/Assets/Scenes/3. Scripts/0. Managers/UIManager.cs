@@ -142,12 +142,13 @@ public class UIManager : MonoBehaviour
 
         if ((Player.GetInstance().GetMoney() - _towerPrice) < 0)
         {
-            Debug.Log("Not Enough Minerals");
+            Player.GetInstance().ShowAlert("자원이 부족합니다");
             return;
         }
         else
         {
             Player.GetInstance().LoseMoney(_towerPrice);
+            Player.GetInstance().ShowAlert("타워 건설 완료");
         }
 
         if (_groundComponent.IsBuildTower)
@@ -163,14 +164,13 @@ public class UIManager : MonoBehaviour
 
     public void MergeButton()
     {
-        Debug.Log("MERGE");
-
         if (!_groundComponent.IsBuildTower)
         {
             return;
         }
 
         Player.GetInstance().MergeTower(_selectedObj);
+        Player.GetInstance().ShowAlert("타워 합병 완료");
         LoadPanel(_selectedObj);
     }
 
@@ -205,7 +205,7 @@ public class UIManager : MonoBehaviour
         Player.GetInstance().DeleteTower(_selectedObj.transform.parent);
         Player.GetInstance().AddMoney(sellPrice);
 
-        Debug.Log("SELL " + sellPrice);
+        Player.GetInstance().ShowAlert("타워 판매 완료 $" + sellPrice);
         _groundComponent.IsBuildTower = false;
         LoadPanel(_selectedObj);
     }

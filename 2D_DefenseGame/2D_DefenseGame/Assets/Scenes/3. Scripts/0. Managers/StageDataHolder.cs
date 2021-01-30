@@ -11,13 +11,11 @@ public class StageDataHolder : MonoBehaviour
     private void Start()
     {
         var tempObject = FindObjectsOfType<StageDataHolder>();
-        Debug.Log("hello");
 
         if (tempObject.Length == 1)
         {
              _clearCount = PlayerPrefs.GetInt("StageCount");
             DontDestroyOnLoad(this);
-
         }
         else
         {
