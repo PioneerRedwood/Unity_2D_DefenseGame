@@ -63,6 +63,12 @@ public abstract class Monster : MonoBehaviour
     #endregion
 
     #region Control Properties
+
+    public float GetCurrHP()
+    {
+        return _currHP;
+    }
+
     public float GetcurrSpeed()
     {
         return _currSpeed;
@@ -95,7 +101,6 @@ public abstract class Monster : MonoBehaviour
     {
         _giveBuff = null;
         _currSlow = 0.0f;
-        Debug.Log("return!");
     }
 
     #endregion

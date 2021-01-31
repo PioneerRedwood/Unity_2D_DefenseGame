@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
     private Ground _groundComponent;
     private Route _routeComponent;
 
-    public void RouteClick(GameObject route)
+    public void RouteClicked(GameObject route)
     {
 
         if (_selectedObj == route)
@@ -32,10 +32,9 @@ public class UIManager : MonoBehaviour
 
         _selectedObj = route;
         LoadPanel(_selectedObj);
-
     }
 
-    public void GroundClick(GameObject ground)
+    public void GroundClicked(GameObject ground)
     {
 
         if (_selectedObj == ground)
@@ -84,6 +83,10 @@ public class UIManager : MonoBehaviour
                 CreateButton(2);
                 LoadTowerInfo();
             }
+        }
+        else if(selectedObj.CompareTag("Enemy"))
+        {
+            LoadMonsterInfo();
         }
     }
 
@@ -169,8 +172,15 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        Player.GetInstance().MergeTower(_selectedObj);
-        Player.GetInstance().ShowAlert("타워 합병 완료");
+        if(Player.GetInstance().MergeTower(_selectedObj))
+        {
+            Player.GetInstance().ShowAlert("타워 합병 완료");
+        }
+        else
+        {
+            Player.GetInstance().ShowAlert("합병할 타워가 없습니다");
+        }
+
         LoadPanel(_selectedObj);
     }
 
@@ -246,5 +256,41 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Monster selected
+
+    public void LoadMonsterInfo()
+    {
+        Monster[] totalMonsters = FindObjectsOfType<Monster>();
+
+        foreach(Monster monster in totalMonsters)
+        {
+            if(monster == null)
+            {
+                continue;
+            }
+
+            if(_selectedObj.GetComponent<Monster>().Equals(monster))
+            {
+                _infoPanel.OnPanel(monster);
+                return;
+            }
+        }
+    }
+
+    public void MonsterClicked(GameObject monster)
+    {
+        if(_selectedObj == monster)
+        {
+            ResetPanel();
+            _selectedObj = null;
+            return;
+        }
+
+        _selectedObj = monster;
+        LoadPanel(_selectedObj);
+    }
+    
     #endregion
 }

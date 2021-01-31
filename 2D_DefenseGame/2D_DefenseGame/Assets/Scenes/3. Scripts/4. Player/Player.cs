@@ -172,8 +172,6 @@ public class Player : MonoBehaviour
 
             if (tower.transform.parent == delete)
             {
-                Debug.Log("Deleted!");
-
                 _towerList.RemoveAt(towerindex);
                 Destroy(tower.gameObject);
                 break;
@@ -183,15 +181,15 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void MergeTower(GameObject selectedObj)
+    public bool MergeTower(GameObject selectedObj)
     {
-        Tower SelectedTower = GetTower(selectedObj.transform.parent);
+        Tower selectedTower = GetTower(selectedObj.transform.parent);
 
         foreach (Tower tower in _towerList)
         {
-            if (tower._towerName == SelectedTower._towerName && tower != SelectedTower)
+            if (tower._towerName == selectedTower._towerName && tower != selectedTower)
             {
-                switch (SelectedTower._tier.ToString())
+                switch (selectedTower._tier.ToString())
                 {
                     case "Common":
                         BuildTower(selectedObj, GetRandomTower(_towerManager.Uncommon));
@@ -211,17 +209,18 @@ public class Player : MonoBehaviour
                         break;
                 }
 
-                _towerList.Remove(SelectedTower);
+                _towerList.Remove(selectedTower);
                 _towerList.Remove(tower);
 
                 tower.transform.parent.GetChild(0).GetComponent<Ground>().IsBuildTower = false;
 
-                Destroy(SelectedTower.gameObject);
+                Destroy(selectedTower.gameObject);
                 Destroy(tower.gameObject);
 
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     public void AddTower(Tower tower)
