@@ -19,7 +19,6 @@ public class Tower : Tile
     public float _defaultDamage = 0.0f;
     public float _range = 2f;
 
-    // 현재 적용되는 데미지
     public float _damage = 1.0f;
 
     protected Transform _targetTransform;
@@ -92,12 +91,31 @@ public class Tower : Tile
     }
     #endregion
 
-    /// <summary>
-    /// ControlDamage 
-    /// 어떤 방식으로 데미지를 변경할지 정할 필요가 있음
-    /// </summary>
-    /// <param name="controlValue">변경 수치(양수면 버프 음수면 너프)</param>
-    /// <param name="duration">지속되는 기간</param>
+    #region Control Damage
+
+    public List<float> GetState()
+    {
+        List<float> states = new List<float>();
+        if(_increaseDamage != 0.0f)
+        {
+            states.Add(_increaseDamage);
+        }
+        else
+        {
+            states.Add(0.0f);
+        }
+
+        if(_decreaseDamage != 0.0f)
+        {
+            states.Add(_decreaseDamage);
+        }
+        else
+        {
+            states.Add(0.0f);
+        }
+
+        return states;
+    }
 
     public void DecreaseDamage(float value, float duration)
     {
@@ -123,7 +141,6 @@ public class Tower : Tile
         }
     }
 
-
     public void LoadDamage()
     {
         _damage = _defaultDamage + _defaultDamage * _increaseDamage - _defaultDamage * _decreaseDamage;
@@ -134,24 +151,26 @@ public class Tower : Tile
 
     }
 
-    public void ResetDamage(bool Selector)
+    public void ResetDamage(bool selector)
     {
         _damage = _defaultDamage;
 
-        if (Selector)
+        if (selector)
         {
             _increaseDamage = 0.0f;
             _buffduration = 0.0f;
             _stateChangedbuffTime = 0.0f;
 
         }
-        else if (!Selector)
+        else if (!selector)
         {
             _decreaseDamage = 0.0f;
             _duration = 0.0f;
             _stateChangedTime = 0.0f;
         }
     }
+
+    #endregion
 
     #region Draw Range of tower
     private void OnDrawGizmosSelected()

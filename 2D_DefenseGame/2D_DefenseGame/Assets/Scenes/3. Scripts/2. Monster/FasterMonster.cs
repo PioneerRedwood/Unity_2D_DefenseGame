@@ -20,24 +20,46 @@ public class FasterMonster : Monster
     // FasterMonster 전용 이동 함수
     new void MoveToNext()
     {
-        _currSpeed = _speed - _speed * _currSlow - _speed * _currDelay;
-        if(_currSpeed < _speed * 0.3)
+        if (_isDirect)
         {
-            _currSpeed = _speed * 0.3f;
+            Quaternion direction = Quaternion.LookRotation(Vector3.forward, new Vector3(_nextPos.x, _nextPos.y, transform.position.z) - transform.position);
+            _objectSprite.transform.rotation = direction;
+
+            _currSpeed = _speed - _speed * _currSlow - _speed * _currDelay;
+
+            transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
+
+            if ((Vector2)transform.position == _nextPos && _nextPos != _waypoints[_waypoints.Length - 1])
+            {
+                _nextPos = _waypoints[++_wayPointIdx];
+            }
+
+            if ((Vector2)transform.position == _waypoints[_waypoints.Length - 1])
+            {
+                Destroy(gameObject);
+                Player.GetInstance().LoseLife(1);
+            }
         }
-
-
-        transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
-
-        if ((Vector2)transform.position == _nextPos && _nextPos != _waypoints[_waypoints.Length - 1])
+        else
         {
-            _nextPos = _waypoints[++_wayPointIdx];
-        }
+            _currSpeed = _speed - _speed * _currSlow - _speed * _currDelay;
+            if (_currSpeed < _speed * 0.3)
+            {
+                _currSpeed = _speed * 0.3f;
+            }
 
-        if ((Vector2)transform.position == _waypoints[_waypoints.Length - 1])
-        {
-            Destroy(gameObject);
-            Player.GetInstance().LoseLife(1);
+            transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
+
+            if ((Vector2)transform.position == _nextPos && _nextPos != _waypoints[_waypoints.Length - 1])
+            {
+                _nextPos = _waypoints[++_wayPointIdx];
+            }
+
+            if ((Vector2)transform.position == _waypoints[_waypoints.Length - 1])
+            {
+                Destroy(gameObject);
+                Player.GetInstance().LoseLife(1);
+            }
         }
     }
 

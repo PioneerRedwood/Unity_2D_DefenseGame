@@ -256,7 +256,6 @@ public class Player : MonoBehaviour
     {
         // _towerList에 기존에 씬에 둔 타워가 저장이 되지 않아 임의로 배열 만들어서 넣어둠
         Tower[] towerList = FindObjectsOfType<Tower>();
-        Debug.Log("Up Common Tower " + towerList.Length);
 
         if (_currMoney >= (int)(_commonUpCost * _commonLevel))
         {

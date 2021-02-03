@@ -7,8 +7,11 @@ public abstract class Monster : MonoBehaviour
 {
     [Header("Monster Property")]
     public Image _currentHPPref = null;
+    public string _monsterName = "";
+    [SerializeField] protected GameObject _objectSprite = null;
     [SerializeField] protected float _hp = 0.0f;
     [SerializeField] protected float _speed = 0.0f;
+    [SerializeField] protected bool _isDirect = false;
 
     protected float _currSpeed = 0.0f;
     protected float _currHP = 0.0f;
@@ -45,19 +48,42 @@ public abstract class Monster : MonoBehaviour
 
     protected void MoveToNext()
     {
-        _currSpeed = _speed - _speed * _currSlow;
-
-        transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
-        
-        if ((Vector2)transform.position == _nextPos && _nextPos != _waypoints[_waypoints.Length - 1])
+        if (_isDirect)
         {
-            _nextPos = _waypoints[++_wayPointIdx];
+            Quaternion direction = Quaternion.LookRotation(Vector3.forward ,new Vector3(_nextPos.x, _nextPos.y, transform.position.z) - transform.position);
+            _objectSprite.transform.rotation = direction;
+
+            _currSpeed = _speed - _speed * _currSlow;
+
+            transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
+
+            if ((Vector2)transform.position == _nextPos && _nextPos != _waypoints[_waypoints.Length - 1])
+            {
+                _nextPos = _waypoints[++_wayPointIdx];
+            }
+
+            if ((Vector2)transform.position == _waypoints[_waypoints.Length - 1])
+            {
+                Destroy(gameObject);
+                Player.GetInstance().LoseLife(1);
+            }
         }
-
-        if ((Vector2)transform.position == _waypoints[_waypoints.Length - 1])
+        else
         {
-            Destroy(gameObject);
-            Player.GetInstance().LoseLife(1);
+            _currSpeed = _speed - _speed * _currSlow;
+
+            transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
+
+            if ((Vector2)transform.position == _nextPos && _nextPos != _waypoints[_waypoints.Length - 1])
+            {
+                _nextPos = _waypoints[++_wayPointIdx];
+            }
+
+            if ((Vector2)transform.position == _waypoints[_waypoints.Length - 1])
+            {
+                Destroy(gameObject);
+                Player.GetInstance().LoseLife(1);
+            }
         }
     }
     #endregion
@@ -82,6 +108,11 @@ public abstract class Monster : MonoBehaviour
     public void SetSpeed(float input)
     {
         _currSpeed = input;
+    }
+
+    public float GetState()
+    {
+        return _currSlow;
     }
 
     public void DecreaseSpeed(Transform buffer, float slow, float range)

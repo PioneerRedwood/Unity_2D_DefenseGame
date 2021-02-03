@@ -11,6 +11,7 @@ public class StageManager : MonoBehaviour
     [SerializeField] private Stage[] _stages = null;
     [SerializeField] public Vector3 _stageHolder;
     [SerializeField] private GameObject _GameOverPanel = null;
+    [SerializeField] private GameObject _PausePanel = null;
 
     private GameObject _stageDataHolder;
     private Stage _currentStage;
@@ -102,6 +103,7 @@ public class StageManager : MonoBehaviour
         Player.GetInstance().ResetGame();
         Time.timeScale = 1;
         _GameOverPanel.SetActive(false);
+        _PausePanel.SetActive(false);
     }
 
     public void QuitToStageSelectorScene()
@@ -110,5 +112,10 @@ public class StageManager : MonoBehaviour
         SceneManager.LoadScene("StageSelectScene");
     }
 
+    public void PauseMenu()
+    {
+        Time.timeScale = 0;
+        _PausePanel.SetActive(true);
+    }
 
 }

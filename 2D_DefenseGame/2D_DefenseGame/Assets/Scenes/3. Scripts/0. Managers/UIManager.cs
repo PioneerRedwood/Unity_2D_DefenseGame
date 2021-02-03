@@ -20,9 +20,15 @@ public class UIManager : MonoBehaviour
     private Ground _groundComponent;
     private Route _routeComponent;
 
+
+    private uint count = 0;
+    private void Start()
+    {
+        InvokeRepeating("UpdateInfoPanel", 0.0f, 0.5f);
+    }
+
     public void RouteClicked(GameObject route)
     {
-
         if (_selectedObj == route)
         {
             ResetPanel();
@@ -49,6 +55,25 @@ public class UIManager : MonoBehaviour
     }
 
     #region Panel
+
+    private void UpdateInfoPanel()
+    {
+        if(_selectedObj == null || _selectedObj.CompareTag("Route"))
+        {
+            return;
+        }
+
+        // Ground가 먼저 찍혀서 검사를 해야함
+        if (_selectedObj.CompareTag("Ground") || (Player.GetInstance().GetTower(_selectedObj.transform.parent)).CompareTag("Tower"))
+        {
+            LoadTowerInfo();
+            count++;
+        }
+        else if(_selectedObj.CompareTag("Enemy"))
+        {
+            LoadMonsterInfo();
+        }
+    }
 
     //왼쪽의 버튼들 업데이트
     public void LoadPanel(GameObject selectedObj)
@@ -226,15 +251,18 @@ public class UIManager : MonoBehaviour
     private void LoadTowerInfo()
     {
         Tower selectedTower = Player.GetInstance().GetTower(_selectedObj.transform.parent);
+        if (selectedTower != null)
+        {
+            _infoPanel.OnTowerPanel(selectedTower);
+            _towerAttackRange.OnAttackRange(selectedTower._range, selectedTower.transform.position);
 
-        _infoPanel.OnPanel(selectedTower.transform);
-        _towerAttackRange.OnAttackRange(selectedTower._range, selectedTower.transform.position);
+        }
     }
-
+    
     #endregion
 
     #region Tower upgrade Panel
-    
+
     public void OnTowerUpgradePanelButtonClicked()
     {
         if(!_isTowerUpgradePanelOpen)
@@ -273,7 +301,7 @@ public class UIManager : MonoBehaviour
 
             if(_selectedObj.GetComponent<Monster>().Equals(monster))
             {
-                _infoPanel.OnPanel(monster);
+                _infoPanel.OnMonsterPanel(monster);
                 return;
             }
         }
