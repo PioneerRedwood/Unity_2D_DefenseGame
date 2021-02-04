@@ -62,9 +62,9 @@ public class InfoPanel : MonoBehaviour
         {
             _profileSprite.sprite = monster.GetComponentInChildren<SpriteRenderer>().sprite;
 
-            _nameText.text = "이름: " + monster._monsterName.ToString();
+            _nameText.text = "이름: " + monster.GetName().ToString();
             _damageText.text = "체력: " + monster.GetCurrHP().ToString();
-            _tierText.text = "이동속도: " + monster.GetcurrSpeed().ToString();
+            _tierText.text = "이동속도: " + monster.GetCurrSpeed().ToString();
             _rangeText.text = "";
 
             if (monster.GetState() != 0.0f)

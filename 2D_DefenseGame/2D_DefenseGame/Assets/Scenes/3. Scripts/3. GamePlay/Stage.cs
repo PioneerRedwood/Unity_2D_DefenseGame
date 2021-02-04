@@ -146,7 +146,6 @@ public class Stage : MonoBehaviour
 
             if (monster != null)
             {
-                monster.name = _wave.GetWaveBundle(idx).monster.ToString() + "" + _monsters.Count;
                 monster.transform.SetParent(gameObject.transform);
 
                 monster.InitWaypoint(_waypoints);

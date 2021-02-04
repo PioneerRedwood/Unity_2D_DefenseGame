@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class Ground : Tile
 {
-    public bool IsBuildTower;
+    private bool _isTowerBuilt = false;
 
-    // Start is called before the first frame update
-    void Start()
+    public void SetTowerBuilt(bool isTowerBuilt)
     {
-        IsBuildTower = false;
+        _isTowerBuilt = isTowerBuilt;
     }
 
-
+    public bool GetTowerBuilt()
+    {
+        return _isTowerBuilt;
+    }
 }

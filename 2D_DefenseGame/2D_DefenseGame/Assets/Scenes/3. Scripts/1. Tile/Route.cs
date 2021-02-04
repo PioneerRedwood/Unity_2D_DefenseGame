@@ -4,18 +4,15 @@ using UnityEngine;
 
 public class Route : Tile
 {
+    private bool _isObstacleBuilt = false;
 
-    // Start is called before the first frame update
-    void Start()
+    public void SetObstacleBuilt(bool isObstacleBuilt)
     {
-        
+        _isObstacleBuilt = isObstacleBuilt;
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    public bool GetObstacleBuilt()
     {
-        
+        return _isObstacleBuilt;
     }
-
-
 }

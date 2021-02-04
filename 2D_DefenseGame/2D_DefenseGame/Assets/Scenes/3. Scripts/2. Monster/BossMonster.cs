@@ -24,7 +24,7 @@ public class BossMonster : Monster
 
     protected override void ShowHP()
     {
-        _currentHPPref.fillAmount = _currHP / _hp;
+        _currHPImg.fillAmount = _currHP / _hp;
     }
 
     void Start()

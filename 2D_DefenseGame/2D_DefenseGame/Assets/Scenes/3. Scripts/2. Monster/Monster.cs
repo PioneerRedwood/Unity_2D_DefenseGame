@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public abstract class Monster : MonoBehaviour
 {
     [Header("Monster Property")]
-    public Image _currentHPPref = null;
-    public string _monsterName = "";
+    [SerializeField] protected string _monsterName = null;
+    [SerializeField] protected Image _currHPImg = null;
     [SerializeField] protected GameObject _objectSprite = null;
     [SerializeField] protected float _hp = 0.0f;
     [SerializeField] protected float _speed = 0.0f;
@@ -19,15 +19,18 @@ public abstract class Monster : MonoBehaviour
     protected float _currSlow = 0.0f;
     protected float _range = 0.0f;
     
-    public Transform _giveBuff = null;
+    protected Transform _debuffedTowerTransform = null;
     protected Vector2[] _waypoints { get; set; }
     protected Vector2 _nextPos;
     protected int _wayPointIdx = 0;
+
+    private Obstacle _obstacle;
 
     private void Awake()
     {
         _currSpeed = _speed;
         _currHP = _hp;
+        InvokeRepeating("UpdateObstacle", 0.0f, 0.25f);
     }
 
     #region Damage
@@ -90,12 +93,17 @@ public abstract class Monster : MonoBehaviour
 
     #region Control Properties
 
+    public string GetName()
+    {
+        return _monsterName;
+    }
+
     public float GetCurrHP()
     {
         return _currHP;
     }
 
-    public float GetcurrSpeed()
+    public float GetCurrSpeed()
     {
         return _currSpeed;
     }
@@ -110,6 +118,11 @@ public abstract class Monster : MonoBehaviour
         _currSpeed = input;
     }
 
+    public Vector2 GetNextPos()
+    {
+        return _nextPos;
+    }
+
     public float GetState()
     {
         return _currSlow;
@@ -117,23 +130,60 @@ public abstract class Monster : MonoBehaviour
 
     public void DecreaseSpeed(Transform buffer, float slow, float range)
     {
-        if (_giveBuff != buffer)
+        if (_debuffedTowerTransform != buffer)
         {
             if (_currSlow < slow)
             {
                 _range = range;
                 _currSlow = slow;
-                _giveBuff = buffer;
+                _debuffedTowerTransform = buffer;
             }
         }
     }
 
+    public Transform GetDebuffedTowerTransform()
+    {
+        return _debuffedTowerTransform;
+    }
+
     public void ResetBuff()
     {
-        _giveBuff = null;
+        _debuffedTowerTransform = null;
         _currSlow = 0.0f;
     }
 
     #endregion
-    
+
+    #region Handling Obstacle
+
+    private void UpdateObstacle()
+    {
+        if(_obstacle != null)
+        {
+            _currSpeed = 0.0f;
+            StartCoroutine("EngageObstacle");
+        }
+        else
+        {
+            _currSpeed = _speed;
+            StopCoroutine("EngageObstacle");
+        }
+    }
+
+    public void SetObstacle(Obstacle obstacle)
+    {
+        if (obstacle != null)
+        {
+            _obstacle = obstacle;
+            return;
+        }
+    }
+
+    private IEnumerator EngageObstacle()
+    {
+        _obstacle.GetDamage(1);
+        yield return new WaitForSeconds(0.25f);
+    }
+
+    #endregion
 }

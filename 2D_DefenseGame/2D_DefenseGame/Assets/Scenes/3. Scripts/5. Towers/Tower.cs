@@ -33,7 +33,7 @@ public class Tower : Tile
     private float _duration = 0.0f;
     private float _stateChangedbuffTime = 0.0f;
     private float _buffduration = 0.0f;
-
+    
     void Awake()
     {
         _damage = _defaultDamage;

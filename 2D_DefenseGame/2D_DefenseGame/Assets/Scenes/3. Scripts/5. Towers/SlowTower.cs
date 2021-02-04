@@ -20,7 +20,7 @@ public class SlowTower : Tower
             }
             else
             {
-                if (_enemies[i].GetComponent<Monster>()._giveBuff == transform)
+                if (_enemies[i].GetComponent<Monster>().GetDebuffedTowerTransform() == transform)
                 {
                     _enemies[i].GetComponent<Monster>().ResetBuff();
                 }

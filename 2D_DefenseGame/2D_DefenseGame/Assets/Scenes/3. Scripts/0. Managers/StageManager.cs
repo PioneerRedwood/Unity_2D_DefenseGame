@@ -118,4 +118,10 @@ public class StageManager : MonoBehaviour
         _PausePanel.SetActive(true);
     }
 
+    public void GoOn()
+    {
+        Time.timeScale = 1;
+        _PausePanel.SetActive(false);
+    }
+
 }
