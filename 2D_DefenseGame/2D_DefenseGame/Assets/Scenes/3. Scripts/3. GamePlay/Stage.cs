@@ -25,31 +25,50 @@ public class Stage : MonoBehaviour
 
     private float time = 0.0f;
     private Text _timerText;
+    private System.Text.StringBuilder stringBuilder;
 
     private void Start()
     {
-        // 초기화로 _stageIdx가 유효한 값이면
         if (_stageIdx < 0)
         {
             _stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
             _stageState = StageState.Ongoing;
         }
 
-        // StageState를 검사하는 함수. 맨 처음 실행 전 _nextWaveDelay와 _monsterSpawnDelay를 기다림
+        stringBuilder = new System.Text.StringBuilder("");
+        _timerText = GameObject.Find("Timer").GetComponent<Text>();
+
+        InvokeRepeating("UpdateState", 0.0f, 0.1f);
         InvokeRepeating("CheckStageState", _nextWaveDelay + _monsterSpawnDelay, 1.0f);
     }
 
     private void Update()
     {
+        time += Time.deltaTime;
+    }
+
+    private void UpdateState()
+    {
         if (_stageState == StageState.Ongoing)
         {
-            _timerText = GameObject.Find("Timer").GetComponent<Text>();
-            _timerText.text = "다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)) + " \n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave()
-                                        + "\n남은 몬스터 수: " + _monsters.Count
-                                        + "\nHP: " + Player.GetInstance().GetLife() + "\nMoney: " + Player.GetInstance().GetMoney();
-            time += Time.deltaTime;
+            if (_wave.GetNumOfWave() != _waveIdx)
+            {
+                stringBuilder.Clear();
+                stringBuilder.Append("다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)));
+            }
+            else
+            {
+                stringBuilder.Clear();
+                stringBuilder.Append("마지막 웨이브");
+            }
 
-            // 맨 처음 웨이브라면 _nextWaveDelay 기다리지 않음
+            stringBuilder.Append("\n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave());
+            stringBuilder.Append("\n남은 몬스터 수: " + _monsters.Count);
+            stringBuilder.Append("\nHP: " + Player.GetInstance().GetLife());
+            stringBuilder.Append("\nMoney: " + Player.GetInstance().GetMoney());
+
+            _timerText.text = stringBuilder.ToString();
+
             if (_waveIdx == 0)
             {
                 time = 0;
@@ -69,6 +88,55 @@ public class Stage : MonoBehaviour
             }
         }
     }
+
+    //private void Update()
+    //{
+    //    if (_stageState == StageState.Ongoing)
+    //    {
+    //        _timerText = GameObject.Find("Timer").GetComponent<Text>();
+    //        if (_wave.GetNumOfWave() != _waveIdx)
+    //        {
+    //            stringBuilder.Clear();
+    //            stringBuilder.Append("다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)));
+    //        }
+    //        else
+    //        {
+    //            stringBuilder.Append("마지막 웨이브");
+    //        }
+
+    //        stringBuilder.Append("\n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave());
+    //        stringBuilder.Append("\n남은 몬스터 수: " + _monsters.Count);
+    //        stringBuilder.Append("\nHP: " + Player.GetInstance().GetLife());
+    //        stringBuilder.Append("\nMoney: " + Player.GetInstance().GetMoney());
+
+    //        _timerText.text = stringBuilder.ToString();
+
+
+    //        //_timerText.text = "다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)) + " \n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave()
+    //        //                            + "\n남은 몬스터 수: " + _monsters.Count
+    //        //                            + "\nHP: " + Player.GetInstance().GetLife() + "\nMoney: " + Player.GetInstance().GetMoney();
+
+    //        time += Time.deltaTime;
+
+    //        if (_waveIdx == 0)
+    //        {
+    //            time = 0;
+    //            LoadWave(_waveIdx++);
+    //            return;
+    //        }
+
+    //        if (time > _nextWaveDelay && _waveIdx < _wave.GetNumOfWave())
+    //        {
+    //            time = 0;
+    //            LoadWave(_waveIdx++);
+    //        }
+
+    //        if (Player.GetInstance().GetLife() <= 0)
+    //        {
+    //            _stageState = StageState.Fail;
+    //        }
+    //    }
+    //}
 
     public enum StageState
     {

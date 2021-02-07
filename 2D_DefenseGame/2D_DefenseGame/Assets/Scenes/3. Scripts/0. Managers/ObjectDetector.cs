@@ -36,6 +36,10 @@ public class ObjectDetector : MonoBehaviour
                 {
                     _UIManager.MonsterClicked(_hit.collider.gameObject);
                 }
+                else if(_hit.transform.CompareTag("Obstacle"))
+                {
+                    _UIManager.RouteClicked(_hit.transform.parent.gameObject);
+                }
             }
         }
     }

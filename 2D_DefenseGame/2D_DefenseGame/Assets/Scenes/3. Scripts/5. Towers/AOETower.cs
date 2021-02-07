@@ -14,17 +14,19 @@ public class AOETower : Tower
     [SerializeField] private Transform _muzzle = null;
 
     [Header("Attacking")]
+    [SerializeField] private bool _isRotate = true;
     [SerializeField] private float _bulletSpeed = 20.0f;
     [SerializeField] private float _attackDelay = 1f;
     private float _fireCount = 0f;
 
-    new void Update()
+    void Update()
     {
-        base.Update();
-
         if (_targetTransform == null)
         {
-            transform.Rotate(new Vector3(0f, 0f, 1f) * 80 * Time.deltaTime, Space.Self);
+            if (_isRotate)
+            {
+                transform.Rotate(new Vector3(0f, 0f, 1f) * 80 * Time.deltaTime, Space.Self);
+            }
             return;
         }
         else

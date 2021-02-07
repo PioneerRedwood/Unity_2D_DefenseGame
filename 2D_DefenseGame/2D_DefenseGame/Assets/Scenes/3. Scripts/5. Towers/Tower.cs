@@ -37,23 +37,17 @@ public class Tower : Tile
     void Awake()
     {
         _damage = _defaultDamage;
-    }
-
-    protected void Update()
-    {
-        UpdateTarget();
+        InvokeRepeating("UpdateTarget", 0.0f, 0.1f);
     }
 
     #region Updating target
     void UpdateTarget()
     {
-        // 태그로 적들을 배열로 가져옴
         _enemies = GameObject.FindGameObjectsWithTag(_enemyTag);
         GameObject nearestEnemy = null;
 
         float shortestDistance = Mathf.Infinity;
 
-        // 필드 내 적 중에서 가장 가까운 놈을 찾아내서 등록
         foreach (GameObject enemy in _enemies)
         {
             float distanceToEnemy = Vector2.Distance(transform.position, enemy.transform.position);
@@ -64,7 +58,6 @@ public class Tower : Tile
             }
         }
 
-        // 적을 찾은 경우 타겟 수정
         if (nearestEnemy != null && shortestDistance <= _range)
         {
             _targetTransform = nearestEnemy.transform;
@@ -144,11 +137,6 @@ public class Tower : Tile
     public void LoadDamage()
     {
         _damage = _defaultDamage + _defaultDamage * _increaseDamage - _defaultDamage * _decreaseDamage;
-    }
-
-    public void LoadAllBufferTower()
-    {
-
     }
 
     public void ResetDamage(bool selector)

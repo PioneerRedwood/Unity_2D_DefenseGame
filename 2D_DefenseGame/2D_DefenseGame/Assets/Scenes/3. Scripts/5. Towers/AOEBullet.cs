@@ -8,7 +8,8 @@ public class AOEBullet : MonoBehaviour
     [SerializeField] private float _speed = 0.5f;
     [SerializeField] private float _damage = 20.0f;
     [SerializeField] private float _aoeRange = 3;
-
+    [SerializeField] private bool _isRotate = true;
+   
     private Monster _target;
     private GameObject[] _enemies;
     private string _enemyTag = "Enemy";

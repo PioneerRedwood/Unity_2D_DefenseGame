@@ -37,6 +37,7 @@ public class MissionManager : MonoBehaviour
     public int _rareCount = 0;
     public int _uniqueCount = 0;
     public int _legendaryCount = 0;
+    public int _KillCount = 0;
 
 
     private void Start()

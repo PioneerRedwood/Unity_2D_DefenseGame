@@ -9,14 +9,17 @@ public class LaserTower : Tower
     [SerializeField] private LineRenderer _lineRenderer = null;
     [SerializeField] private Transform _hitEffect = null;
     [SerializeField] private LayerMask _targetLayer = 0;
+    [SerializeField] private bool _isRotate = true;
 
-    new void Update()
+    void Update()
     {
-        base.Update();
 
         if (_targetTransform == null)
         {
-            transform.Rotate(new Vector3(0f, 0f, 1f) * 80 * Time.deltaTime, Space.Self);
+            if (_isRotate)
+            {
+                transform.Rotate(new Vector3(0f, 0f, 1f) * 80 * Time.deltaTime, Space.Self);
+            }
             DisableLaser();
 
             return;
@@ -27,27 +30,31 @@ public class LaserTower : Tower
             transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
             EnableLaser();
             SpawnLaser();
-         }
+        }
     }
 
     #region Laser attack
+
     private void SpawnLaser()
     {
         Vector3 direction = _currTarget.transform.position - _muzzle.position;
-        RaycastHit2D[] hit = Physics2D.RaycastAll(_muzzle.position, direction, _range, _targetLayer);
+        RaycastHit[] hit = Physics.RaycastAll(new Vector3(transform.position.x, transform.position.y, -1f), new Vector3(direction.x, direction.y, 0f),
+                                                _range, _targetLayer);
 
-        for (int i = 0; i <hit.Length; i++)
+        Debug.DrawRay(new Vector3(transform.position.x, transform.position.y, -1f), new Vector3(direction.x, direction.y, 0f));
+
+        for (int i = 0; i < hit.Length; i++)
         {
-            if(hit[i].transform == _currTarget.transform)
+            if (hit[i].transform == _currTarget.transform)
             {
                 _lineRenderer.SetPosition(0, _muzzle.position);
                 _lineRenderer.SetPosition(1, new Vector3(hit[i].point.x, hit[i].point.y, 0) + Vector3.back);
 
                 _hitEffect.position = hit[i].point;
                 _currTarget.OnDamage(_damage * Time.deltaTime);
-             }
-         }
-     }
+            }
+        }
+    }
 
     private void EnableLaser()
     {

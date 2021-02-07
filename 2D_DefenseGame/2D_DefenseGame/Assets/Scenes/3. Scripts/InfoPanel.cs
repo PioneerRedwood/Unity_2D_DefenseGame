@@ -53,6 +53,10 @@ public class InfoPanel : MonoBehaviour
                 _stateImage2.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 20);
             }
         }
+        else
+        {
+            OffPanel();
+        }
     }
 
     public void OnMonsterPanel(Monster monster)
@@ -73,6 +77,29 @@ public class InfoPanel : MonoBehaviour
                 _stateImage1.enabled = false;
                 _stateImage2.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 20);
             }
+        }
+        else
+        {
+            OffPanel();
+        }
+    }
+
+    public void OnObstaclePanel(Obstacle obstacle)
+    {
+        gameObject.SetActive(true);
+        
+        if(obstacle != null)
+        {
+            _profileSprite.sprite = obstacle.GetComponentInChildren<SpriteRenderer>().sprite;
+
+            _nameText.text = "이름: " + obstacle.GetName();
+            _damageText.text = "체력: " + obstacle.GetCurrHP().ToString();
+            _tierText.text = "붙은 몬스터 수: " + obstacle.GetMonsterCount().ToString();
+            _rangeText.text = "";
+        }
+        else
+        {
+            OffPanel();
         }
     }
 

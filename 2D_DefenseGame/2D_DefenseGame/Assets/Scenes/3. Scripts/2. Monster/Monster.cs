@@ -53,10 +53,13 @@ public abstract class Monster : MonoBehaviour
     {
         if (_isDirect)
         {
-            Quaternion direction = Quaternion.LookRotation(Vector3.forward ,new Vector3(_nextPos.x, _nextPos.y, transform.position.z) - transform.position);
+            Quaternion direction = Quaternion.LookRotation(Vector3.forward, new Vector3(_nextPos.x, _nextPos.y, transform.position.z) - transform.position);
             _objectSprite.transform.rotation = direction;
 
-            _currSpeed = _speed - _speed * _currSlow;
+            if (_obstacle == null)
+            {
+                _currSpeed = _speed - _speed * _currSlow;
+            }
 
             transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
 
@@ -73,7 +76,10 @@ public abstract class Monster : MonoBehaviour
         }
         else
         {
-            _currSpeed = _speed - _speed * _currSlow;
+            if (_obstacle == null)
+            {
+                _currSpeed = _speed - _speed * _currSlow;
+            }
 
             transform.position = Vector2.MoveTowards(transform.position, (Vector2)_nextPos, _currSpeed * Time.deltaTime);
 
@@ -176,6 +182,18 @@ public abstract class Monster : MonoBehaviour
         {
             _obstacle = obstacle;
             return;
+        }
+    }
+
+    public bool GetObstacle()
+    {
+        if(_obstacle != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 

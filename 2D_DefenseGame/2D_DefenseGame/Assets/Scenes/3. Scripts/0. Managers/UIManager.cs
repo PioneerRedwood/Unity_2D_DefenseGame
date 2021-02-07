@@ -28,6 +28,8 @@ public class UIManager : MonoBehaviour
         InvokeRepeating("UpdateInfoPanel", 0.0f, 0.25f);
     }
 
+    #region Object Clicked
+
     public void RouteClicked(GameObject route)
     {
         if (_selectedObj == route)
@@ -43,7 +45,6 @@ public class UIManager : MonoBehaviour
 
     public void GroundClicked(GameObject ground)
     {
-
         if (_selectedObj == ground)
         {
             ResetPanel();
@@ -54,6 +55,8 @@ public class UIManager : MonoBehaviour
         _selectedObj = ground;
         LoadPanel(_selectedObj);
     }
+
+    #endregion
 
     #region Panel
 
@@ -67,19 +70,22 @@ public class UIManager : MonoBehaviour
 
         if (_selectedObj.CompareTag("Ground"))
         {
-            if(Player.GetInstance().GetTower(_selectedObj.transform.parent) != null 
+            if ((Player.GetInstance().GetTower(_selectedObj.transform.parent) != null)
                 && (Player.GetInstance().GetTower(_selectedObj.transform.parent).CompareTag("Tower")))
             {
                 LoadTowerInfo();
             }
         }
-        else if(_selectedObj.CompareTag("Enemy"))
+        else if (_selectedObj.CompareTag("Enemy"))
         {
             LoadMonsterInfo();
         }
-        else if(_selectedObj.CompareTag("Obstacle"))
+        else if (_selectedObj.CompareTag("Route"))
         {
-            //_infoPanel.OnObstaclePanel();
+            if(_selectedObj.GetComponent<Route>().GetObstacleBuilt())
+            {
+                LoadObstacleInfo();
+            }
         }
     }
 
@@ -99,16 +105,11 @@ public class UIManager : MonoBehaviour
 
             if (_routeComponent.GetObstacleBuilt())
             {
-                // 지어진 상태라면?
-                //CreateButton(3); 
-                //LoadObstacleInfo(); 밑에 있는 것만 적용해도 됨
-                //_infoPanel.OnObstaclePanel(_routeComponent);
+                LoadObstacleInfo();
             }
             else
             {
-
-                // 지어지지 않았으면
-                //CreateButton(4);
+                CreateButton(3);
             }
         }
         else if (selectedObj.CompareTag("Ground"))
@@ -131,7 +132,7 @@ public class UIManager : MonoBehaviour
                 CreateButton(0);
             }
         }
-        else if(selectedObj.CompareTag("Enemy"))
+        else if (selectedObj.CompareTag("Enemy"))
         {
             LoadMonsterInfo();
         }
@@ -159,7 +160,7 @@ public class UIManager : MonoBehaviour
                 btnListener.onClick.AddListener(SellTower);
                 break;
             case 3:
-                btnListener.onClick.AddListener(BuildObstacleOnRoute);
+                btnListener.onClick.AddListener(InstallObstacleOnRoute);
                 break;
             default:
                 break;
@@ -206,7 +207,7 @@ public class UIManager : MonoBehaviour
         {
             Player.GetInstance().LoseMoney(_towerPrice);
             Player.GetInstance().ShowAlert("타워 건설 완료");
-        }        
+        }
 
         _groundComponent.SetTowerBuilt(true);
 
@@ -221,7 +222,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        if(Player.GetInstance().MergeTower(_selectedObj))
+        if (Player.GetInstance().MergeTower(_selectedObj))
         {
             Player.GetInstance().ShowAlert("타워 합병 완료");
         }
@@ -240,7 +241,7 @@ public class UIManager : MonoBehaviour
         {
             return;
         }
-        switch(Player.GetInstance().GetTower(_selectedObj.transform.parent)._tier)
+        switch (Player.GetInstance().GetTower(_selectedObj.transform.parent)._tier)
         {
             case Tower.TowerTier.Common:
                 sellPrice = _towerPrice / 2;
@@ -285,10 +286,20 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Route
-    
-    private void BuildObstacleOnRoute()
+
+    private void LoadObstacleInfo()
     {
-        if(!_routeComponent.GetObstacleBuilt())
+        Obstacle selectedObstacle = _selectedObj.GetComponentInChildren<Obstacle>();
+
+        if (selectedObstacle != null)
+        {
+            _infoPanel.OnObstaclePanel(selectedObstacle);
+        }
+    }
+
+    private void InstallObstacleOnRoute()
+    {
+        if (_routeComponent.GetObstacleBuilt())
         {
             return;
         }
@@ -305,6 +316,8 @@ public class UIManager : MonoBehaviour
         }
 
         _routeComponent.SetObstacleBuilt(true);
+
+        Player.GetInstance().InstallObstacle(_routeComponent);
         LoadPanel(_selectedObj);
     }
 
@@ -314,14 +327,14 @@ public class UIManager : MonoBehaviour
 
     public void OnTowerUpgradePanelButtonClicked()
     {
-        if(!_isTowerUpgradePanelOpen)
+        if (!_isTowerUpgradePanelOpen)
         {
             _towerUpgradePanel.GetComponent<Animator>().SetBool("Clicked", true);
             _isTowerUpgradePanelOpen = true;
 
             Sprite rightArrow = Resources.Load<Sprite>("right arrow");
             _towerUpgradePanel.GetComponentInChildren<Image>().sprite = rightArrow;
-            
+
         }
         else
         {
@@ -341,14 +354,14 @@ public class UIManager : MonoBehaviour
     {
         Monster[] totalMonsters = FindObjectsOfType<Monster>();
 
-        foreach(Monster monster in totalMonsters)
+        foreach (Monster monster in totalMonsters)
         {
-            if(monster == null)
+            if (monster == null)
             {
                 continue;
             }
 
-            if(_selectedObj.GetComponent<Monster>().Equals(monster))
+            if (_selectedObj.GetComponent<Monster>().Equals(monster))
             {
                 _infoPanel.OnMonsterPanel(monster);
                 return;
@@ -358,7 +371,7 @@ public class UIManager : MonoBehaviour
 
     public void MonsterClicked(GameObject monster)
     {
-        if(_selectedObj == monster)
+        if (_selectedObj == monster)
         {
             ResetPanel();
             _selectedObj = null;
@@ -368,6 +381,6 @@ public class UIManager : MonoBehaviour
         _selectedObj = monster;
         LoadPanel(_selectedObj);
     }
-    
+
     #endregion
 }

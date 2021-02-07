@@ -14,4 +14,7 @@ public class GamePrefabManager : SingletonScriptableObject<GamePrefabManager>
 
     // Tower
     public Tower towerPrefab;
+
+    // Obstacle
+    public Obstacle obstaclePrefab;
 }

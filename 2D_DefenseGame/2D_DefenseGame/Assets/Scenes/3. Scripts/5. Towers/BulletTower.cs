@@ -11,23 +11,28 @@ public class BulletTower : Tower
     [Header("Attacking")]
     [SerializeField] private float _bulletSpeed = 20.0f;
     [SerializeField] private float _attackDelay = 1f;
+    [SerializeField] private bool _isRotate = true;
 
     protected float _fireCount = 0f;
 
-    new void Update()
+    void Update()
     {
-        base.Update();
-
         if (_targetTransform == null)
         {
-            transform.Rotate(new Vector3(0f, 0f, 1f) * 80 * Time.deltaTime, Space.Self);
+            if (_isRotate)
+            {
+                transform.Rotate(new Vector3(0f, 0f, 1f) * 80 * Time.deltaTime, Space.Self);
+            }
             return;
         }
         else
         {
             // 지정된 적 방향으로 회전
-            Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
+            if (_isRotate)
+            {
+                Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
+                transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
+            }
 
             // Attack
             if (_attackDelay <= _fireCount)

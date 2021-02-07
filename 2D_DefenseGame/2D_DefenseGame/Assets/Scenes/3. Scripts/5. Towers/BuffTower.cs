@@ -11,10 +11,8 @@ public class BuffTower : Tower
 
     private Tower[] _towers;
 
-    new void Update()
+    void Update()
     {
-        base.Update();
-
         GetTower();
 
         for (int i = _towers.Length - 1; i > -1; i--)

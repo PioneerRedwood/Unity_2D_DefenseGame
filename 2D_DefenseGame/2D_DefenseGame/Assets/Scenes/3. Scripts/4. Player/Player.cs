@@ -384,4 +384,18 @@ public class Player : MonoBehaviour
         }
     }
     #endregion
+
+    #region Handle Obstacle
+
+    public void InstallObstacle(Route route)
+    {
+        Obstacle obstacle = Instantiate(GamePrefabManager.Instance.obstaclePrefab);
+
+        obstacle.InitObstacleOnRoute(route);
+        obstacle.SetName(obstacle.GetName() + " " + (Vector2)route.transform.position);
+        obstacle.transform.position = route.transform.position;
+        obstacle.transform.SetParent(route.transform);
+    }
+
+    #endregion
 }
