@@ -78,7 +78,7 @@ public class Obstacle : Tile
             }
             else
             {
-                if (_monsters.Contains(monster))
+                if (_monsters.Contains(monster) || (monster == null))
                 {
                     monster.SetObstacle(null);
                     _monsters.Remove(monster);

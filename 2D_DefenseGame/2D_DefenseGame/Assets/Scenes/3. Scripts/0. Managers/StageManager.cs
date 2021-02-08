@@ -10,17 +10,16 @@ public class StageManager : MonoBehaviour
     [Header("Stage")]
     [SerializeField] private Stage[] _stages = null;
     [SerializeField] public Vector3 _stageHolder;
-    [SerializeField] private GameObject _GameOverPanel = null;
-    [SerializeField] private GameObject _PausePanel = null;
+    [SerializeField] private GameObject _gameOverPanel = null;
+    [SerializeField] private GameObject _pausePanel = null;
 
     private GameObject _stageDataHolder;
     private Stage _currentStage;
     private int _currStageIdx = -1;
     private bool _bIsScene { get; set; }
 
-    void Start()
+    private void Awake()
     {
-        _stageDataHolder = GameObject.Find("StageDataHolder");
         // for Debugging 일단 게임씬에서 실행할때 에러 안뜨도록 추가
         if (_stageDataHolder == null)
         {
@@ -28,9 +27,15 @@ public class StageManager : MonoBehaviour
             stageHolder.AddComponent<StageDataHolder>();
             _stageDataHolder = stageHolder;
         }
+    }
+
+    void Start()
+    {
+        _stageDataHolder = GameObject.Find("StageDataHolder");
 
         _currStageIdx = _stageDataHolder.GetComponent<StageDataHolder>().GetCurrentStage();
-        SetCurrentStage(_currStageIdx);
+        //SetCurrentStage(_currStageIdx);
+        SetCurrentStage(1);
     }
 
     void Update()
@@ -42,7 +47,6 @@ public class StageManager : MonoBehaviour
                 CancelInvoke("CheckStageLoaded");
             }
 
-            // 스테이지 클리어시 해야하는 동작 추가 바람
             if (_currentStage.GetState() == Stage.StageState.Success)
             {
                 Destroy(_currentStage, 1.0f);
@@ -55,7 +59,7 @@ public class StageManager : MonoBehaviour
             else if (_currentStage.GetState() == Stage.StageState.Fail)
             {
                 Time.timeScale = 0;
-                _GameOverPanel.SetActive(true);
+                _gameOverPanel.SetActive(true);
                 _currentStage.SetState(Stage.StageState.Paused);
             }
         }
@@ -73,9 +77,6 @@ public class StageManager : MonoBehaviour
         }
     }
 
-    // 해당 함수는 SetCurrentStage()에서 참조됨
-    // 시작시 0.2초 딜레이 후 2초마다 실행 후 InvokeRepeating()을 종료
-    // 씬에 존재할 때 스테이지가 로드되지 않았다면 로드
     private void CheckStageLoaded()
     {
         if (_bIsScene && _currentStage == null)
@@ -102,8 +103,8 @@ public class StageManager : MonoBehaviour
         LoadStage(_currStageIdx);
         Player.GetInstance().ResetGame();
         Time.timeScale = 1;
-        _GameOverPanel.SetActive(false);
-        _PausePanel.SetActive(false);
+        _gameOverPanel.SetActive(false);
+        _pausePanel.SetActive(false);
     }
 
     public void QuitToStageSelectorScene()
@@ -112,16 +113,19 @@ public class StageManager : MonoBehaviour
         SceneManager.LoadScene("StageSelectScene");
     }
 
-    public void PauseMenu()
+    public void OpenPauseMenu()
     {
-        Time.timeScale = 0;
-        _PausePanel.SetActive(true);
+        if(!_gameOverPanel.activeInHierarchy)
+        {
+            Time.timeScale = 0;
+            _pausePanel.SetActive(true);
+        }
     }
 
     public void GoOn()
     {
         Time.timeScale = 1;
-        _PausePanel.SetActive(false);
+        _pausePanel.SetActive(false);
     }
 
 }

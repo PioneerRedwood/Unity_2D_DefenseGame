@@ -21,10 +21,19 @@ public class InfoPanel : MonoBehaviour
         {
             _profileSprite.sprite = tower.GetComponent<SpriteRenderer>().sprite;
 
-            _nameText.text = "이름: " + tower._towerName;
-            _damageText.text = "공격력: " + tower._damage.ToString();
-            _tierText.text = "등급: " + tower._tier.ToString();
-            _rangeText.text = "공격범위: " + tower._range.ToString();
+            _nameText.text = "Name: " + tower._towerName;
+            
+            if(tower.GetComponent<BuffTower>() == null)
+            {
+                _damageText.text = "Damage: " + tower._damage.ToString();
+            }
+            else
+            {
+                _damageText.text = "Add damage: " + tower.GetComponent<BuffTower>().GetBuffInfo() * 100 + "%";
+            }
+
+            _tierText.text = "Tier: " + tower._tier.ToString();
+            _rangeText.text = "Range: " + tower._range.ToString();
 
             List<float> stateList = tower.GetState();
 
@@ -66,9 +75,9 @@ public class InfoPanel : MonoBehaviour
         {
             _profileSprite.sprite = monster.GetComponentInChildren<SpriteRenderer>().sprite;
 
-            _nameText.text = "이름: " + monster.GetName().ToString();
-            _damageText.text = "체력: " + monster.GetCurrHP().ToString();
-            _tierText.text = "이동속도: " + monster.GetCurrSpeed().ToString();
+            _nameText.text = "Name: " + monster.GetName().ToString();
+            _damageText.text = "HP: " + monster.GetCurrHP().ToString();
+            _tierText.text = "Speed: " + monster.GetCurrSpeed().ToString();
             _rangeText.text = "";
 
             if (monster.GetState() != 0.0f)
@@ -92,9 +101,9 @@ public class InfoPanel : MonoBehaviour
         {
             _profileSprite.sprite = obstacle.GetComponentInChildren<SpriteRenderer>().sprite;
 
-            _nameText.text = "이름: " + obstacle.GetName();
-            _damageText.text = "체력: " + obstacle.GetCurrHP().ToString();
-            _tierText.text = "붙은 몬스터 수: " + obstacle.GetMonsterCount().ToString();
+            _nameText.text = "Name: " + obstacle.GetName();
+            _damageText.text = "HP: " + obstacle.GetCurrHP().ToString();
+            _tierText.text = obstacle.GetMonsterCount().ToString() + " Attached";
             _rangeText.text = "";
         }
         else

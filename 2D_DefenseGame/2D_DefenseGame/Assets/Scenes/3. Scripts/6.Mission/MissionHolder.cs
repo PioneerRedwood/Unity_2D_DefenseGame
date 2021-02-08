@@ -13,13 +13,12 @@ public class MissionHolder : MonoBehaviour
         _legendary
     }
 
-
     [SerializeField]
     private int _count = 5;
     [SerializeField]
     private string _text = "";
     [SerializeField]
-    private Mission _mission;
+    private Mission _mission = Mission._common;
     [SerializeField]
     private int _reward = 0;
 

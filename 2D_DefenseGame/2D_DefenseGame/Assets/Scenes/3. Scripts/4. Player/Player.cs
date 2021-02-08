@@ -50,6 +50,7 @@ public class Player : MonoBehaviour
 
     private bool _isAlertOpen = false;
     private Text alertText = null;
+    private float _gameSpeedScale = 1.0f;
 
     void Awake()
     {
@@ -69,6 +70,44 @@ public class Player : MonoBehaviour
             alertText.CrossFadeAlpha(0f, 0f, true);
         }
     }
+
+    public float GetGameSpeed()
+    {
+        return _gameSpeedScale;
+    }
+
+    public void UpGameSpeed()
+    {
+        if(_gameSpeedScale <= 1.5f)
+        {
+            _gameSpeedScale += 0.1f;
+            Time.timeScale = _gameSpeedScale;
+            ShowAlert("Game speed up");
+        }
+        else
+        {
+            _gameSpeedScale = 1.0f;
+            Time.timeScale = _gameSpeedScale;
+            ShowAlert("Game speed Range: 0.5 ~ 1.5");
+        }
+    }
+
+    public void DownGameSpeed()
+    {
+        if(_gameSpeedScale >= 0.5f)
+        {
+            _gameSpeedScale -= 0.1f;
+            Time.timeScale = _gameSpeedScale;
+            ShowAlert("Game speed down");
+        }
+        else
+        {
+            _gameSpeedScale = 1.0f;
+            Time.timeScale = _gameSpeedScale;
+            ShowAlert("Game speed Range: 0.5 ~ 1.5");
+        }
+    }
+
 
     #region Player basic method
     public void ResetGame()
@@ -156,7 +195,7 @@ public class Player : MonoBehaviour
         AddTower(tempTower);
     }
 
-    public void BuildTower(GameObject selectedObj, Tower tower)
+    public bool BuildTower(GameObject selectedObj, Tower tower)
     {
         Tower tempTower = Instantiate(tower, selectedObj.transform.position, Quaternion.identity);
 
@@ -181,6 +220,14 @@ public class Player : MonoBehaviour
         tempTower.transform.SetParent(selectedObj.transform.parent);
 
         AddTower(tempTower);
+        if (tempTower != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void DeleteTower(Transform delete)
@@ -203,36 +250,37 @@ public class Player : MonoBehaviour
 
     public bool MergeTower(GameObject selectedObj)
     {
+        bool isCompleted = false;
         Tower selectedTower = GetTower(selectedObj.transform.parent);
 
         foreach (Tower tower in _towerList)
         {
-            if (tower._towerName == selectedTower._towerName && tower != selectedTower)
+            if ((tower != selectedTower) && tower._towerName.Equals(selectedTower._towerName) && (tower._tier.Equals(selectedTower._tier)))
             {
-                switch (selectedTower._tier.ToString())
+                switch (selectedTower._tier)
                 {
-                    case "Common":
-                        BuildTower(selectedObj, GetRandomTower(_towerManager.Uncommon));
+                    case Tower.TowerTier.Common:
+                        isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Uncommon));
                         MissionManager.GetInstance()._uncommonCount += 1;
                         break;
-                    case "Uncommon":
-                        BuildTower(selectedObj, GetRandomTower(_towerManager.Rare));
+                    case Tower.TowerTier.Uncommon:
+                        isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Rare));
                         MissionManager.GetInstance()._rareCount += 1;
                         break;
-                    case "Rare":
-                        BuildTower(selectedObj, GetRandomTower(_towerManager.Unique));
+                    case Tower.TowerTier.Rare:
+                        isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Unique));
                         MissionManager.GetInstance()._uniqueCount += 1;
                         break;
-                    case "Unique":
-                        BuildTower(selectedObj, GetRandomTower(_towerManager.Legendary));
+                    case Tower.TowerTier.Unique:
+                        isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Legendary));
                         MissionManager.GetInstance()._legendaryCount += 1;
                         break;
-                    case "Legendary":
+                    case Tower.TowerTier.Legendary:
                         break;
                     default:
                         break;
                 }
-
+                
                 _towerList.Remove(selectedTower);
                 _towerList.Remove(tower);
 
@@ -240,11 +288,10 @@ public class Player : MonoBehaviour
 
                 Destroy(selectedTower.gameObject);
                 Destroy(tower.gameObject);
-
-                return true;
+                break;
             }
         }
-        return false;
+        return isCompleted;
     }
 
     public void AddTower(Tower tower)
@@ -290,11 +337,11 @@ public class Player : MonoBehaviour
             _currMoney -= (int)(_commonUpCost * _commonLevel++);
             GameObject.Find("CommonUpText").GetComponent<Text>().text = "Common Up \n#" + _commonLevel + " Cost: " + (_commonUpCost * _commonLevel);
 
-            ShowAlert("Common Tower 업그레이드 완료");
+            ShowAlert("Upgrade common tower completed");
         }
         else
         {
-            ShowAlert("자원이 부족합니다");
+            ShowAlert("Not enough money");
         }
     }
 
@@ -311,11 +358,11 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_uncommonUpCost * _uncommonLevel++);
             GameObject.Find("UncommonUpText").GetComponent<Text>().text = "Uncommon Up \n#" + _uncommonLevel + " Cost: " + (_uncommonUpCost * _uncommonLevel);
-            ShowAlert("Uncommon Tower 업그레이드 완료");
+            ShowAlert("Upgrade uncommon tower completed");
         }
         else
         {
-            ShowAlert("자원이 부족합니다");
+            ShowAlert("Not enough money");
         }
     }
 
@@ -332,11 +379,11 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_rareUpCost * _rareLevel++);
             GameObject.Find("RareUpText").GetComponent<Text>().text = "Rare Up \n#" + _rareLevel + " Cost: " + (_rareUpCost * _rareLevel);
-            ShowAlert("Rare Tower 업그레이드 완료");
+            ShowAlert("Upgrade rare tower completed");
         }
         else
         {
-            ShowAlert("자원이 부족합니다");
+            ShowAlert("Not enough money");
         }
     }
 
@@ -355,11 +402,11 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_uniqueUpCost * _uniqueLevel++);
             GameObject.Find("UniqueUpText").GetComponent<Text>().text = "Unique Up \n#" + _uniqueLevel + " Cost: " + (_uniqueUpCost * _uniqueLevel);
-            ShowAlert("Unique Tower 업그레이드 완료");
+            ShowAlert("Upgrade unique tower completed");
         }
         else
         {
-            ShowAlert("자원이 부족합니다");
+            ShowAlert("Not enough money");
         }
     }
 
@@ -376,11 +423,11 @@ public class Player : MonoBehaviour
             }
             _currMoney -= (int)(_legendaryUpCost * _legendaryLevel++);
             GameObject.Find("LegendaryUpText").GetComponent<Text>().text = "Legendary Up \n#" + _legendaryLevel + " Cost: " + (_legendaryUpCost * _legendaryLevel);
-            ShowAlert("Legendary Tower 업그레이드 완료");
+            ShowAlert("Upgrade legendary tower completed");
         }
         else
         {
-            ShowAlert("자원이 부족합니다");
+            ShowAlert("Not enough money");
         }
     }
     #endregion

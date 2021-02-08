@@ -18,6 +18,7 @@ public class Stage : MonoBehaviour
 
     public Tile[,] _tiles;
     private StageManager _stageManager;
+
     // _stageIdx는 로드가 진행되지 않으면 -1값임
     private int _stageIdx = -1;
     private int _waveIdx = 0;
@@ -27,6 +28,11 @@ public class Stage : MonoBehaviour
     private Text _timerText;
     private System.Text.StringBuilder stringBuilder;
 
+    private void Awake()
+    {
+        stringBuilder = new System.Text.StringBuilder("");
+    }
+
     private void Start()
     {
         if (_stageIdx < 0)
@@ -35,7 +41,6 @@ public class Stage : MonoBehaviour
             _stageState = StageState.Ongoing;
         }
 
-        stringBuilder = new System.Text.StringBuilder("");
         _timerText = GameObject.Find("Timer").GetComponent<Text>();
 
         InvokeRepeating("UpdateState", 0.0f, 0.1f);
@@ -54,18 +59,19 @@ public class Stage : MonoBehaviour
             if (_wave.GetNumOfWave() != _waveIdx)
             {
                 stringBuilder.Clear();
-                stringBuilder.Append("다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)));
+                stringBuilder.Append("Next Wave: " + (_nextWaveDelay - Mathf.Round(time)));
             }
             else
             {
                 stringBuilder.Clear();
-                stringBuilder.Append("마지막 웨이브");
+                stringBuilder.Append("Last Wave");
             }
 
-            stringBuilder.Append("\n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave());
-            stringBuilder.Append("\n남은 몬스터 수: " + _monsters.Count);
+            stringBuilder.Append("\nNow/Total: " + _waveIdx + "/" + _wave.GetNumOfWave());
+            stringBuilder.Append("\nMonsters: " + _monsters.Count);
             stringBuilder.Append("\nHP: " + Player.GetInstance().GetLife());
             stringBuilder.Append("\nMoney: " + Player.GetInstance().GetMoney());
+            stringBuilder.Append("\nGameSpeed: " + Player.GetInstance().GetGameSpeed());
 
             _timerText.text = stringBuilder.ToString();
 

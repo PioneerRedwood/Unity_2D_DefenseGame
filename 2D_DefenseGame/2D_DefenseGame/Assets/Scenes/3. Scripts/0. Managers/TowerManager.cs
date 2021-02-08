@@ -15,5 +15,4 @@ public class TowerManager : MonoBehaviour
     {
         Player.GetInstance().LoadTower(this);
     }
-
 }

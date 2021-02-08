@@ -11,9 +11,14 @@ public class BuffTower : Tower
 
     private Tower[] _towers;
 
-    void Update()
+    private void Start()
     {
-        GetTower();
+        InvokeRepeating("UpdateTowerList", 0.0f, 0.1f);
+    }
+
+    void UpdateTowerList()
+    {
+        _towers = GameObject.FindObjectsOfType<Tower>();
 
         for (int i = _towers.Length - 1; i > -1; i--)
         {
@@ -22,33 +27,16 @@ public class BuffTower : Tower
             if (distance.magnitude <= base._range)
             {
                 //본인은 적용 X
-                if (transform == _towers[i].transform) { }
-                else
+                if ((transform != _towers[i].transform) && (_towers[i] != null))
                 {
-
                     _towers[i].IncreaseDamage(_addDamageBuff, _addBuffduration);
                 }
             }
         }
     }
 
-    void Attack()
+    public float GetBuffInfo()
     {
-        for (int i = _enemies.Length; i > -1; --i)
-        {
-            Vector3 distance = _enemies[i].transform.position - transform.position;
-
-            if (distance.magnitude <= _range)
-            {
-                _enemies[i].GetComponent<Monster>().OnDamage(_damage);
-            }
-        }
+        return _addDamageBuff;
     }
-
-
-    void GetTower()
-    {
-        _towers = GameObject.FindObjectsOfType<Tower>();
-    }
-
 }

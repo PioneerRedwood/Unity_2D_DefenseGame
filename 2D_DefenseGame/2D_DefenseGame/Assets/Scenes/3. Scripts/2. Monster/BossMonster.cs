@@ -35,12 +35,12 @@ public class BossMonster : Monster
 
     void Update()
     {
-        MoveToNext();
-        ShowHP();
-        if(_currHP <= 0)
+        if (_currHP <= 0)
         {
             Destroy(gameObject);
         }
+        MoveToNext();
+        ShowHP();
     }
 
     void ActivateAura()

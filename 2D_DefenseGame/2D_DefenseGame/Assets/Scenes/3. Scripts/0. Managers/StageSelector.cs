@@ -47,8 +47,6 @@ public class StageSelector : MonoBehaviour
     {
         if (_onMove != OnMove.Stop)
         {
-            //Debug.Log("이전: " + _prevIdx + " 현재: " + _currIdx + " 다음: " + _nextIdx);
-
             _content.transform.position =
                 Vector2.Lerp(new Vector2(_content.transform.position.x, _content.transform.position.y), new Vector2(_nextXPos, _content.transform.position.y), _speed * Time.deltaTime);
 

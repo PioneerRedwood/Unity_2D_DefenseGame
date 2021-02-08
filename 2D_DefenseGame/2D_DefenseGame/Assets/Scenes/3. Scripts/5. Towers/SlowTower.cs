@@ -8,20 +8,32 @@ public class SlowTower : Tower
     [Range(0, 1)]
     [SerializeField] private float _slow = 0.0f;
 
-    void Update()
+    private void Start()
+    {
+        InvokeRepeating("UpdateSlowTarget", 0.0f, 0.1f);
+    }
+
+    void UpdateSlowTarget()
     {
         for (int i = 0; i < _enemies.Length; i++)
         {
-            if (Vector3.Distance(transform.position, _enemies[i].transform.position) < _range)
+            if(_enemies != null)
             {
-                _enemies[i].GetComponent<Monster>().DecreaseSpeed(transform, _slow, _range);
+                if (Vector3.Distance(transform.position, _enemies[i].transform.position) < _range)
+                {
+                    _enemies[i].GetComponent<Monster>().DecreaseSpeed(transform, _slow, _range);
+                }
+                else
+                {
+                    if (_enemies[i].GetComponent<Monster>().GetDebuffedTowerTransform() == transform)
+                    {
+                        _enemies[i].GetComponent<Monster>().ResetBuff();
+                    }
+                }
             }
             else
             {
-                if (_enemies[i].GetComponent<Monster>().GetDebuffedTowerTransform() == transform)
-                {
-                    _enemies[i].GetComponent<Monster>().ResetBuff();
-                }
+                continue;
             }
         }
     }

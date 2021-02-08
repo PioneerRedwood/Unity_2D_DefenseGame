@@ -17,7 +17,6 @@ public class FasterMonster : Monster
     private float _deltaTime = 0f;
     private float _damagedTime = 0f;
 
-    // FasterMonster 전용 이동 함수
     new void MoveToNext()
     {
         if (_isDirect)
@@ -86,6 +85,11 @@ public class FasterMonster : Monster
 
     void Update()
     {
+        if (_currHP <= 0)
+        {
+            Destroy(gameObject);
+        }
+
         _deltaTime += Time.deltaTime;
 
         if(_isAttacked && ((_deltaTime - _damagedTime) >= _delayTime))
@@ -99,9 +103,5 @@ public class FasterMonster : Monster
         MoveToNext();
 
         ShowHP();
-        if (_currHP <= 0)
-        {
-            Destroy(gameObject);
-        }
     }
 }

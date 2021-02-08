@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ObjectDetector : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class ObjectDetector : MonoBehaviour
 
     void Start()
     {
-        _main = Camera.main;   
+        _main = Camera.main;
     }
 
     void Update()
@@ -23,20 +24,19 @@ public class ObjectDetector : MonoBehaviour
 
             if (Physics.Raycast(_ray, out _hit, Mathf.Infinity))
             {
-
                 if (_hit.transform.CompareTag("Ground"))
                 {
                     _UIManager.GroundClicked(_hit.collider.gameObject);
                 }
-                else if(_hit.transform.CompareTag("Route"))
+                else if (_hit.transform.CompareTag("Route"))
                 {
                     _UIManager.RouteClicked(_hit.collider.gameObject);
                 }
-                else if(_hit.transform.CompareTag("Enemy"))
+                else if (_hit.transform.CompareTag("Enemy"))
                 {
                     _UIManager.MonsterClicked(_hit.collider.gameObject);
                 }
-                else if(_hit.transform.CompareTag("Obstacle"))
+                else if (_hit.transform.CompareTag("Obstacle"))
                 {
                     _UIManager.RouteClicked(_hit.transform.parent.gameObject);
                 }

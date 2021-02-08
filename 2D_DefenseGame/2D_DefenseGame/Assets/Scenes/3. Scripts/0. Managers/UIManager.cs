@@ -200,13 +200,13 @@ public class UIManager : MonoBehaviour
 
         if ((Player.GetInstance().GetMoney() - _towerPrice) < 0)
         {
-            Player.GetInstance().ShowAlert("자원이 부족합니다");
+            Player.GetInstance().ShowAlert("Not enough money");
             return;
         }
         else
         {
             Player.GetInstance().LoseMoney(_towerPrice);
-            Player.GetInstance().ShowAlert("타워 건설 완료");
+            Player.GetInstance().ShowAlert("Tower build completed");
         }
 
         _groundComponent.SetTowerBuilt(true);
@@ -224,11 +224,11 @@ public class UIManager : MonoBehaviour
 
         if (Player.GetInstance().MergeTower(_selectedObj))
         {
-            Player.GetInstance().ShowAlert("타워 합병 완료");
+            Player.GetInstance().ShowAlert("Tower merge completed");
         }
         else
         {
-            Player.GetInstance().ShowAlert("합병할 타워가 없습니다");
+            Player.GetInstance().ShowAlert("There is no proper tower to merge");
         }
 
         LoadPanel(_selectedObj);
@@ -265,7 +265,7 @@ public class UIManager : MonoBehaviour
         Player.GetInstance().DeleteTower(_selectedObj.transform.parent);
         Player.GetInstance().AddMoney(sellPrice);
 
-        Player.GetInstance().ShowAlert("타워 판매 완료 $" + sellPrice);
+        Player.GetInstance().ShowAlert("Sell tower +$" + sellPrice);
         _groundComponent.SetTowerBuilt(false);
         LoadPanel(_selectedObj);
     }
@@ -306,13 +306,13 @@ public class UIManager : MonoBehaviour
 
         if ((Player.GetInstance().GetMoney() - _obstaclePrice) < 0)
         {
-            Player.GetInstance().ShowAlert("자원이 부족합니다");
+            Player.GetInstance().ShowAlert("Not enough money");
             return;
         }
         else
         {
             Player.GetInstance().LoseMoney(_obstaclePrice);
-            Player.GetInstance().ShowAlert("장애물 건설 완료");
+            Player.GetInstance().ShowAlert("Obstacle install completed");
         }
 
         _routeComponent.SetObstacleBuilt(true);
