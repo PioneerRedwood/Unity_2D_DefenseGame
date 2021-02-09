@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//
-// Area Of Effect Tower : 범위 공격 타워
-// Bullet 종류가 다름
-//
-
 public class AOETower : Tower
 {
     [Header("AOETower Property")]
@@ -19,7 +14,7 @@ public class AOETower : Tower
     [SerializeField] private float _attackDelay = 1f;
     private float _fireCount = 0f;
 
-    void Update()
+    private void Update()
     {
         if (_targetTransform == null)
         {

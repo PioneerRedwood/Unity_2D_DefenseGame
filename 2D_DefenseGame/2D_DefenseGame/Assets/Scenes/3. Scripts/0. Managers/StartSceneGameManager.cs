@@ -5,16 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class StartSceneGameManager : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
     public void OnPlayClicked()
     {
         SceneManager.LoadScene("StageSelectScene");
@@ -32,6 +22,25 @@ public class StartSceneGameManager : MonoBehaviour
 
     public void OnQuitClicked()
     {
-        Application.Quit(0);
+        Application.Quit();
+    }
+
+    public void InitGame()
+    {
+        // 퍼블리시(빌드) 후 없애야 함
+        PlayerPrefs.SetString("StageClearCount", "1:0\t2:-1\t3:-1\t4:-1\t5:-1");
+        PlayerPrefs.Save();
+
+        if (PlayerPrefs.GetInt("ID_Play") == 0)
+        {
+            PlayerPrefs.SetString("StageClearCount", "1:0\t2:-1\t3:-1\t4:-1\t5:-1");
+        }
+        PlayerPrefs.SetInt("ID_Play", PlayerPrefs.GetInt("ID_Play") + 1);
+        PlayerPrefs.Save();
+    }
+
+    private void Awake()
+    {
+        InitGame();
     }
 }

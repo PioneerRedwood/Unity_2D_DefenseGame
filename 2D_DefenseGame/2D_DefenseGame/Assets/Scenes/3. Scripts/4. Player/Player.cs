@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
     private int _currMoney;
     private int _currLife;
 
+    #region Tower property
     [Header("Tower tier cost")]
     [SerializeField] private uint _commonUpCost = 0;
     [SerializeField] private uint _uncommonUpCost = 0;
@@ -47,17 +48,25 @@ public class Player : MonoBehaviour
     private uint _legendaryLevel = 1;
 
     private List<Tower> _towerList = new List<Tower>();
+    #endregion
 
     private bool _isAlertOpen = false;
-    private Text alertText = null;
-    private float _gameSpeedScale = 1.0f;
+    private Text _alertText = null;
 
-    void Awake()
+    private bool _toggleGameSpeed = false;
+    private float _gameSpeedScale = 1.0f;
+    private int[] _clearCounts = null;
+
+    private void Awake()
     {
         if (_instance == null)
         {
             _instance = this;
+
+            _clearCounts = new int[PlayerPrefs.GetString("StageClearCount").Split('\t').Length];
+            _clearCounts = GetStageClearCount();
         }
+
     }
 
     private void Start()
@@ -66,48 +75,64 @@ public class Player : MonoBehaviour
         _currLife = _life;
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("GameScene"))
         {
-            alertText = GameObject.Find("AlertText").GetComponent<Text>();
-            alertText.CrossFadeAlpha(0f, 0f, true);
+            _alertText = GameObject.Find("AlertText").GetComponent<Text>();
+            _alertText.CrossFadeAlpha(0f, 0f, true);
         }
     }
 
-    public float GetGameSpeed()
+    #region Game play :: Stage clear state
+
+    public void AddStageClearCount(int stageIdx)
     {
-        return _gameSpeedScale;
+        _clearCounts[stageIdx] += 1;
+        _clearCounts[stageIdx + 1] = 0;
+
+        System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder(
+                                                    "1:" + _clearCounts[0] + '\t' +
+                                                    "2:" + _clearCounts[1] + '\t' +
+                                                    "3:" + _clearCounts[2] + '\t' +
+                                                    "4:" + _clearCounts[3] + '\t' +
+                                                    "5:" + _clearCounts[4]);
+        PlayerPrefs.SetString("StageClearCount", stringBuilder.ToString());
+        PlayerPrefs.Save();
     }
 
-    public void UpGameSpeed()
+    public int[] GetStageClearCount()
     {
-        if(_gameSpeedScale <= 1.5f)
+        int idx = 0;
+        string[] strs = PlayerPrefs.GetString("StageClearCount").Split('\t');
+
+        foreach (string str in strs)
         {
-            _gameSpeedScale += 0.1f;
-            Time.timeScale = _gameSpeedScale;
-            ShowAlert("Game speed up");
+            string[] tempStrs = str.Split(':');
+            _clearCounts[idx] = int.Parse(tempStrs[1]);
+            idx++;
+        }
+        return _clearCounts;
+    }
+
+    #endregion
+
+    #region Handle Game Speed
+
+    public void ToggleGameSpeed()
+    {
+        if (_toggleGameSpeed)
+        {
+            _gameSpeedScale /= 2.0f;
+            _toggleGameSpeed = false;
         }
         else
         {
-            _gameSpeedScale = 1.0f;
-            Time.timeScale = _gameSpeedScale;
-            ShowAlert("Game speed Range: 0.5 ~ 1.5");
+            _gameSpeedScale *= 2.0f;
+            _toggleGameSpeed = true;
         }
+
+        Time.timeScale = _gameSpeedScale;
+        ShowAlert("Toggle game speed");
     }
 
-    public void DownGameSpeed()
-    {
-        if(_gameSpeedScale >= 0.5f)
-        {
-            _gameSpeedScale -= 0.1f;
-            Time.timeScale = _gameSpeedScale;
-            ShowAlert("Game speed down");
-        }
-        else
-        {
-            _gameSpeedScale = 1.0f;
-            Time.timeScale = _gameSpeedScale;
-            ShowAlert("Game speed Range: 0.5 ~ 1.5");
-        }
-    }
-
+    #endregion
 
     #region Player basic method
     public void ResetGame()
@@ -145,8 +170,8 @@ public class Player : MonoBehaviour
     {
         if (!_isAlertOpen)
         {
-            alertText.text = msg;
-            alertText.CrossFadeAlpha(1f, 0.5f, true);
+            _alertText.text = msg;
+            _alertText.CrossFadeAlpha(1f, 0.5f, true);
             _isAlertOpen = true;
             StartCoroutine(DelayAlert());
         }
@@ -155,7 +180,7 @@ public class Player : MonoBehaviour
     private IEnumerator DelayAlert()
     {
         yield return new WaitForSeconds(1f);
-        alertText.CrossFadeAlpha(0f, 0.5f, true);
+        _alertText.CrossFadeAlpha(0f, 0.5f, true);
         _isAlertOpen = false;
     }
 
@@ -276,18 +301,23 @@ public class Player : MonoBehaviour
                         MissionManager.GetInstance()._legendaryCount += 1;
                         break;
                     case Tower.TowerTier.Legendary:
+                        ShowAlert("There is no next from Legedary");
+                        isCompleted = true;
                         break;
                     default:
                         break;
                 }
-                
-                _towerList.Remove(selectedTower);
-                _towerList.Remove(tower);
 
-                tower.transform.parent.GetChild(0).GetComponent<Ground>().SetTowerBuilt(false);
+                if(isCompleted)
+                {
+                    _towerList.Remove(selectedTower);
+                    _towerList.Remove(tower);
 
-                Destroy(selectedTower.gameObject);
-                Destroy(tower.gameObject);
+                    tower.transform.parent.GetChild(0).GetComponent<Ground>().SetTowerBuilt(false);
+
+                    Destroy(selectedTower.gameObject);
+                    Destroy(tower.gameObject);
+                }
                 break;
             }
         }

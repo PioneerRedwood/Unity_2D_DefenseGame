@@ -16,10 +16,9 @@ public class Stage : MonoBehaviour
     [SerializeField] private float _firstSpawnDelay = 0.0f;
     [SerializeField] private float _monsterSpawnDelay = 0.0f;
 
-    public Tile[,] _tiles;
+    [SerializeField] private Tile[,] _tiles;
     private StageManager _stageManager;
 
-    // _stageIdx는 로드가 진행되지 않으면 -1값임
     private int _stageIdx = -1;
     private int _waveIdx = 0;
     private List<Monster> _monsters = new List<Monster>();
@@ -27,6 +26,12 @@ public class Stage : MonoBehaviour
     private float time = 0.0f;
     private Text _timerText;
     private System.Text.StringBuilder stringBuilder;
+
+    public enum StageState
+    {
+        Ongoing, Fail, Success
+    }
+    private StageState _stageState { get; set; }
 
     private void Awake()
     {
@@ -60,6 +65,7 @@ public class Stage : MonoBehaviour
             {
                 stringBuilder.Clear();
                 stringBuilder.Append("Next Wave: " + (_nextWaveDelay - Mathf.Round(time)));
+                stringBuilder.Append("\nNow/Total: " + _waveIdx + "/" + _wave.GetNumOfWave());
             }
             else
             {
@@ -67,11 +73,10 @@ public class Stage : MonoBehaviour
                 stringBuilder.Append("Last Wave");
             }
 
-            stringBuilder.Append("\nNow/Total: " + _waveIdx + "/" + _wave.GetNumOfWave());
             stringBuilder.Append("\nMonsters: " + _monsters.Count);
             stringBuilder.Append("\nHP: " + Player.GetInstance().GetLife());
             stringBuilder.Append("\nMoney: " + Player.GetInstance().GetMoney());
-            stringBuilder.Append("\nGameSpeed: " + Player.GetInstance().GetGameSpeed());
+            stringBuilder.Append("\nGame speed: " + Mathf.FloorToInt(Time.timeScale));
 
             _timerText.text = stringBuilder.ToString();
 
@@ -94,62 +99,6 @@ public class Stage : MonoBehaviour
             }
         }
     }
-
-    //private void Update()
-    //{
-    //    if (_stageState == StageState.Ongoing)
-    //    {
-    //        _timerText = GameObject.Find("Timer").GetComponent<Text>();
-    //        if (_wave.GetNumOfWave() != _waveIdx)
-    //        {
-    //            stringBuilder.Clear();
-    //            stringBuilder.Append("다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)));
-    //        }
-    //        else
-    //        {
-    //            stringBuilder.Append("마지막 웨이브");
-    //        }
-
-    //        stringBuilder.Append("\n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave());
-    //        stringBuilder.Append("\n남은 몬스터 수: " + _monsters.Count);
-    //        stringBuilder.Append("\nHP: " + Player.GetInstance().GetLife());
-    //        stringBuilder.Append("\nMoney: " + Player.GetInstance().GetMoney());
-
-    //        _timerText.text = stringBuilder.ToString();
-
-
-    //        //_timerText.text = "다음 웨이브까지: " + (_nextWaveDelay - Mathf.Round(time)) + " \n현재/총: " + _waveIdx + "/" + _wave.GetNumOfWave()
-    //        //                            + "\n남은 몬스터 수: " + _monsters.Count
-    //        //                            + "\nHP: " + Player.GetInstance().GetLife() + "\nMoney: " + Player.GetInstance().GetMoney();
-
-    //        time += Time.deltaTime;
-
-    //        if (_waveIdx == 0)
-    //        {
-    //            time = 0;
-    //            LoadWave(_waveIdx++);
-    //            return;
-    //        }
-
-    //        if (time > _nextWaveDelay && _waveIdx < _wave.GetNumOfWave())
-    //        {
-    //            time = 0;
-    //            LoadWave(_waveIdx++);
-    //        }
-
-    //        if (Player.GetInstance().GetLife() <= 0)
-    //        {
-    //            _stageState = StageState.Fail;
-    //        }
-    //    }
-    //}
-
-    public enum StageState
-    {
-        // 진행중, 실패, 성공, 언로드, 정지, 대기
-        Ongoing, Fail, Success, Unload, Paused, Wait
-    }
-    private StageState _stageState { get; set; }
 
     #region Grid
     public void CreateGrid()
@@ -181,7 +130,7 @@ public class Stage : MonoBehaviour
     #endregion
 
     #region Stage Wave control
-    // StageManager에서 스테이지를 인덱스를 받아 초기화
+
     public void InitStage(int idx)
     {
         _stageIdx = idx;
@@ -206,7 +155,6 @@ public class Stage : MonoBehaviour
     #endregion
 
     #region Monster
-    // 몬스터 스폰
     private IEnumerator SpawnMonster(int idx)
     {
         yield return new WaitForSeconds(_firstSpawnDelay);
@@ -229,7 +177,6 @@ public class Stage : MonoBehaviour
         }
     }
 
-    // 스테이지 위치값에 따른 Waypoints에 offset 추가
     public void SpawnPointOffset()
     {
         Vector2 offset = new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
@@ -238,10 +185,8 @@ public class Stage : MonoBehaviour
         {
             _waypoints[i] += offset;
         }
-
     }
 
-    // 몬스터 리스트 업데이트와 몬스터의 수와 웨이브 수를 체크
     void CheckStageState()
     {
         for (int i = 0; i < _monsters.Count; i++)
@@ -258,5 +203,4 @@ public class Stage : MonoBehaviour
         }
     }
     #endregion
-
 }

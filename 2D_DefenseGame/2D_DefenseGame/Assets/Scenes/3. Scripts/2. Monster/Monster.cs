@@ -160,7 +160,7 @@ public abstract class Monster : MonoBehaviour
 
     #endregion
 
-    #region Handling Obstacle
+    #region Handle Obstacle
 
     private void UpdateObstacle()
     {

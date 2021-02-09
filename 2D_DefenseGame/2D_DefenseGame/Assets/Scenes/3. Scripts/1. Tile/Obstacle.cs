@@ -41,9 +41,6 @@ public class Obstacle : Tile
                                        new Vector3(monster.GetNextPos().x - monster.transform.position.x, monster.GetNextPos().y - monster.transform.position.y, -0.2f), 
                                        out _hit, 15.0f);
             
-            Debug.DrawRay(new Vector3(monster.transform.position.x, monster.transform.position.y, -0.2f),
-                           new Vector3(monster.GetNextPos().x, monster.GetNextPos().y, -0.2f));
-            
             if (ray && _hit.transform.CompareTag("Obstacle"))
             {
                 if (!monster.GetObstacle())

@@ -4,12 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-// 스테이지의 생성과 파괴를 관리
 public class StageManager : MonoBehaviour
 {
     [Header("Stage")]
     [SerializeField] private Stage[] _stages = null;
-    [SerializeField] public Vector3 _stageHolder;
+    [SerializeField] private Vector3 _stageHolder = Vector3.zero;
     [SerializeField] private GameObject _gameOverPanel = null;
     [SerializeField] private GameObject _pausePanel = null;
 
@@ -20,7 +19,6 @@ public class StageManager : MonoBehaviour
 
     private void Awake()
     {
-        // for Debugging 일단 게임씬에서 실행할때 에러 안뜨도록 추가
         if (_stageDataHolder == null)
         {
             GameObject stageHolder = new GameObject("StageDataHolder");
@@ -29,16 +27,15 @@ public class StageManager : MonoBehaviour
         }
     }
 
-    void Start()
+    private void Start()
     {
         _stageDataHolder = GameObject.Find("StageDataHolder");
 
         _currStageIdx = _stageDataHolder.GetComponent<StageDataHolder>().GetCurrentStage();
-        //SetCurrentStage(_currStageIdx);
-        SetCurrentStage(1);
+        SetCurrentStage(_currStageIdx);
     }
 
-    void Update()
+    private void Update()
     {
         if (_currentStage != null)
         {
@@ -50,17 +47,16 @@ public class StageManager : MonoBehaviour
             if (_currentStage.GetState() == Stage.StageState.Success)
             {
                 Destroy(_currentStage, 1.0f);
-                if(_currStageIdx >= PlayerPrefs.GetInt("StageCount"))
-                {
-                    _stageDataHolder.GetComponent<StageDataHolder>().AddClearCount();
-                }
+
+                Player.GetInstance().AddStageClearCount(_currStageIdx);
+                _stageDataHolder.GetComponent<StageDataHolder>().SetCurrentStage(_currStageIdx + 1);
                 SceneManager.LoadScene("StageSelectScene");
             }
             else if (_currentStage.GetState() == Stage.StageState.Fail)
             {
                 Time.timeScale = 0;
                 _gameOverPanel.SetActive(true);
-                _currentStage.SetState(Stage.StageState.Paused);
+                _stageDataHolder.GetComponent<StageDataHolder>().SetCurrentStage(_currStageIdx);
             }
         }
     }
@@ -115,7 +111,7 @@ public class StageManager : MonoBehaviour
 
     public void OpenPauseMenu()
     {
-        if(!_gameOverPanel.activeInHierarchy)
+        if (!_gameOverPanel.activeInHierarchy)
         {
             Time.timeScale = 0;
             _pausePanel.SetActive(true);

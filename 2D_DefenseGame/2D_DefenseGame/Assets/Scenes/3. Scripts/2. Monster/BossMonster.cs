@@ -2,12 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
- * 보스 몬스터:
- *      월등한 체력
- *      일정 시간마다 주변 타워 공격력 저하 오라 발생
- */
-
 public class BossMonster : Monster
 {
     [Header("BossMonster property")]

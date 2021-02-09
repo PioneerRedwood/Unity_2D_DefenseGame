@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//
-// summary:
-//      타워 공격 범위 전시
-//
 public class TowerAttackRange : MonoBehaviour
 {
     public float _imageScale;

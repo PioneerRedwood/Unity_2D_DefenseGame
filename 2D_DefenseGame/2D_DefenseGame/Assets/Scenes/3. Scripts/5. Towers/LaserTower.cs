@@ -13,7 +13,6 @@ public class LaserTower : Tower
 
     void Update()
     {
-
         if (_targetTransform == null)
         {
             if (_isRotate)

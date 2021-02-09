@@ -13,12 +13,12 @@ public class BuffTower : Tower
 
     private void Start()
     {
-        InvokeRepeating("UpdateTowerList", 0.0f, 0.1f);
+        InvokeRepeating("UpdateTowerList", 0.0f, 0.25f);
     }
 
     void UpdateTowerList()
     {
-        _towers = GameObject.FindObjectsOfType<Tower>();
+        _towers = FindObjectsOfType<Tower>();
 
         for (int i = _towers.Length - 1; i > -1; i--)
         {
@@ -26,7 +26,6 @@ public class BuffTower : Tower
 
             if (distance.magnitude <= base._range)
             {
-                //본인은 적용 X
                 if ((transform != _towers[i].transform) && (_towers[i] != null))
                 {
                     _towers[i].IncreaseDamage(_addDamageBuff, _addBuffduration);

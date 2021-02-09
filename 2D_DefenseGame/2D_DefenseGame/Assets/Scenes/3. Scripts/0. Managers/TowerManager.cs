@@ -11,7 +11,7 @@ public class TowerManager : MonoBehaviour
     [SerializeField] public Tower[] Unique;
     [SerializeField] public Tower[] Legendary;
 
-    void Start()
+    private void Start()
     {
         Player.GetInstance().LoadTower(this);
     }

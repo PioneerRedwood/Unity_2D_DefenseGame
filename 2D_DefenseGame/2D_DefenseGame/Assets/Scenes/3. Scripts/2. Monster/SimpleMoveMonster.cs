@@ -21,11 +21,11 @@ public class SimpleMoveMonster : Monster
 
     void Update()
     {
+        MoveToNext();
+        ShowHP();
         if (_currHP <= 0)
         {
             Destroy(gameObject);
         }
-        MoveToNext();
-        ShowHP();
     }
 }

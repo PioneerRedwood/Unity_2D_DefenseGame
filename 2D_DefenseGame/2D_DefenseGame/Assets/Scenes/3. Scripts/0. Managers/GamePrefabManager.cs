@@ -8,7 +8,7 @@ public class GamePrefabManager : SingletonScriptableObject<GamePrefabManager>
 {
     // Ground
     public Ground groundPrefab;
-    
+
     // Route
     public Route routePrefab;
 

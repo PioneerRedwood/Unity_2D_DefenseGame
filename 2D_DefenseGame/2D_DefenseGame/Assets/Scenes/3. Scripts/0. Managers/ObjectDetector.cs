@@ -11,12 +11,12 @@ public class ObjectDetector : MonoBehaviour
     private Ray _ray;
     private RaycastHit _hit;
 
-    void Start()
+    private void Start()
     {
         _main = Camera.main;
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {

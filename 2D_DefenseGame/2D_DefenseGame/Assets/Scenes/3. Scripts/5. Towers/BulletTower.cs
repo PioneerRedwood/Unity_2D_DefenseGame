@@ -15,7 +15,7 @@ public class BulletTower : Tower
 
     protected float _fireCount = 0f;
 
-    void Update()
+    private void Update()
     {
         if (_targetTransform == null)
         {
@@ -27,14 +27,12 @@ public class BulletTower : Tower
         }
         else
         {
-            // 지정된 적 방향으로 회전
             if (_isRotate)
             {
                 Quaternion direction = Quaternion.LookRotation(Vector3.forward, _targetTransform.position - transform.position);
                 transform.rotation = Quaternion.Slerp(transform.rotation, direction, _turnSpeed * Time.deltaTime);
             }
 
-            // Attack
             if (_attackDelay <= _fireCount)
             {
                 Attack();
