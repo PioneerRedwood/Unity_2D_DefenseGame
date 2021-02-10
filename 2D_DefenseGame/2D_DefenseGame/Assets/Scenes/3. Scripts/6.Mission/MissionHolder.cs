@@ -1,44 +1,52 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class MissionHolder : MonoBehaviour
 {
-    enum Mission
+    private string _missionExplanation = null;
+    private string _missionName = null;
+
+    public void SetMissionInfo(string missionIdx, MissionManager.Mission mission)
     {
-        _common,
-        _uncommon,
-        _rare,
-        _unique,
-        _legendary
-    }
-
-    [SerializeField]
-    private int _count = 5;
-    [SerializeField]
-    private string _text = "";
-    [SerializeField]
-    private Mission _mission = Mission._common;
-    [SerializeField]
-    private int _reward = 0;
-
-    private int _missionCount = -1;
-
-    private void Start()
-    {
-        _text += " " + _count + "개 짓기";
-        _missionCount = MissionManager.GetInstance().GetValue(_mission + "Count");
-    }
-
-    private void Update()
-    {
-        
-        if (_missionCount != -1 && MissionManager.GetInstance().GetValue(_mission + "Count") - _missionCount >= _count)
+        _missionName = missionIdx;
+        StringBuilder stringBuilder = new StringBuilder(missionIdx);
+        if (mission._towerType.Equals(""))
         {
-            Player.GetInstance().AddMoney(_reward);
-            Destroy(this.gameObject);
+            stringBuilder.Append(" Required: " + mission._towerTier + " x " + mission._numOfTower);
+        }
+        else if (mission._towerType.Equals("Bullet"))
+        {
+            stringBuilder.Append(" Required: " + mission._towerTier + " " + mission._towerType + " x " + mission._numOfTower);
+        }
+        else if (mission._towerType.Equals("AOE"))
+        {
+            stringBuilder.Append(" Required: " + mission._towerTier + " " + mission._towerType + " x " + mission._numOfTower);
+        }
+        else if (mission._towerType.Equals("Buff"))
+        {
+            stringBuilder.Append(" Required: " + mission._towerType + " x " + mission._numOfTower);
+        }
+        else if (mission._towerType.Equals("Slow"))
+        {
+            stringBuilder.Append(" Required: " + mission._towerType + " x " + mission._numOfTower);
+        }
+        else if (mission._towerType.Equals("Laser"))
+        {
+            stringBuilder.Append(" Required: " + mission._towerType + " x " + mission._numOfTower);
         }
 
+        _missionExplanation = stringBuilder.ToString();
+    }
 
+    public void OnMissionBtnClicked()
+    {
+        Player.GetInstance().ShowAlert(_missionExplanation);
+    }
+
+    public string GetMissionName()
+    {
+        return _missionName;
     }
 }

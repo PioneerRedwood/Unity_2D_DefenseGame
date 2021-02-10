@@ -16,7 +16,7 @@ public class StageDataHolder : MonoBehaviour
         }
         else
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 
@@ -27,6 +27,9 @@ public class StageDataHolder : MonoBehaviour
 
     public void SetCurrentStage(int set)
     {
-        _currStageIdx = set;
+        if(Player.GetInstance()._numOfStage > set)
+        {
+            _currStageIdx = set;
+        }
     }
 }

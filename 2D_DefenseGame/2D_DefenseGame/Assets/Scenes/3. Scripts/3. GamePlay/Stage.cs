@@ -134,6 +134,8 @@ public class Stage : MonoBehaviour
     public void InitStage(int idx)
     {
         _stageIdx = idx;
+        SetSpawnPosOffset();
+        MissionManager.GetInstance().InitLedger();
     }
 
     // Wave 시작
@@ -152,9 +154,11 @@ public class Stage : MonoBehaviour
     {
         _stageState = State;
     }
+
     #endregion
 
     #region Monster
+
     private IEnumerator SpawnMonster(int idx)
     {
         yield return new WaitForSeconds(_firstSpawnDelay);
@@ -177,7 +181,7 @@ public class Stage : MonoBehaviour
         }
     }
 
-    public void SpawnPointOffset()
+    private void SetSpawnPosOffset()
     {
         Vector2 offset = new Vector2(gameObject.transform.position.x, gameObject.transform.position.y);
 
@@ -187,7 +191,7 @@ public class Stage : MonoBehaviour
         }
     }
 
-    void CheckStageState()
+    private void CheckStageState()
     {
         for (int i = 0; i < _monsters.Count; i++)
         {
@@ -202,5 +206,6 @@ public class Stage : MonoBehaviour
             _stageState = StageState.Success;
         }
     }
+
     #endregion
 }

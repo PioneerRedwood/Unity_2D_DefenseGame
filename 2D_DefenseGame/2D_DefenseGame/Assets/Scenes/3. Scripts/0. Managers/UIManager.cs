@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating("UpdateInfoPanel", 0.0f, 0.25f);
+        InvokeRepeating("UpdateInfoPanel", 0.0f, 0.2f);
     }
 
     #region Object Clicked
@@ -58,7 +58,7 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-    #region Panel
+    #region Main panel
 
     private void UpdateInfoPanel()
     {
@@ -89,7 +89,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //왼쪽의 버튼들 업데이트
     public void LoadPanel(GameObject selectedObj)
     {
         ResetPanel();
@@ -138,7 +137,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //버튼 생성 후 이벤트리스너 부착
     public void CreateButton(int num)
     {
         GameObject button = Instantiate(_buttons[num]);
@@ -167,8 +165,7 @@ public class UIManager : MonoBehaviour
         }
 
     }
-
-    //패널 초기화
+    
     public void ResetPanel()
     {
         Transform child = _UIPanel.GetComponentInChildren<Transform>();
@@ -323,7 +320,16 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-    #region Tower upgrade Panel
+    #region Tower upgrade panel
+
+    public void ResetTowerUpgradePanel()
+    {
+        GameObject.Find("CommonUpText").GetComponent<Text>().text = "Common Up \n#" + 1 + " Cost: " + 50;
+        GameObject.Find("UncommonUpText").GetComponent<Text>().text = "Uncommon Up \n#" + 1 + " Cost: " + 100;
+        GameObject.Find("RareUpText").GetComponent<Text>().text = "Rare Up \n#" + 1 + " Cost: " + 300;
+        GameObject.Find("UniqueUpText").GetComponent<Text>().text = "Unique Up \n#" + 1 + " Cost: " + 500;
+        GameObject.Find("LegendaryUpText").GetComponent<Text>().text = "Legendary Up \n#" + 1 + " Cost: " + 1000;
+    }
 
     public void OnTowerUpgradePanelButtonClicked()
     {

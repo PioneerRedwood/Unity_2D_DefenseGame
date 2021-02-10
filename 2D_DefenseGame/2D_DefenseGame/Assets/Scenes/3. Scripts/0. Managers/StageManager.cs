@@ -11,11 +11,12 @@ public class StageManager : MonoBehaviour
     [SerializeField] private Vector3 _stageHolder = Vector3.zero;
     [SerializeField] private GameObject _gameOverPanel = null;
     [SerializeField] private GameObject _pausePanel = null;
+    [SerializeField] private GameObject _clearPanel = null;
 
     private GameObject _stageDataHolder;
     private Stage _currentStage;
     private int _currStageIdx = -1;
-    private bool _bIsScene { get; set; }
+    private bool _isAtScene { get; set; }
 
     private void Awake()
     {
@@ -33,74 +34,88 @@ public class StageManager : MonoBehaviour
 
         _currStageIdx = _stageDataHolder.GetComponent<StageDataHolder>().GetCurrentStage();
         SetCurrentStage(_currStageIdx);
+
+        InvokeRepeating("UpdateStageManager", 0.0f, 0.1f);
     }
 
-    private void Update()
+    private void UpdateStageManager()
     {
-        if (_currentStage != null)
+        if (_currentStage.GetState() == Stage.StageState.Ongoing)
         {
-            if (_bIsScene)
-            {
-                CancelInvoke("CheckStageLoaded");
-            }
-
-            if (_currentStage.GetState() == Stage.StageState.Success)
-            {
-                Destroy(_currentStage, 1.0f);
-
-                Player.GetInstance().AddStageClearCount(_currStageIdx);
-                _stageDataHolder.GetComponent<StageDataHolder>().SetCurrentStage(_currStageIdx + 1);
-                SceneManager.LoadScene("StageSelectScene");
-            }
-            else if (_currentStage.GetState() == Stage.StageState.Fail)
-            {
-                Time.timeScale = 0;
-                _gameOverPanel.SetActive(true);
-                _stageDataHolder.GetComponent<StageDataHolder>().SetCurrentStage(_currStageIdx);
-            }
+            return;
+        }
+        else if (_currentStage.GetState() == Stage.StageState.Success)
+        {
+            Player.GetInstance().AddStageClearCount(_currStageIdx);
+            _stageDataHolder.GetComponent<StageDataHolder>().SetCurrentStage(_currStageIdx + 1);
+            OpenClearMenu();
+        }
+        else if (_currentStage.GetState() == Stage.StageState.Fail)
+        {
+            Time.timeScale = 0;
+            _gameOverPanel.SetActive(true);
+            _stageDataHolder.GetComponent<StageDataHolder>().SetCurrentStage(_currStageIdx);
+            CancelInvoke("UpdateStageManager");
         }
     }
 
     #region Stage Setting & Load
-    public void LoadStage(int index)
+
+    private void LoadStage(int index)
     {
+        if(!IsInvoking("UpdateStageManager"))
+        {
+            InvokeRepeating("UpdateStageManager", 0.0f, 0.1f);
+        }
+
         _currentStage = Instantiate<Stage>(_stages[index], _stageHolder, Quaternion.identity);
 
         if (_currentStage != null)
         {
-            _currentStage.SpawnPointOffset();
             _stages[index].InitStage(index);
         }
+    }
+    
+    private void SetCurrentStage(int index)
+    {
+        _currStageIdx = index;
+        _isAtScene = true;
+        InvokeRepeating("CheckStageLoaded", 0.0f, 0.1f);
     }
 
     private void CheckStageLoaded()
     {
-        if (_bIsScene && _currentStage == null)
+        if (_isAtScene && (_currentStage == null))
         {
             LoadStage(_currStageIdx);
-            _bIsScene = false;
+            _isAtScene = false;
             CancelInvoke("CheckInScene");
         }
     }
 
-    public void SetCurrentStage(int index)
-    {
-        _currStageIdx = index;
-        InvokeRepeating("CheckStageLoaded", 0.2f, 2f);
-        _bIsScene = true;
-    }
-
     #endregion
+
+    #region Stage interaction
 
     public void ReloadStage()
     {
-        Destroy(_currentStage.gameObject);
+        if(_currentStage != null)
+        {
+            Transform[] objs = _currentStage.GetComponentsInChildren<Transform>();
+            foreach(Transform obj in objs)
+            {
+                Destroy(obj.gameObject);
+            }
+            Destroy(_currentStage.gameObject);
+        }
 
         LoadStage(_currStageIdx);
         Player.GetInstance().ResetGame();
         Time.timeScale = 1;
+
         _gameOverPanel.SetActive(false);
         _pausePanel.SetActive(false);
+        _clearPanel.SetActive(false);
     }
 
     public void QuitToStageSelectorScene()
@@ -118,10 +133,40 @@ public class StageManager : MonoBehaviour
         }
     }
 
+    public void OpenClearMenu()
+    {
+        CancelInvoke("UpdateStageManager");
+        if (!_gameOverPanel.activeInHierarchy)
+        {
+            Time.timeScale = 0;
+            _clearPanel.SetActive(true);
+
+            if ((_currStageIdx + 1) == Player.GetInstance()._numOfStage)
+            {
+                Button[] btns = _clearPanel.GetComponentsInChildren<Button>();
+                foreach (Button btn in btns)
+                {
+                    if (btn.name.Equals("NextStage"))
+                    {
+                        btn.gameObject.SetActive(false);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void LoadNextStage()
+    {
+        _currStageIdx++;
+        ReloadStage();
+    }
+
     public void GoOn()
     {
         Time.timeScale = 1;
         _pausePanel.SetActive(false);
     }
 
+    #endregion
 }

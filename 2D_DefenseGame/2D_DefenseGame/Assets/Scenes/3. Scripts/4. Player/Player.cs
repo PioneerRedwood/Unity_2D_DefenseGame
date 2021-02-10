@@ -23,10 +23,13 @@ public class Player : MonoBehaviour
     [SerializeField] private int _money = 0;
     [SerializeField] private int _life = 0;
 
+    [HideInInspector] public int _numOfStage = 0;
+
     private int _currMoney;
     private int _currLife;
 
     #region Tower property
+
     [Header("Tower tier cost")]
     [SerializeField] private uint _commonUpCost = 0;
     [SerializeField] private uint _uncommonUpCost = 0;
@@ -48,6 +51,7 @@ public class Player : MonoBehaviour
     private uint _legendaryLevel = 1;
 
     private List<Tower> _towerList = new List<Tower>();
+
     #endregion
 
     private bool _isAlertOpen = false;
@@ -56,17 +60,18 @@ public class Player : MonoBehaviour
     private bool _toggleGameSpeed = false;
     private float _gameSpeedScale = 1.0f;
     private int[] _clearCounts = null;
+    private System.Text.StringBuilder _gameLog;
 
     private void Awake()
     {
         if (_instance == null)
         {
             _instance = this;
-
-            _clearCounts = new int[PlayerPrefs.GetString("StageClearCount").Split('\t').Length];
+            _numOfStage = PlayerPrefs.GetString("StageClearCount").Split('\t').Length;
+            _clearCounts = new int[_numOfStage];
             _clearCounts = GetStageClearCount();
+            _gameLog = new System.Text.StringBuilder();
         }
-
     }
 
     private void Start()
@@ -84,16 +89,27 @@ public class Player : MonoBehaviour
 
     public void AddStageClearCount(int stageIdx)
     {
-        _clearCounts[stageIdx] += 1;
-        _clearCounts[stageIdx + 1] = 0;
+        if (stageIdx < _numOfStage)
+        {
+            _clearCounts[stageIdx] += 1;
+            if ((stageIdx + 1) != _numOfStage)
+            {
+                _clearCounts[stageIdx + 1] = 0;
+            }
+        }
 
-        System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder(
-                                                    "1:" + _clearCounts[0] + '\t' +
-                                                    "2:" + _clearCounts[1] + '\t' +
-                                                    "3:" + _clearCounts[2] + '\t' +
-                                                    "4:" + _clearCounts[3] + '\t' +
-                                                    "5:" + _clearCounts[4]);
-        PlayerPrefs.SetString("StageClearCount", stringBuilder.ToString());
+        for (int i = 0; i < _numOfStage; i++)
+        {
+            _gameLog.Append(i + 1);
+            _gameLog.Append(":");
+            _gameLog.Append(_clearCounts[i]);
+            if ((i + 1) != _numOfStage)
+            {
+                _gameLog.Append('\t');
+            }
+        }
+
+        PlayerPrefs.SetString("StageClearCount", _gameLog.ToString());
         PlayerPrefs.Save();
     }
 
@@ -108,6 +124,7 @@ public class Player : MonoBehaviour
             _clearCounts[idx] = int.Parse(tempStrs[1]);
             idx++;
         }
+
         return _clearCounts;
     }
 
@@ -135,10 +152,20 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Player basic method
+
     public void ResetGame()
     {
         _currMoney = _money;
         _currLife = _life;
+
+        _commonLevel = 1;
+        _uncommonLevel = 1;
+        _rareLevel = 1;
+        _uniqueLevel = 1;
+        _legendaryLevel = 1;
+
+        GameObject.Find("UIManager").GetComponent<UIManager>().ResetTowerUpgradePanel();
+
         _towerList.Clear();
     }
     public void AddMoney(int num)
@@ -171,7 +198,7 @@ public class Player : MonoBehaviour
         if (!_isAlertOpen)
         {
             _alertText.text = msg;
-            _alertText.CrossFadeAlpha(1f, 0.5f, true);
+            _alertText.CrossFadeAlpha(1f, 1f, true);
             _isAlertOpen = true;
             StartCoroutine(DelayAlert());
         }
@@ -179,7 +206,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator DelayAlert()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         _alertText.CrossFadeAlpha(0f, 0.5f, true);
         _isAlertOpen = false;
     }
@@ -207,17 +234,26 @@ public class Player : MonoBehaviour
         return find;
     }
 
-    public void BuildTower(GameObject selectedObj)
+    public bool BuildTower(GameObject selectedObj)
     {
         Tower tempTower = Instantiate(GetRandomTower(_towerManager.Common), selectedObj.transform.position, Quaternion.identity);
 
         tempTower._defaultDamage += _commonDamageUp * (_commonLevel - 1);
+        tempTower._range += 0.1f * (_commonLevel - 1);
 
         tempTower.transform.position = selectedObj.transform.position;
         tempTower.transform.SetParent(selectedObj.transform.parent);
 
-        MissionManager.GetInstance()._commonCount += 1;
-        AddTower(tempTower);
+        if (tempTower != null)
+        {
+            MissionManager.GetInstance().UpdateLedger(tempTower._tier, tempTower._towerName, 1);
+            AddTower(tempTower);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public bool BuildTower(GameObject selectedObj, Tower tower)
@@ -228,15 +264,19 @@ public class Player : MonoBehaviour
         {
             case Tower.TowerTier.Uncommon:
                 tempTower._defaultDamage += _uncommonDamageUp * (_uncommonLevel - 1);
+                tempTower._range += 0.1f * (_uncommonLevel - 1);
                 break;
             case Tower.TowerTier.Rare:
                 tempTower._defaultDamage += _rareDamageUp * (_rareLevel - 1);
+                tempTower._range += 0.1f * (_rareLevel - 1);
                 break;
             case Tower.TowerTier.Unique:
                 tempTower._defaultDamage += _uniqueDamageUp * (_uniqueLevel - 1);
+                tempTower._range += 0.1f * (_uniqueLevel - 1);
                 break;
             case Tower.TowerTier.Legendary:
                 tempTower._defaultDamage += _legendaryDamageUp * (_legendaryLevel - 1);
+                tempTower._range += 0.1f * (_legendaryLevel - 1);
                 break;
             default:
                 break;
@@ -244,9 +284,11 @@ public class Player : MonoBehaviour
         tempTower.transform.position = selectedObj.transform.position;
         tempTower.transform.SetParent(selectedObj.transform.parent);
 
-        AddTower(tempTower);
+
         if (tempTower != null)
         {
+            MissionManager.GetInstance().UpdateLedger(tempTower._tier, tempTower._towerName, 1);
+            AddTower(tempTower);
             return true;
         }
         else
@@ -261,10 +303,10 @@ public class Player : MonoBehaviour
 
         foreach (Tower tower in _towerList)
         {
-
             if (tower.transform.parent == delete)
             {
-                _towerList.RemoveAt(towerindex);
+                _towerList.Remove(tower);
+                MissionManager.GetInstance().UpdateLedger(tower._tier, tower._towerName, -1);
                 Destroy(tower.gameObject);
                 break;
             }
@@ -277,6 +319,7 @@ public class Player : MonoBehaviour
     {
         bool isCompleted = false;
         Tower selectedTower = GetTower(selectedObj.transform.parent);
+        Debug.Log(_towerList.Count);
 
         foreach (Tower tower in _towerList)
         {
@@ -286,19 +329,15 @@ public class Player : MonoBehaviour
                 {
                     case Tower.TowerTier.Common:
                         isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Uncommon));
-                        MissionManager.GetInstance()._uncommonCount += 1;
                         break;
                     case Tower.TowerTier.Uncommon:
                         isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Rare));
-                        MissionManager.GetInstance()._rareCount += 1;
                         break;
                     case Tower.TowerTier.Rare:
                         isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Unique));
-                        MissionManager.GetInstance()._uniqueCount += 1;
                         break;
                     case Tower.TowerTier.Unique:
                         isCompleted = BuildTower(selectedObj, GetRandomTower(_towerManager.Legendary));
-                        MissionManager.GetInstance()._legendaryCount += 1;
                         break;
                     case Tower.TowerTier.Legendary:
                         ShowAlert("There is no next from Legedary");
@@ -308,15 +347,18 @@ public class Player : MonoBehaviour
                         break;
                 }
 
-                if(isCompleted)
+                if (isCompleted)
                 {
-                    _towerList.Remove(selectedTower);
-                    _towerList.Remove(tower);
+                    MissionManager.GetInstance().UpdateLedger(selectedTower._tier, selectedTower._towerName, -1);
+                    MissionManager.GetInstance().UpdateLedger(tower._tier, tower._towerName, -1);
 
-                    tower.transform.parent.GetChild(0).GetComponent<Ground>().SetTowerBuilt(false);
+                    if (_towerList.Remove(selectedTower) && _towerList.Remove(tower))
+                    {
+                        tower.transform.parent.GetChild(0).GetComponent<Ground>().SetTowerBuilt(false);
 
-                    Destroy(selectedTower.gameObject);
-                    Destroy(tower.gameObject);
+                        Destroy(selectedTower.gameObject);
+                        Destroy(tower.gameObject);
+                    }
                 }
                 break;
             }
@@ -350,116 +392,117 @@ public class Player : MonoBehaviour
         return randomTower;
     }
 
-    #endregion
-
-    #region Upgrade tower
-    private void UpgradeCommonTower()
+    public void UpgradeTower(string idx)
     {
-        if (_currMoney >= (int)(_commonUpCost * _commonLevel))
+        switch (int.Parse(idx))
         {
-            foreach (Tower tower in GetInstance().GetTowerList())
-            {
-                if (tower._tier == Tower.TowerTier.Common)
+            case 0:
+                if (_currMoney >= (int)(_commonUpCost * _commonLevel))
                 {
-                    tower._defaultDamage += _commonDamageUp * _commonLevel;
-                }
-            }
-            _currMoney -= (int)(_commonUpCost * _commonLevel++);
-            GameObject.Find("CommonUpText").GetComponent<Text>().text = "Common Up \n#" + _commonLevel + " Cost: " + (_commonUpCost * _commonLevel);
+                    foreach (Tower tower in GetInstance().GetTowerList())
+                    {
+                        if (tower._tier == Tower.TowerTier.Common)
+                        {
+                            tower._defaultDamage += _commonDamageUp * _commonLevel;
+                            tower._range += 0.1f;
+                        }
+                    }
+                    _currMoney -= (int)(_commonUpCost * _commonLevel++);
+                    GameObject.Find("CommonUpText").GetComponent<Text>().text = "Common Up \n#" + _commonLevel + " Cost: " + (_commonUpCost * _commonLevel);
 
-            ShowAlert("Upgrade common tower completed");
-        }
-        else
-        {
-            ShowAlert("Not enough money");
+                    ShowAlert("Upgrade common tower completed");
+                }
+                else
+                {
+                    ShowAlert("Not enough money");
+                }
+
+                break;
+            case 1:
+                if (_currMoney >= (int)(_uncommonUpCost * _uncommonLevel))
+                {
+                    foreach (Tower tower in GetInstance().GetTowerList())
+                    {
+                        if (tower._tier == Tower.TowerTier.Uncommon)
+                        {
+                            tower._defaultDamage += _uncommonDamageUp * _uncommonLevel;
+                            tower._range += 0.1f;
+                        }
+                    }
+                    _currMoney -= (int)(_uncommonUpCost * _uncommonLevel++);
+                    GameObject.Find("UncommonUpText").GetComponent<Text>().text = "Uncommon Up \n#" + _uncommonLevel + " Cost: " + (_uncommonUpCost * _uncommonLevel);
+                    ShowAlert("Upgrade uncommon tower completed");
+                }
+                else
+                {
+                    ShowAlert("Not enough money");
+                }
+                break;
+            case 2:
+                if (_currMoney >= (int)(_rareUpCost * _rareLevel))
+                {
+                    foreach (Tower tower in GetInstance().GetTowerList())
+                    {
+                        if (tower._tier == Tower.TowerTier.Rare)
+                        {
+                            tower._defaultDamage += _rareDamageUp * _rareLevel;
+                            tower._range += 0.1f;
+                        }
+                    }
+                    _currMoney -= (int)(_rareUpCost * _rareLevel++);
+                    GameObject.Find("RareUpText").GetComponent<Text>().text = "Rare Up \n#" + _rareLevel + " Cost: " + (_rareUpCost * _rareLevel);
+                    ShowAlert("Upgrade rare tower completed");
+                }
+                else
+                {
+                    ShowAlert("Not enough money");
+                }
+                break;
+            case 3:
+                if (_currMoney >= (int)(_uniqueUpCost * _uniqueLevel))
+                {
+                    foreach (Tower tower in GetInstance().GetTowerList())
+                    {
+                        if (tower._tier == Tower.TowerTier.Unique)
+                        {
+                            tower._defaultDamage += _uniqueDamageUp * _uniqueLevel;
+                            tower._range += 0.1f;
+                        }
+                    }
+                    _currMoney -= (int)(_uniqueUpCost * _uniqueLevel++);
+                    GameObject.Find("UniqueUpText").GetComponent<Text>().text = "Unique Up \n#" + _uniqueLevel + " Cost: " + (_uniqueUpCost * _uniqueLevel);
+                    ShowAlert("Upgrade unique tower completed");
+                }
+                else
+                {
+                    ShowAlert("Not enough money");
+                }
+                break;
+            case 4:
+                if (_currMoney >= (int)(_legendaryUpCost * _legendaryLevel))
+                {
+                    foreach (Tower tower in GetInstance().GetTowerList())
+                    {
+                        if (tower._tier == Tower.TowerTier.Legendary)
+                        {
+                            tower._defaultDamage += _legendaryDamageUp * _legendaryLevel;
+                            tower._range += 0.1f;
+                        }
+                    }
+                    _currMoney -= (int)(_legendaryUpCost * _legendaryLevel++);
+                    GameObject.Find("LegendaryUpText").GetComponent<Text>().text = "Legendary Up \n#" + _legendaryLevel + " Cost: " + (_legendaryUpCost * _legendaryLevel);
+                    ShowAlert("Upgrade legendary tower completed");
+                }
+                else
+                {
+                    ShowAlert("Not enough money");
+                }
+                break;
+            default:
+                break;
         }
     }
 
-    private void UpgradeUncommonTower()
-    {
-        if (_currMoney >= (int)(_uncommonUpCost * _uncommonLevel))
-        {
-            foreach (Tower tower in GetInstance().GetTowerList())
-            {
-                if (tower._tier == Tower.TowerTier.Uncommon)
-                {
-                    tower._defaultDamage += _uncommonDamageUp * _uncommonLevel;
-                }
-            }
-            _currMoney -= (int)(_uncommonUpCost * _uncommonLevel++);
-            GameObject.Find("UncommonUpText").GetComponent<Text>().text = "Uncommon Up \n#" + _uncommonLevel + " Cost: " + (_uncommonUpCost * _uncommonLevel);
-            ShowAlert("Upgrade uncommon tower completed");
-        }
-        else
-        {
-            ShowAlert("Not enough money");
-        }
-    }
-
-    private void UpgradeRareTower()
-    {
-        if (_currMoney >= (int)(_rareUpCost * _rareLevel))
-        {
-            foreach (Tower tower in GetInstance().GetTowerList())
-            {
-                if (tower._tier == Tower.TowerTier.Rare)
-                {
-                    tower._defaultDamage += _rareDamageUp * _rareLevel;
-                }
-            }
-            _currMoney -= (int)(_rareUpCost * _rareLevel++);
-            GameObject.Find("RareUpText").GetComponent<Text>().text = "Rare Up \n#" + _rareLevel + " Cost: " + (_rareUpCost * _rareLevel);
-            ShowAlert("Upgrade rare tower completed");
-        }
-        else
-        {
-            ShowAlert("Not enough money");
-        }
-    }
-
-    private void UpgradeUniqueTower()
-    {
-        Tower[] towerList = FindObjectsOfType<Tower>();
-
-        if (_currMoney >= (int)(_uniqueUpCost * _uniqueLevel))
-        {
-            foreach (Tower tower in GetInstance().GetTowerList())
-            {
-                if (tower._tier == Tower.TowerTier.Unique)
-                {
-                    tower._defaultDamage += _uniqueDamageUp * _uniqueLevel;
-                }
-            }
-            _currMoney -= (int)(_uniqueUpCost * _uniqueLevel++);
-            GameObject.Find("UniqueUpText").GetComponent<Text>().text = "Unique Up \n#" + _uniqueLevel + " Cost: " + (_uniqueUpCost * _uniqueLevel);
-            ShowAlert("Upgrade unique tower completed");
-        }
-        else
-        {
-            ShowAlert("Not enough money");
-        }
-    }
-
-    private void UpgradeLegendaryTower()
-    {
-        if (_currMoney >= (int)(_legendaryUpCost * _legendaryLevel))
-        {
-            foreach (Tower tower in GetInstance().GetTowerList())
-            {
-                if (tower._tier == Tower.TowerTier.Legendary)
-                {
-                    tower._defaultDamage += _legendaryDamageUp * _legendaryLevel;
-                }
-            }
-            _currMoney -= (int)(_legendaryUpCost * _legendaryLevel++);
-            GameObject.Find("LegendaryUpText").GetComponent<Text>().text = "Legendary Up \n#" + _legendaryLevel + " Cost: " + (_legendaryUpCost * _legendaryLevel);
-            ShowAlert("Upgrade legendary tower completed");
-        }
-        else
-        {
-            ShowAlert("Not enough money");
-        }
-    }
     #endregion
 
     #region Handle Obstacle

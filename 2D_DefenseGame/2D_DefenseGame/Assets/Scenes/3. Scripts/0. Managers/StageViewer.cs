@@ -9,10 +9,8 @@ public class StageViewer : MonoBehaviour
     [Header("Stage UI")]
     [SerializeField] private Text _stateText = null;
     [SerializeField] private Image _image = null;
-    [SerializeField] private Text _alertText = null;  
 
     private int _idx = -1;
-    private bool _isAlertOpen = false;
 
     public enum StageViewState
     {
@@ -53,7 +51,8 @@ public class StageViewer : MonoBehaviour
                 break;
             case StageViewState.Locked:
 
-                _stateText.text = "Locked";
+                //_stateText.text = "Locked";
+                _stateText.text = "Debuggin On";
 
                 tempColor.a = 0.4f;
                 _image.color = tempColor;
@@ -62,7 +61,6 @@ public class StageViewer : MonoBehaviour
 
                 break;
             case StageViewState.NotTried:
-                _stateText.text = "Not tried";
                 break;
             default:
                 break;
