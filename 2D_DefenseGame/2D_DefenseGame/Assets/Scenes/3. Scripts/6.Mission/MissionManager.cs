@@ -47,11 +47,9 @@ public class MissionManager : MonoBehaviour
 
     #region Mission UI
 
-    private void CreateMissionBtn()
+    private void InitMissionHolder()
     {
         int idx = 0;
-
-        Debug.Log("Create Mission Button 실행");
 
         foreach (Mission mission in _missions)
         {
@@ -74,6 +72,7 @@ public class MissionManager : MonoBehaviour
 
     #region Tower Ledger
 
+    [System.Serializable]
     public struct TowerLedger
     {
         public uint _numOfCommon;
@@ -104,7 +103,7 @@ public class MissionManager : MonoBehaviour
         }
     }
 
-    private TowerLedger _towerLedger = new TowerLedger(0);
+    [SerializeField] private TowerLedger _towerLedger = new TowerLedger(0);
 
     public TowerLedger GetTowerLedger()
     {
@@ -113,6 +112,8 @@ public class MissionManager : MonoBehaviour
 
     public void InitLedger()
     {
+        Debug.Log("Ledger 초기화");
+
         _towerLedger._numOfCommon = 0;
         _towerLedger._numOfUncommon = 0;
         _towerLedger._numOfRare = 0;
@@ -137,7 +138,7 @@ public class MissionManager : MonoBehaviour
         _holders = new List<MissionHolder>();
         _holders.Clear();
 
-        CreateMissionBtn();
+        InitMissionHolder();
     }
 
     // tier, towerName, offset: -1(delete), 1(add)
@@ -317,45 +318,39 @@ public class MissionManager : MonoBehaviour
         public Tower.TowerTier _towerTier;
         public string _towerType;
         public uint _numOfTower;
-        public int _reward;
-
-        public void SetCleared()
-        {
-            _isCleared = true;
-        }
+        public int _reward;   
     }
 
+    // this member displayed on inspector
     [SerializeField] private List<Mission> _missions = null;
 
     private void CheckAllMissions()
     {
-        for (int i = 0; i < _missions.Count; i++)
+        for (int i = 0; i < _holders.Count; i++)
         {
-            if (_missions[i]._isCleared)
+            if (_holders[i].GetCleared())
             {
                 continue;
             }
 
-            if (_missions[i]._towerType.Equals(""))
+            if (_holders[i].GetTowerType().Equals(""))
             {
-                if (CheckNumOfTowerMission(_missions[i]._towerTier, _missions[i]._numOfTower))
+                if (CheckNumOfTowerMission(_holders[i].GetTowerTier(), _holders[i].GetNumOfTower()))
                 {
-                    Player.GetInstance().AddMoney(_missions[i]._reward);
-                    _missions[i].SetCleared();
-
-                    _holders[i].gameObject.GetComponentInChildren<Text>().text = "#" + (i + 1) + " Cleared";
-                    _holders[i].gameObject.GetComponent<Button>().interactable = false;
+                    Player.GetInstance().AddMoney(_holders[i].GetReward());
+                    _holders[i].SetCleared();
+                    
+                    continue;
                 }
             }
             else
             {
-                if (CheckTowerTypeMission(_missions[i]._towerType, _missions[i]._numOfTower))
+                if (CheckTowerTypeMission(_holders[i].GetTowerType(), _holders[i].GetNumOfTower()))
                 {
-                    Player.GetInstance().AddMoney(_missions[i]._reward);
-                    _missions[i].SetCleared();
+                    Player.GetInstance().AddMoney(_holders[i].GetReward());
+                    _holders[i].SetCleared();
 
-                    _holders[i].gameObject.GetComponentInChildren<Text>().text = "#" + (i + 1) + "Cleared";
-                    _holders[i].gameObject.GetComponent<Button>().interactable = false;
+                    continue;
                 }
             }
         }

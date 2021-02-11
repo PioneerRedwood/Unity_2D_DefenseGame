@@ -319,7 +319,7 @@ public class Player : MonoBehaviour
     {
         bool isCompleted = false;
         Tower selectedTower = GetTower(selectedObj.transform.parent);
-        Debug.Log(_towerList.Count);
+        int counts = _towerList.Count;
 
         foreach (Tower tower in _towerList)
         {
@@ -341,7 +341,7 @@ public class Player : MonoBehaviour
                         break;
                     case Tower.TowerTier.Legendary:
                         ShowAlert("There is no next from Legedary");
-                        isCompleted = true;
+                        isCompleted = false;
                         break;
                     default:
                         break;

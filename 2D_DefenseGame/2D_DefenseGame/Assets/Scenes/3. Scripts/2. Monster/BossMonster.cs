@@ -5,7 +5,7 @@ using UnityEngine;
 public class BossMonster : Monster
 {
     [Header("BossMonster property")]
-    [Range(0, 3)]
+    [Range(0, 5)]
     [SerializeField] private float _auraRange = 2.0f;
     [Range(0, 1)]
     [SerializeField] private float _decreaseDamage = 0.0f;
