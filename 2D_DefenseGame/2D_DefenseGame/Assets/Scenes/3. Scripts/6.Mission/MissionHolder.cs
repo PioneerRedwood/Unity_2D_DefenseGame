@@ -45,7 +45,7 @@ public class MissionHolder : MonoBehaviour
         }
 
         _missionExplanation = stringBuilder.ToString();
-        
+
         _isCleared = mission._isCleared;
         _numOfTower = mission._numOfTower;
         _towerTier = mission._towerTier;
@@ -55,7 +55,7 @@ public class MissionHolder : MonoBehaviour
 
     public void OnMissionBtnClicked()
     {
-        Player.GetInstance().ShowAlert(_missionExplanation);
+        Player.GetInstance().ShowAlert("Cleared! " + _missionExplanation);
     }
 
     public string GetMissionName()
@@ -77,25 +77,25 @@ public class MissionHolder : MonoBehaviour
     {
         return _numOfTower;
     }
-    
+
     public int GetReward()
     {
         return _reward;
-    }    
+    }
 
     public bool GetCleared()
     {
         return _isCleared;
     }
-    
+
     public void SetCleared()
     {
         gameObject.GetComponentInChildren<Text>().text = _missionName + " Cleared";
-        //.gameObject.GetComponent<Button>().interactable = false;
-        // 텍스트와 색을 바꿔놓는게 좋을듯
+
         Color color = gameObject.GetComponent<Image>().color;
         color.a = 0.2f;
         Color temp = color;
+
         gameObject.GetComponent<Image>().color = temp;
 
         _isCleared = true;

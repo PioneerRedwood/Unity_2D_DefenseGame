@@ -21,7 +21,9 @@ public class MissionManager : MonoBehaviour
 
     #endregion
 
-    [SerializeField] private GameObject _towerLedgerPanel = null;
+    [SerializeField] private GameObject _missionPanel = null;
+    [SerializeField] private Text _towerTierLedgerText = null;
+    [SerializeField] private Text _towerTypeLedgerText = null;
     [SerializeField] private GameObject _missionBtnPref = null;
 
     private List<MissionHolder> _holders = null;
@@ -57,8 +59,8 @@ public class MissionManager : MonoBehaviour
             {
                 GameObject btnPref = Instantiate(_missionBtnPref);
 
-                btnPref.transform.position = _towerLedgerPanel.transform.position;
-                btnPref.transform.SetParent(_towerLedgerPanel.transform);
+                btnPref.transform.position = _missionPanel.transform.position;
+                btnPref.transform.SetParent(_missionPanel.transform);
 
                 MissionHolder holder = btnPref.GetComponent<MissionHolder>();
                 btnPref.GetComponentInChildren<Text>().text = "Mission #" + (++idx).ToString();
@@ -103,7 +105,7 @@ public class MissionManager : MonoBehaviour
         }
     }
 
-    [SerializeField] private TowerLedger _towerLedger = new TowerLedger(0);
+    private TowerLedger _towerLedger = new TowerLedger(0);
 
     public TowerLedger GetTowerLedger()
     {
@@ -126,11 +128,11 @@ public class MissionManager : MonoBehaviour
         _towerLedger._numOfSlow = 0;
         _towerLedger._numOfLaser = 0;
 
-        Transform child = _towerLedgerPanel.GetComponentInChildren<Transform>();
+        Transform child = _missionPanel.GetComponentInChildren<Transform>();
 
         foreach (Transform iter in child)
         {
-            if (iter != _towerLedgerPanel.transform)
+            if (iter != _missionPanel.transform)
             {
                 Destroy(iter.gameObject);
             }
@@ -303,6 +305,11 @@ public class MissionManager : MonoBehaviour
                 _towerLedger._numOfLaser += 1;
             }
         }
+
+        _towerTierLedgerText.text = "Common: " + _towerLedger._numOfCommon + "\nUncommon: " + _towerLedger._numOfUncommon + "\nRare: " + _towerLedger._numOfRare
+                                + "\nUnique: " + _towerLedger._numOfUnique + "\nLegendary: " + _towerLedger._numOfLegendary;
+        _towerTypeLedgerText.text = "Bullet: " + _towerLedger._numOfBullet + "\nAOE: " + _towerLedger._numOfAOE + "\nBuff: " + _towerLedger._numOfBuff
+                                + "\nSlow: " + _towerLedger._numOfSlow + "\nLaser: " + _towerLedger._numOfLaser;
 
         CheckAllMissions();
     }

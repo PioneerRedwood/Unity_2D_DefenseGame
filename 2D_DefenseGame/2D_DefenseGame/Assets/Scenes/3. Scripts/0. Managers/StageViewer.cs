@@ -51,8 +51,7 @@ public class StageViewer : MonoBehaviour
                 break;
             case StageViewState.Locked:
 
-                //_stateText.text = "Locked";
-                _stateText.text = "Debuggin On";
+                _stateText.text = "Locked";
 
                 tempColor.a = 0.4f;
                 _image.color = tempColor;
