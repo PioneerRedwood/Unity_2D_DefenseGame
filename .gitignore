@@ -1,29 +1,16 @@
 # : comments
 *.cs.meta
-
 *.csproj
 
-*.meta
-
 *.info
-
 *.asset
-
 *.json
-
 *.log
-
 *.txt
-
 *.cache
-
 *.bin
-
 *.psd
-
 *.png
-
 *.prefab
-
 *.unity
 

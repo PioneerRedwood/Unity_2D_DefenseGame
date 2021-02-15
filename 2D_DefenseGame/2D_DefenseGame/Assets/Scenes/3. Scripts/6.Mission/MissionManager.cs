@@ -114,8 +114,6 @@ public class MissionManager : MonoBehaviour
 
     public void InitLedger()
     {
-        Debug.Log("Ledger 초기화");
-
         _towerLedger._numOfCommon = 0;
         _towerLedger._numOfUncommon = 0;
         _towerLedger._numOfRare = 0;

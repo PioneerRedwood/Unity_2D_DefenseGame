@@ -25,9 +25,7 @@ public class StageViewer : MonoBehaviour
 
     public void OnStageClicked()
     {
-        // 배포 시 없앨 것
-        //if (_idx != -1 && (_state != StageViewState.Locked))
-        if (_idx != -1)
+        if (_idx != -1 && (_state != StageViewState.Locked))
         {
             SceneManager.LoadScene("GameScene");
         }

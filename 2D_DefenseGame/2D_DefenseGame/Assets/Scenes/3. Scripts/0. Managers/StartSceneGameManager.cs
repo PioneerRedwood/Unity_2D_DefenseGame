@@ -27,10 +27,6 @@ public class StartSceneGameManager : MonoBehaviour
 
     public void InitGame()
     {
-        // 퍼블리시(빌드) 후 없애야 함
-        PlayerPrefs.SetString("StageClearCount", "1:0\t2:-1\t3:-1\t4:-1\t5:-1");
-        PlayerPrefs.Save();
-
         if (PlayerPrefs.GetInt("ID_Play") == 0)
         {
             PlayerPrefs.SetString("StageClearCount", "1:0\t2:-1\t3:-1\t4:-1\t5:-1");
