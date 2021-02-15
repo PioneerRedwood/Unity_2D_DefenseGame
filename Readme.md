@@ -1,6 +1,7 @@
 # 2D Tower Defense Game by Unity
 
-2020.12.22 ~ 진행 중 (with Lulie)
+2020.12.22 ~ 2021.02.04 (with Lulie)
+2021.02.05 ~ 2021.02.15 Redwood
 
 스타크래프트 1과 2의 랜덤타워디펜스 유즈맵을 모토로 삼아 개발했다.
 
@@ -36,7 +37,7 @@
 ​	GamePrefabManager, SingletonScriptableObject, SimpleMonster, Player 추가
 
 - GamePrefabManager 
-  - 어떠한 클래서에서도 원하는 오브젝트를 생성하기 위해 몇몇 프리팹을 지정해둔 매니저 클래스
+  - 어떠한 클래스에서도 원하는 오브젝트를 생성하기 위해 몇몇 프리팹을 지정해둔 매니저 클래스
   - 반드시 Assets/Resources 디렉토리에 위치해야함
 - SingletonScriptableObject
   -  GamePrefabManager가 게임 내 항상 하나의 인스턴스로만 존재하기 위한 추상 래퍼 클래스
